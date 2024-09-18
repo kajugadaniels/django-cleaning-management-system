@@ -19,18 +19,22 @@ def user_login(request):
             if user is not None:
                 if user.is_active:
                     auth_login(request, user)
-                    messages.success(request, _('Connexion réussie!'))
+                    messages.success(request, _('Login successful!'))
                     return redirect('base:dashboard')
                 else:
-                    messages.error(request, _('Votre compte est inactif.'))
+                    messages.error(request, _('Your account is inactive.'))
             else:
-                messages.error(request, _('Email ou mot de passe invalide'))
+                messages.error(request, _('Invalid email or password'))
         else:
-            messages.error(request, _("Veuillez corriger l'erreur ci-dessous."))
+            messages.error(request, _("Please correct the error below."))
     else:
         form = LoginForm()
 
-    return render(request, 'auth/login.html', {'form': form})
+    context = {
+        'form': form
+    }
+
+    return render(request, 'auth/login.html', context)
 
 def user_logout(request):
     logout(request)
@@ -45,7 +49,7 @@ def userProfile(request):
             profile_form = UserProfileForm(request.POST, request.FILES, instance=user)
             if profile_form.is_valid():
                 profile_form.save()
-                messages.success(request, 'Profil mis à jour avec succès.')
+                messages.success(request, 'Profile updated successfully.')
                 return redirect('auth:userProfile')
             else:
                 password_form = PasswordChangeForm(user=user)
@@ -54,7 +58,7 @@ def userProfile(request):
             if password_form.is_valid():
                 password_form.save()
                 update_session_auth_hash(request, password_form.user)
-                messages.success(request, 'Mot de passe modifié avec succès. Veuillez vous reconnecter.')
+                messages.success(request, 'Password changed successfully. Please log in again.')
                 logout(request)
                 return redirect('auth:login')
             else:
