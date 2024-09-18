@@ -1,3 +1,5 @@
+from home.forms import *
+from home.models import *
 from account.models import *
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
@@ -80,4 +82,4 @@ def addUser(request):
         'form': form,
         'logged_in_user': request.user
     }
-    return render(request, 'users/create.html', context)f
+    return render(request, 'users/create.html', context)
