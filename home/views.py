@@ -319,3 +319,18 @@ def editTask(request, id):
         'task': task
     }
     return render(request, 'tasks/edit.html', context)
+
+@login_required
+def deleteTask(request, id):
+    if request.user.role not in ['Admin', 'Client'] and not request.user.is_superuser:
+        messages.error(request, "You are not authorized to access this page.")
+        return redirect('base:dashboard')
+
+    task = get_object_or_404(Task, id=id)
+    if request.method == 'POST':
+        task.delete_status = True
+        task.save()
+        messages.success(request, "Task deleted successfully.")
+        return redirect('base:getTasks')
+    
+    return render(request, 'tasks/delete.html', {'task': task})
