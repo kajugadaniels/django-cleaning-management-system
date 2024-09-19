@@ -60,8 +60,15 @@
                                                     <a href="{% url 'base:viewCleanupRequest' request.id %}" class="btn btn-primary btn-sm">
                                                         View
                                                     </a>
+                                            
+                                                    {% if not request.completed_at %}
+                                                    <a href="{% url 'base:markCleanupRequestComplete' request.id %}" class="btn btn-success btn-sm">
+                                                        Mark as Completed
+                                                    </a>
+                                                    {% endif %}
                                                 </div>
                                             </td>
+                                            
                                         </tr>
                                     {% endfor %}
                                 </tbody>
