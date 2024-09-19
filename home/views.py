@@ -332,13 +332,13 @@ def assignCleanersToTask(request, taskId):
     task = get_object_or_404(Task, id=taskId, cleanup_request__company=request.user, delete_status=False)
 
     if request.method == 'POST':
-        form = TaskCleanerForm(request.POST, instance=task)
+        form = TaskCleanerForm(request.POST, instance=task, user=request.user)
         if form.is_valid():
             form.save()
             messages.success(request, "Cleaners assigned successfully.")
-            return redirect('viewCleanupRequestDetails', cleanupRequestId=task.cleanup_request.id)
+            return redirect('base:viewCleanupRequestDetails', cleanupRequestId=task.cleanup_request.id)
     else:
-        form = TaskCleanerForm(instance=task)
+        form = TaskCleanerForm(instance=task, user=request.user)
 
     context = {
         'form': form,
