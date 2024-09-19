@@ -69,3 +69,14 @@ class AdminApproveCleanupRequestForm(forms.ModelForm):
         # Only show users with the 'Company' role in the company field
         self.fields['company'].queryset = User.objects.filter(role='Company')
         self.fields['company'].label = "Assign Company"
+
+class TaskCleanerForm(forms.ModelForm):
+    cleaners = forms.ModelMultipleChoiceField(
+        queryset=User.objects.filter(role='Cleaner'), 
+        widget=forms.CheckboxSelectMultiple, 
+        required=True
+    )
+
+    class Meta:
+        model = Task
+        fields = ['cleaners']
