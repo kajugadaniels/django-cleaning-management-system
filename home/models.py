@@ -29,7 +29,7 @@ class CleanupRequest(models.Model):
 
 class Task(models.Model):
     cleanup_request = models.ForeignKey(CleanupRequest, on_delete=models.CASCADE, related_name='tasks')
-    name = models.CharField(max_length=255)  # Changed from description to name
+    name = models.CharField(max_length=255, null=True, blank=True)
     cleaners = models.ManyToManyField(User, related_name='tasks_assigned', blank=True)
     assigned_at = models.DateTimeField(null=True, blank=True)
     completed_at = models.DateTimeField(null=True, blank=True)
