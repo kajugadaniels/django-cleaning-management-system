@@ -173,25 +173,31 @@ def addCleanupRequest(request):
 
     if request.method == 'POST':
         cleanup_request_form = CleanupRequestForm(request.POST)
-        task_formset = TaskFormSet(request.POST)
+        
+        # Manually handle multiple tasks submitted via the form
+        task_names = request.POST.getlist('task_name')  # Get the list of task names dynamically submitted
 
-        if cleanup_request_form.is_valid() and task_formset.is_valid():
+        if cleanup_request_form.is_valid():
             cleanup_request = cleanup_request_form.save(commit=False)
-            cleanup_request.client = request.user
+            cleanup_request.client = request.user  # Auto-fill client
             cleanup_request.save()
 
-            task_formset.instance = cleanup_request
-            task_formset.save()
+            # Save each task associated with the cleanup request
+            for name in task_names:
+                if name.strip():  # Ensure no empty task is saved
+                    Task.objects.create(
+                        cleanup_request=cleanup_request,
+                        name=name,
+                        added_by=request.user
+                    )
 
             messages.success(request, "Cleanup request created successfully.")
             return redirect('base:getCleanupRequests')
     else:
         cleanup_request_form = CleanupRequestForm()
-        task_formset = TaskFormSet()
 
     context = {
-        'cleanup_request_form': cleanup_request_form,
-        'task_formset': task_formset
+        'cleanup_request_form': cleanup_request_form
     }
     return render(request, 'cleanup_requests/create.html', context)
 
