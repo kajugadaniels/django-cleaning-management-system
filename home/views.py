@@ -334,8 +334,11 @@ def assignCleanersToTask(request, taskId):
     if request.method == 'POST':
         form = TaskCleanerForm(request.POST, instance=task, user=request.user)
         if form.is_valid():
-            form.save()
-            messages.success(request, "Cleaners assigned successfully.")
+            task = form.save(commit=False)
+            task.assigned_at = timezone.now()  # Set the assigned_at field to the current time
+            task.save()
+            form.save_m2m()  # Save many-to-many data for cleaners
+            messages.success(request, "Cleaners assigned successfully and time recorded.")
             return redirect('base:viewCleanupRequestDetails', cleanupRequestId=task.cleanup_request.id)
     else:
         form = TaskCleanerForm(instance=task, user=request.user)
