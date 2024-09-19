@@ -166,35 +166,31 @@ def getCleanupRequests(request):
 
 @login_required
 def addCleanupRequest(request):
-    if request.user.role not in ['Admin', 'Client']:
+    if request.user.role != 'Client':
         messages.error(request, "You are not authorized to access this page.")
-        return redirect('home')
+        return redirect('base:dashboard')
 
     if request.method == 'POST':
         cleanup_request_form = CleanupRequestForm(request.POST)
         task_formset = TaskFormSet(request.POST)
-
+        
         if cleanup_request_form.is_valid() and task_formset.is_valid():
             cleanup_request = cleanup_request_form.save(commit=False)
-            cleanup_request.added_by = request.user
+            cleanup_request.client = request.user  # Auto-fill client
             cleanup_request.save()
-
-            tasks = task_formset.save(commit=False)
-            for task in tasks:
-                task.cleanup_request = cleanup_request
-                task.save()
-
-            messages.success(request, "Cleanup request and tasks added successfully.")
+            
+            task_formset.instance = cleanup_request
+            task_formset.save()
+            
+            messages.success(request, "Cleanup request created successfully.")
             return redirect('base:getCleanupRequests')
-        else:
-            messages.error(request, "Please correct the errors in the form.")
     else:
         cleanup_request_form = CleanupRequestForm()
         task_formset = TaskFormSet()
 
     context = {
         'cleanup_request_form': cleanup_request_form,
-        'task_formset': task_formset,
+        'task_formset': task_formset
     }
     return render(request, 'cleanup_requests/create.html', context)
 

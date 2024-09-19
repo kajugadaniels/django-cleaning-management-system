@@ -58,7 +58,7 @@ class TaskForm(forms.ModelForm):
         model = Task
         fields = ['description']
         widgets = {
-            'description': forms.Textarea(attrs={'class': 'form-control'}),
+            'description': forms.TextInput(attrs={'class': 'form-control'}),
         }
 
 TaskFormSet = forms.inlineformset_factory(CleanupRequest, Task, form=TaskForm, extra=1, can_delete=True)
