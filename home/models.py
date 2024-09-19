@@ -29,7 +29,7 @@ class CleanupRequest(models.Model):
 
 class Task(models.Model):
     cleanup_request = models.ForeignKey(CleanupRequest, on_delete=models.CASCADE, related_name='tasks')
-    description = models.TextField()
+    name = models.CharField(max_length=255)  # Changed from description to name
     cleaners = models.ManyToManyField(User, related_name='tasks_assigned', blank=True)
     assigned_at = models.DateTimeField(null=True, blank=True)
     completed_at = models.DateTimeField(null=True, blank=True)
@@ -42,4 +42,4 @@ class Task(models.Model):
     updated_at = models.DateTimeField(auto_now=True)
 
     def __str__(self):
-        return f'Task for Request {self.cleanup_request}'
+        return f'Task {self.name} for Request {self.cleanup_request}'
