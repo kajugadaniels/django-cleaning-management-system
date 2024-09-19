@@ -63,7 +63,9 @@ class AdminApproveCleanupRequestForm(forms.ModelForm):
         widgets = {
             'company': forms.Select(attrs={'class': 'form-control'}),
         }
-        
+
     def __init__(self, *args, **kwargs):
         super(AdminApproveCleanupRequestForm, self).__init__(*args, **kwargs)
+        # Only show users with the 'Company' role in the company field
+        self.fields['company'].queryset = User.objects.filter(role='Company')
         self.fields['company'].label = "Assign Company"

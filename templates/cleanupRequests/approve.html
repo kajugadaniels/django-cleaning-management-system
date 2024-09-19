@@ -6,7 +6,7 @@
             <div class="card shadow-lg mb-4">
                 <div class="card-body">
                     <div class="d-flex justify-content-between align-items-center">
-                        <h4 class="card-title">Approve Cleanup Request</h4>
+                        <h4 class="card-title">Approve or Reject Cleanup Request</h4>
                         <a class="btn btn-primary" href="{% url 'base:adminViewCleanupRequests' %}">
                             <i class="fa fa-arrow-left"></i> Back to Requests
                         </a>
@@ -15,14 +15,21 @@
                     
                     <form method="post">
                         {% csrf_token %}
+                        
                         <div class="mb-3">
                             <label for="company" class="form-label">Assign Company</label>
                             {{ form.company }}
                         </div>
                         
-                        <button type="submit" class="btn btn-success">
-                            <i class="fa fa-check"></i> Approve and Assign
-                        </button>
+                        <div class="d-flex justify-content-between">
+                            <button type="submit" name="approve" class="btn btn-success">
+                                <i class="fa fa-check"></i> Approve and Assign
+                            </button>
+
+                            <button type="submit" name="reject" class="btn btn-danger">
+                                <i class="fa fa-times"></i> Reject
+                            </button>
+                        </div>
                     </form>
                 </div>
             </div>

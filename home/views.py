@@ -260,18 +260,24 @@ def adminApproveCleanupRequest(request, request_id):
 
     # Get the cleanup request
     cleanupRequest = get_object_or_404(CleanupRequest, pk=request_id)
-    
+
     # Handle form submission
     if request.method == 'POST':
         form = AdminApproveCleanupRequestForm(request.POST, instance=cleanupRequest)
         
         if form.is_valid():
-            cleanupRequest = form.save(commit=False)
-            cleanupRequest.approved_at = timezone.now()  # Automatically set approval date
-            cleanupRequest.status = 'Approved'  # Automatically mark as approved
-            cleanupRequest.save()
+            # Check which button was pressed (Approve or Reject)
+            if 'approve' in request.POST:
+                cleanupRequest = form.save(commit=False)
+                cleanupRequest.approved_at = timezone.now()  # Automatically set approval date
+                cleanupRequest.status = 'Approved'  # Automatically mark as approved
+                cleanupRequest.save()
+                messages.success(request, "Cleanup request approved and company assigned successfully.")
+            elif 'reject' in request.POST:
+                cleanupRequest.status = 'Rejected'  # Mark request as rejected
+                cleanupRequest.save()
+                messages.success(request, "Cleanup request rejected.")
             
-            messages.success(request, "Cleanup request approved and company assigned successfully.")
             return redirect('base:adminViewCleanupRequests')
     else:
         form = AdminApproveCleanupRequestForm(instance=cleanupRequest)
@@ -280,5 +286,5 @@ def adminApproveCleanupRequest(request, request_id):
         'cleanupRequest': cleanupRequest,
         'form': form
     }
-    
+
     return render(request, 'cleanupRequests/approve.html', context)
