@@ -16,6 +16,7 @@ urlpatterns = [
     path('client/cleanup-requests/', getCleanupRequests, name='getCleanupRequests'),
     path('client/cleanup-request/add/', addCleanupRequest, name='addCleanupRequest'),
     path('client/cleanup-requests/<int:cleanup_request_id>/', viewCleanupRequest, name='viewCleanupRequest'),
+    path('client/cleanup-request/<int:cleanupRequestId>/complete/', markCleanupRequestComplete, name='markCleanupRequestComplete'),
 
     path('cleanup-requests/', adminViewCleanupRequests, name='adminViewCleanupRequests'),
     path('cleanup-requests/<int:request_id>/', adminApproveCleanupRequest, name='adminApproveCleanupRequest'),
