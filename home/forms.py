@@ -54,3 +54,16 @@ class CleanupRequestForm(forms.ModelForm):
 
 class TaskForm(forms.Form):
     name = forms.CharField(max_length=255, widget=forms.TextInput(attrs={'class': 'form-control'}))
+
+class AdminApproveCleanupRequestForm(forms.ModelForm):
+    class Meta:
+        model = CleanupRequest
+        fields = ['company']
+        
+        widgets = {
+            'company': forms.Select(attrs={'class': 'form-control'}),
+        }
+        
+    def __init__(self, *args, **kwargs):
+        super(AdminApproveCleanupRequestForm, self).__init__(*args, **kwargs)
+        self.fields['company'].label = "Assign Company"
