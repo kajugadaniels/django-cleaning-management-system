@@ -48,32 +48,17 @@ class UserUpdateForm(forms.ModelForm):
 class CleanupRequestForm(forms.ModelForm):
     class Meta:
         model = CleanupRequest
-        fields = ['client', 'location', 'description', 'status']
-
+        fields = ['description']
         widgets = {
             'description': forms.Textarea(attrs={'class': 'form-control'}),
-            'location': forms.TextInput(attrs={'class': 'form-control'}),
         }
-
-    def __init__(self, *args, **kwargs):
-        super(CleanupRequestForm, self).__init__(*args, **kwargs)
-        self.fields['client'].widget.attrs.update({'class': 'form-control'})
-        self.fields['status'].widget.attrs.update({'class': 'form-control'})
-
 
 class TaskForm(forms.ModelForm):
     class Meta:
         model = Task
-        fields = ['title', 'description', 'assigned_cleaners']
-
+        fields = ['description']
         widgets = {
             'description': forms.Textarea(attrs={'class': 'form-control'}),
-            'title': forms.TextInput(attrs={'class': 'form-control'}),
         }
 
-    def __init__(self, *args, **kwargs):
-        super(TaskForm, self).__init__(*args, **kwargs)
-        self.fields['assigned_cleaners'].widget.attrs.update({'class': 'form-control'})
-
-# Create a formset for Task
-TaskFormSet = inlineformset_factory(CleanupRequest, Task, form=TaskForm, extra=1)
+TaskFormSet = forms.inlineformset_factory(CleanupRequest, Task, form=TaskForm, extra=1, can_delete=True)
