@@ -43,3 +43,26 @@ class UserUpdateForm(forms.ModelForm):
         self.fields['role'].choices = [(role, role) for role in roles]
         self.fields['role'].widget.attrs.update({'class': 'form-control', 'required': 'true'})
         self.fields['image'].widget.attrs.update({'class': 'form-control'})
+
+class CleanupRequestForm(forms.ModelForm):
+    class Meta:
+        model = CleanupRequest
+        fields = ['description', 'status', 'company']
+
+    def __init__(self, *args, **kwargs):
+        super(CleanupRequestForm, self).__init__(*args, **kwargs)
+        self.fields['description'].widget.attrs.update({'class': 'form-control', 'placeholder': 'Enter description'})
+        self.fields['status'].widget.attrs.update({'class': 'form-control'})
+        self.fields['company'].widget.attrs.update({'class': 'form-control'})
+
+class TaskForm(forms.ModelForm):
+    class Meta:
+        model = Task
+        fields = ['description', 'cleaners', 'assigned_at', 'completed_at']
+
+    def __init__(self, *args, **kwargs):
+        super(TaskForm, self).__init__(*args, **kwargs)
+        self.fields['description'].widget.attrs.update({'class': 'form-control', 'placeholder': 'Enter task description'})
+        self.fields['cleaners'].widget.attrs.update({'class': 'form-control'})
+        self.fields['assigned_at'].widget.attrs.update({'class': 'form-control', 'type': 'datetime-local'})
+        self.fields['completed_at'].widget.attrs.update({'class': 'form-control', 'type': 'datetime-local'})
