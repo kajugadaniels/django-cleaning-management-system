@@ -236,6 +236,36 @@ def viewCleanupRequest(request, cleanup_request_id):
     return render(request, 'client/cleanupRequests/show.html', context)
 
 @login_required
+def markCleanupRequestComplete(request, cleanupRequestId):
+    # Ensure the user is a Client
+    if request.user.role != 'Client':
+        messages.error(request, "You are not authorized to complete this request.")
+        return redirect('base:getCleanupRequests')
+
+    # Retrieve the cleanup request and associated tasks
+    cleanupRequest = get_object_or_404(CleanupRequest, id=cleanupRequestId, client=request.user, delete_status=False)
+    tasks = Task.objects.filter(cleanup_request=cleanupRequest, delete_status=False)
+
+    # If the request method is POST, update the 'completed_at' fields
+    if request.method == 'POST':
+        # Mark the cleanup request as completed
+        cleanupRequest.completed_at = timezone.now()
+        cleanupRequest.save()
+
+        # Mark all tasks as completed
+        tasks.update(completed_at=timezone.now())
+
+        messages.success(request, "Cleanup request and tasks marked as completed.")
+        return redirect('base:getCleanupRequests')
+
+    context = {
+        'cleanupRequest': cleanupRequest,
+        'tasks': tasks,
+    }
+
+    return render(request, 'client/cleanupRequests/complete.html', context)
+
+@login_required
 def adminViewCleanupRequests(request):
     # Ensure only Admin or SuperAdmin users can access this
     if request.user.role not in ['Admin'] and not request.user.is_superuser:
