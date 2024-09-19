@@ -46,36 +46,38 @@ def getUsers(request):
 
 @login_required
 def addUser(request):
-    # Allow users with the 'Company' role to access the page
     if request.user.role not in ['Admin', 'Company'] and not request.user.is_superuser:
         messages.error(request, "You are not authorized to access this page.")
         return redirect('base:dashboard')
 
-    # Allow 'Admin' and 'Company' to create users with specific roles
-    roles = ['Admin', 'Company', 'Client', 'Cleaner'] if request.user.role == 'Admin' or request.user.is_superuser else ['Company']
+    # For 'Company' users, they should only be able to add 'Cleaner' users
+    if request.user.role == 'Company':
+        roles = ['Cleaner']
+    else:
+        roles = ['Admin', 'Company', 'Client', 'Cleaner'] if request.user.role == 'Admin' or request.user.is_superuser else ['Company']
 
     if request.method == 'POST':
         form = UserCreationForm(request.POST, roles=roles)
 
-        # Check if form is valid first
         if form.is_valid():
-            required_fields = ['name', 'email', 'phone_number', 'password', 'role']
+            required_fields = ['name', 'email', 'phone_number', 'password']
             missing_fields = [field for field in required_fields if not form.cleaned_data.get(field)]
 
             if missing_fields:
                 messages.error(request, f"{', '.join([field.replace('_', ' ').capitalize() for field in missing_fields])} {'is' if len(missing_fields) == 1 else 'are'} required.")
             elif form.cleaned_data.get("password") != form.cleaned_data.get("password_confirmation"):
                 messages.error(request, "Password does not match.")
-            elif form.cleaned_data.get("role") not in roles:
-                messages.error(request, "Invalid role selected.")
             else:
                 user = form.save(commit=False)
                 user.set_password(form.cleaned_data["password"])
+                # Automatically set role to 'Cleaner' if the logged-in user is a 'Company'
+                if request.user.role == 'Company':
+                    user.role = 'Cleaner'
+                user.added_by = request.user  # Link the added user to the current user
                 user.save()
                 messages.success(request, "User added successfully.")
                 return redirect('base:getUsers')
         else:
-            # Display form errors
             for error in form.errors.values():
                 messages.error(request, error)
 

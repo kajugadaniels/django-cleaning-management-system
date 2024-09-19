@@ -45,7 +45,11 @@
                                         <div class="col-12">
                                             <label class="form-label">Role</label>
                                             <div class="input-group flatpicker-calender product-date">
-                                                {{ form.role }}
+                                                {% if logged_in_user.role == 'Company' %}
+                                                    <input type="text" class="form-control" value="Cleaner" name="role" readonly>
+                                                {% else %}
+                                                    {{ form.role }}
+                                                {% endif %}
                                             </div>
                                         </div>
                                     </div>
