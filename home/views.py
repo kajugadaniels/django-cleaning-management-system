@@ -11,7 +11,8 @@ def dashboard(request):
 
 @login_required
 def getUsers(request):
-    if request.user.role == 'Company':
+    # Allow users with the 'Company' role to access the page
+    if request.user.role not in ['Admin', 'Company'] and not request.user.is_superuser:
         messages.error(request, "You are not authorized to access this page.")
         return redirect('base:dashboard')
 
@@ -28,6 +29,7 @@ def getUsers(request):
             except User.DoesNotExist:
                 messages.error(request, "User not found.")
 
+    # Users with 'Company' role can view only other 'Company' users
     if request.user.role == 'Company':
         getUsers = User.objects.filter(role='Company')
     elif request.user.role == 'Admin' or request.user.is_superuser:
@@ -44,10 +46,12 @@ def getUsers(request):
 
 @login_required
 def addUser(request):
-    if request.user.role == 'Company':
+    # Allow users with the 'Company' role to access the page
+    if request.user.role not in ['Admin', 'Company'] and not request.user.is_superuser:
         messages.error(request, "You are not authorized to access this page.")
         return redirect('base:dashboard')
 
+    # Allow 'Admin' and 'Company' to create users with specific roles
     roles = ['Admin', 'Company', 'Client', 'Cleaner'] if request.user.role == 'Admin' or request.user.is_superuser else ['Company']
 
     if request.method == 'POST':
