@@ -13,10 +13,12 @@ urlpatterns = [
     path('user/edit/<int:id>/', editUser, name='editUser'),
     path('user/delete/<int:id>/', deleteUser, name='deleteUser'),
 
-    path('client-cleanup-requests/', getCleanupRequests, name='getCleanupRequests'),
-    path('client-cleanup-request/add/', addCleanupRequest, name='addCleanupRequest'),
-    path('client-cleanup-requests/<int:cleanup_request_id>/', viewCleanupRequest, name='viewCleanupRequest'),
+    path('client/cleanup-requests/', getCleanupRequests, name='getCleanupRequests'),
+    path('client/cleanup-request/add/', addCleanupRequest, name='addCleanupRequest'),
+    path('client/cleanup-requests/<int:cleanup_request_id>/', viewCleanupRequest, name='viewCleanupRequest'),
 
     path('cleanup-requests/', adminViewCleanupRequests, name='adminViewCleanupRequests'),
     path('cleanup-requests/<int:request_id>/', adminApproveCleanupRequest, name='adminApproveCleanupRequest'),
+
+    path('company/viewCleanupRequests/', viewCompanyCleanupRequests, name='viewCompanyCleanupRequests'),
 ]  + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)+ static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
