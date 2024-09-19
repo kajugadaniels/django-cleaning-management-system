@@ -55,9 +55,11 @@
                                             </td>
                                             <td>
                                                 <div class="product-action">
-                                                    <a href="{% url 'base:editUser' user.id %}" class="btn btn-primary btn-sm">
-                                                        Edit
-                                                    </a>
+                                                    {% if request.user.is_superuser %}
+                                                        <a href="{% url 'base:editUser' user.id %}" class="btn btn-primary btn-sm">
+                                                            Edit
+                                                        </a>
+                                                    {% endif %}
                                                     <form method="POST" action="{% url 'base:getUsers' %}">
                                                         {% csrf_token %}
                                                         <input type="hidden" name="user_id" value="{{ user.id }}">
