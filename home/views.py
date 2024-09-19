@@ -150,10 +150,11 @@ def getCleanupRequests(request):
         messages.error(request, "You are not authorized to access this page.")
         return redirect('base:dashboard')
 
+    # Retrieve cleanup requests based on user role
     if request.user.role == 'Client':
-        cleanupRequests = CleanupRequest.objects.filter(client=request.user)
+        cleanupRequests = CleanupRequest.objects.filter(client=request.user, delete_status=False).select_related('company').prefetch_related('tasks')
     elif request.user.role == 'Admin' or request.user.is_superuser:
-        cleanupRequests = CleanupRequest.objects.all()
+        cleanupRequests = CleanupRequest.objects.filter(delete_status=False).select_related('client', 'company').prefetch_related('tasks')
     else:
         cleanupRequests = CleanupRequest.objects.none()
 
