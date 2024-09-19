@@ -1,7 +1,6 @@
 from django import forms
 from home.models import *
 from account.models import *
-from django.forms import inlineformset_factory
 
 class UserCreationForm(forms.ModelForm):
     password = forms.CharField(widget=forms.PasswordInput(attrs={'class': 'form-control', 'required': 'true'}))
@@ -53,13 +52,5 @@ class CleanupRequestForm(forms.ModelForm):
             'description': forms.Textarea(attrs={'class': 'form-control'}),
         }
 
-class TaskForm(forms.ModelForm):
-    class Meta:
-        model = Task
-        fields = ['name']
-        widgets = {
-            'name': forms.TextInput(attrs={'class': 'form-control'}),
-        }
-
-# Task formset
-TaskFormSet = forms.inlineformset_factory(CleanupRequest, Task, form=TaskForm, extra=1, can_delete=True)
+class TaskForm(forms.Form):
+    name = forms.CharField(max_length=255, widget=forms.TextInput(attrs={'class': 'form-control'}))
