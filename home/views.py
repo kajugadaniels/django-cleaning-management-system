@@ -218,4 +218,4 @@ def viewCleanupRequest(request, cleanup_request_id):
         'logged_in_user': request.user
     }
 
-    return render(request, 'cleanup_requests/view.html', context)
+    return render(request, 'cleanup_requests/show.html', context)

@@ -1,0 +1,89 @@
+{% extends 'layouts/app.html' %}
+{% block content %}
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-sm-12">
+            <div class="card">
+                <div class="card-body">
+                    <h4>Cleanup Request Details</h4>
+                    <hr>
+                    <p><strong>Client:</strong> {{ cleanupRequest.client.name }}</p>
+                    
+                    <!-- Check if company exists -->
+                    <p><strong>Company:</strong> 
+                        {% if cleanupRequest.company %}
+                            {{ cleanupRequest.company.name }}
+                        {% else %}
+                            Not assigned yet
+                        {% endif %}
+                    </p>
+
+                    <p><strong>Status:</strong> {{ cleanupRequest.get_status_display }}</p>
+                    <p><strong>Description:</strong> {{ cleanupRequest.description }}</p>
+                    <p><strong>Requested At:</strong> {{ cleanupRequest.requested_at }}</p>
+
+                    <!-- Check if approved_at exists -->
+                    <p><strong>Approved At:</strong> 
+                        {% if cleanupRequest.approved_at %}
+                            {{ cleanupRequest.approved_at }}
+                        {% else %}
+                            Not approved yet
+                        {% endif %}
+                    </p>
+
+                    <!-- Check if completed_at exists -->
+                    <p><strong>Completed At:</strong> 
+                        {% if cleanupRequest.completed_at %}
+                            {{ cleanupRequest.completed_at }}
+                        {% else %}
+                            Not completed yet
+                        {% endif %}
+                    </p>
+                    
+                    <h5>Tasks</h5>
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>Description</th>
+                                <th>Assigned Cleaners</th>
+                                <th>Assigned At</th>
+                                <th>Completed At</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for task in tasks %}
+                            <tr>
+                                <td>{{ task.description }}</td>
+                                <td>
+                                    {% for cleaner in task.cleaners.all %}
+                                        {{ cleaner.name }}{% if not forloop.last %}, {% endif %}
+                                    {% endfor %}
+                                </td>
+
+                                <!-- Check if assigned_at exists for each task -->
+                                <td>
+                                    {% if task.assigned_at %}
+                                        {{ task.assigned_at }}
+                                    {% else %}
+                                        Not assigned yet
+                                    {% endif %}
+                                </td>
+
+                                <!-- Check if completed_at exists for each task -->
+                                <td>
+                                    {% if task.completed_at %}
+                                        {{ task.completed_at }}
+                                    {% else %}
+                                        Not completed yet
+                                    {% endif %}
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
