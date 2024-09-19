@@ -71,8 +71,14 @@ class AdminApproveCleanupRequestForm(forms.ModelForm):
         self.fields['company'].label = "Assign Company"
 
 class TaskCleanerForm(forms.ModelForm):
+    def __init__(self, *args, **kwargs):
+        user = kwargs.pop('user')  # Get the logged-in user from the view
+        super(TaskCleanerForm, self).__init__(*args, **kwargs)
+        # Filter cleaners added by the logged-in company user
+        self.fields['cleaners'].queryset = User.objects.filter(role='Cleaner', added_by=user)
+
     cleaners = forms.ModelMultipleChoiceField(
-        queryset=User.objects.filter(role='Cleaner'), 
+        queryset=User.objects.none(),  # Default to none, will be populated in __init__
         widget=forms.CheckboxSelectMultiple, 
         required=True
     )
