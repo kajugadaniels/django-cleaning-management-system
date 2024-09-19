@@ -8,7 +8,12 @@
                     <h4>Cleanup Request Details</h4>
                     <p><strong>Client:</strong> {{ cleanupRequest.client.name }}</p>
                     <p><strong>Description:</strong> {{ cleanupRequest.description }}</p>
-                    <p><strong>Status:</strong> {{ cleanupRequest.get_status_display }}</p>
+                    <p>
+                        <strong>Status:</strong>
+                        <span class="badge {% if cleanupRequest.status == 'Approved' %}bg-success{% elif cleanupRequest.status == 'Rejected' %}bg-danger{% else %}bg-warning{% endif %}">
+                            {{ cleanupRequest.get_status_display }}
+                        </span>
+                    </p>
                     <p><strong>Requested At:</strong> {{ cleanupRequest.requested_at }}</p>
                     
                     <h5>Tasks</h5>
@@ -34,7 +39,7 @@
                                     {% endif %}
                                 </td>
                                 <td>
-                                    <a class="btn btn-primary btn-sm" href="{% url 'assignCleanersToTask' task.id %}">Assign Cleaners</a>
+                                    <a class="btn btn-primary btn-sm" href="{% url 'base:assignCleanersToTask' task.id %}">Assign Cleaners</a>
                                 </td>
                             </tr>
                             {% endfor %}

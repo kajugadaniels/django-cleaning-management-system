@@ -33,7 +33,7 @@
                                 <td>{{ request.approved_at|default:"Not approved yet" }}</td>
                                 <td>{{ request.completed_at|default:"Not completed yet" }}</td>
                                 <td>
-                                    <a class="btn btn-info btn-sm" href="{% url 'base:viewCleanupRequest' request.id %}">View Details</a>
+                                    <a class="btn btn-info btn-sm" href="{% url 'base:viewCleanupRequestDetails' request.id %}">View Details</a>
                                 </td>
                             </tr>
                             {% endfor %}
