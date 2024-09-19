@@ -168,7 +168,7 @@ def getCleanupRequests(request):
         'logged_in_user': request.user
     }
 
-    return render(request, 'cleanup_requests/index.html', context)
+    return render(request, 'client/cleanupRequests/index.html', context)
 
 @login_required
 def addCleanupRequest(request):
