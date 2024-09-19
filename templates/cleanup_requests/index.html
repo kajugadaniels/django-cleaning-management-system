@@ -1,0 +1,79 @@
+{% extends 'layouts/app.html' %}
+{% load static %}
+{% block content %}
+
+    <div class="container-fluid">
+        <div class="row"> 
+            <div class="col-sm-12"> 
+                <div class="card"> 
+                    <div class="card-body">
+                        <div class="list-product-header">
+                            <div class="d-flex justify-content-between">
+                                <h4>Cleanup Request</h4>
+                                <a class="btn btn-primary" href="{% url 'base:addCleanupRequest' %}"><i class="fa fa-plus"></i>
+                                    Add Cleanup Request
+                                </a>
+                            </div>
+                        </div>
+                        <hr>
+                        <div class="list-product">
+                            <table class="table" id="project-status">
+                                <thead> 
+                                    <tr> 
+                                    <th>
+                                        <div class="form-check"> 
+                                            <input class="form-check-input checkbox-primary" type="checkbox">
+                                        </div>
+                                    </th>
+                                    <th> <span class="f-light f-w-600">Client</span></th>
+                                    <th> <span class="f-light f-w-600">Status</span></th>
+                                    <th> <span class="f-light f-w-600">Descriptions</span></th>
+                                    <th> <span class="f-light f-w-600">Requested_at</span></th>
+                                    <th> <span class="f-light f-w-600">Action</span></th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    
+                                    {% for request in cleanupRequests %}
+                                        <tr class="product-removes">
+                                            <td>
+                                                <div class="form-check"> 
+                                                    <input class="form-check-input checkbox-primary" type="checkbox">
+                                                </div>
+                                            </td>
+                                            <td>
+                                                <p class="f-light">{{ request.client }} </p>
+                                            </td>
+                                            <td>
+                                                <p class="f-light">{{ request.status }} </p>
+                                            </td>
+                                            <td>
+                                                <p class="f-light">{{ request.description }}</p>
+                                            </td>
+                                            <td>
+                                                <p class="f-light">{{ request.requested_at }}</p>
+                                            </td>
+                                            <td>
+                                                <div class="product-action">
+                                                    <a href="{% url 'base:editCleanupRequest' request.id %}" class="btn btn-primary btn-sm">
+                                                        Edit
+                                                    </a>
+                                                    <form method="POST" action="{% url 'base:deleteCleanupRequest' %}">
+                                                        {% csrf_token %}
+                                                        <input type="hidden" name="user_id" value="{{ request.id }}">
+                                                        <button type="submit" class="btn btn-danger btn-sm" onclick="return confirm('Are you sure you want to delete this user?')">Delete</button>
+                                                    </form>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+{% endblock %}
