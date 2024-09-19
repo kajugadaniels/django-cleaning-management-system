@@ -13,10 +13,10 @@ urlpatterns = [
     path('user/edit/<int:id>/', editUser, name='editUser'),
     path('user/delete/<int:id>/', deleteUser, name='deleteUser'),
 
-    path('cleanup-requests/', getCleanupRequests, name='getCleanupRequests'),
-    path('cleanup-request/add/', addCleanupRequest, name='addCleanupRequest'),
-    path('cleanup_requests/<int:cleanup_request_id>/', viewCleanupRequest, name='viewCleanupRequest'),
+    path('client-cleanup-requests/', getCleanupRequests, name='getCleanupRequests'),
+    path('client-cleanup-request/add/', addCleanupRequest, name='addCleanupRequest'),
+    path('client-cleanup-requests/<int:cleanup_request_id>/', viewCleanupRequest, name='viewCleanupRequest'),
 
-    path('admin/cleanup-requests/', adminViewCleanupRequests, name='adminViewCleanupRequests'),
-    path('admin/cleanup-requests/<int:request_id>/', adminApproveCleanupRequest, name='adminApproveCleanupRequest'),
+    path('cleanup-requests/', adminViewCleanupRequests, name='adminViewCleanupRequests'),
+    path('cleanup-requests/<int:request_id>/', adminApproveCleanupRequest, name='adminApproveCleanupRequest'),
 ]  + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)+ static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

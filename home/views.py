@@ -249,7 +249,7 @@ def adminViewCleanupRequests(request):
         'cleanupRequests': cleanupRequests
     }
     
-    return render(request, 'admin/cleanupRequests/index.html', context)
+    return render(request, 'cleanupRequests/index.html', context)
 
 @login_required
 def adminApproveCleanupRequest(request, request_id):
@@ -272,7 +272,7 @@ def adminApproveCleanupRequest(request, request_id):
             cleanupRequest.save()
             
             messages.success(request, "Cleanup request approved and company assigned successfully.")
-            return redirect('adminViewCleanupRequests')
+            return redirect('base:adminViewCleanupRequests')
     else:
         form = AdminApproveCleanupRequestForm(instance=cleanupRequest)
 
@@ -281,4 +281,4 @@ def adminApproveCleanupRequest(request, request_id):
         'form': form
     }
     
-    return render(request, 'admin/cleanupRequests/approve.html', context)
+    return render(request, 'cleanupRequests/approve.html', context)
