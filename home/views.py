@@ -196,145 +196,26 @@ def addCleanupRequest(request):
     return render(request, 'cleanup_requests/create.html', context)
 
 @login_required
-def editCleanupRequest(request, id):
-    if request.user.role not in ['Admin', 'Client'] and not request.user.is_superuser:
+def viewCleanupRequest(request, cleanup_request_id):
+    try:
+        # Fetch the cleanup request and its related tasks
+        cleanupRequest = CleanupRequest.objects.select_related('client', 'company').prefetch_related('tasks').get(id=cleanup_request_id, delete_status=False)
+    except CleanupRequest.DoesNotExist:
+        messages.error(request, "Cleanup request not found.")
+        return redirect('cleanup:getCleanupRequests')
+
+    # Ensure only authorized users can view the details
+    if request.user.role == 'Client' and cleanupRequest.client != request.user:
+        messages.error(request, "You are not authorized to view this cleanup request.")
+        return redirect('base:dashboard')
+    elif request.user.role not in ['Admin', 'Client'] and not request.user.is_superuser:
         messages.error(request, "You are not authorized to access this page.")
         return redirect('base:dashboard')
-
-    cleanupRequest = get_object_or_404(CleanupRequest, id=id)
-
-    if request.method == 'POST':
-        form = CleanupRequestForm(request.POST, instance=cleanupRequest)
-        if form.is_valid():
-            form.save()
-            messages.success(request, "Cleanup request updated successfully.")
-            return redirect('base:getCleanupRequests')
-        else:
-            for error in form.errors.values():
-                messages.error(request, error)
-    else:
-        form = CleanupRequestForm(instance=cleanupRequest)
 
     context = {
-        'form': form,
-        'logged_in_user': request.user,
-        'cleanupRequest': cleanupRequest
-    }
-    return render(request, 'cleanup_requests/edit.html', context)
-
-@login_required
-def deleteCleanupRequest(request, id):
-    if request.user.role not in ['Admin', 'Client'] and not request.user.is_superuser:
-        messages.error(request, "You are not authorized to access this page.")
-        return redirect('base:dashboard')
-
-    cleanupRequest = get_object_or_404(CleanupRequest, id=id)
-    if request.method == 'POST':
-        cleanupRequest.delete_status = True
-        cleanupRequest.save()
-        messages.success(request, "Cleanup request deleted successfully.")
-        return redirect('base:getCleanupRequests')
-    
-    return render(request, 'cleanup_requests/delete.html', {'cleanupRequest': cleanupRequest})
-
-@login_required
-def getTasks(request):
-    if request.user.role not in ['Admin', 'Client'] and not request.user.is_superuser:
-        messages.error(request, "You are not authorized to access this page.")
-        return redirect('base:dashboard')
-
-    if request.method == 'POST':
-        task_id = request.POST.get('task_id')
-        if task_id:
-            try:
-                task = Task.objects.get(id=task_id)
-                if not task.delete_status:
-                    task.delete_status = True
-                    task.save()
-                    messages.success(request, "Task deleted successfully.")
-                else:
-                    messages.error(request, "Task is already deleted.")
-            except Task.DoesNotExist:
-                messages.error(request, "Task not found.")
-
-    if request.user.role == 'Client':
-        tasks = Task.objects.filter(cleanup_request__client=request.user)
-    elif request.user.role == 'Admin' or request.user.is_superuser:
-        tasks = Task.objects.all()
-    else:
-        tasks = Task.objects.none()
-
-    context = {
-        'tasks': tasks,
+        'cleanupRequest': cleanupRequest,
+        'tasks': cleanupRequest.tasks.all(),
         'logged_in_user': request.user
     }
 
-    return render(request, 'tasks/index.html', context)
-
-@login_required
-def addTask(request):
-    if request.user.role not in ['Admin', 'Client'] and not request.user.is_superuser:
-        messages.error(request, "You are not authorized to access this page.")
-        return redirect('base:dashboard')
-
-    if request.method == 'POST':
-        form = TaskForm(request.POST)
-        if form.is_valid():
-            task = form.save(commit=False)
-            task.added_by = request.user
-            task.save()
-            messages.success(request, "Task added successfully.")
-            return redirect('base:getTasks')
-        else:
-            for error in form.errors.values():
-                messages.error(request, error)
-    else:
-        form = TaskForm()
-
-    context = {
-        'form': form,
-        'logged_in_user': request.user
-    }
-    return render(request, 'tasks/create.html', context)
-
-@login_required
-def editTask(request, id):
-    if request.user.role not in ['Admin', 'Client'] and not request.user.is_superuser:
-        messages.error(request, "You are not authorized to access this page.")
-        return redirect('base:dashboard')
-
-    task = get_object_or_404(Task, id=id)
-
-    if request.method == 'POST':
-        form = TaskForm(request.POST, instance=task)
-        if form.is_valid():
-            form.save()
-            messages.success(request, "Task updated successfully.")
-            return redirect('base:getTasks')
-        else:
-            for error in form.errors.values():
-                messages.error(request, error)
-    else:
-        form = TaskForm(instance=task)
-
-    context = {
-        'form': form,
-        'logged_in_user': request.user,
-        'task': task
-    }
-    return render(request, 'tasks/edit.html', context)
-
-@login_required
-def deleteTask(request, id):
-    if request.user.role not in ['Admin', 'Client'] and not request.user.is_superuser:
-        messages.error(request, "You are not authorized to access this page.")
-        return redirect('base:dashboard')
-
-    task = get_object_or_404(Task, id=id)
-    if request.method == 'POST':
-        task.delete_status = True
-        task.save()
-        messages.success(request, "Task deleted successfully.")
-        return redirect('base:getTasks')
-    
-    return render(request, 'tasks/delete.html', {'task': task})
+    return render(request, 'cleanup_requests/view.html', context)
