@@ -44,7 +44,7 @@
                     <table class="table">
                         <thead>
                             <tr>
-                                <th>Description</th>
+                                <th>Name</th>
                                 <th>Assigned Cleaners</th>
                                 <th>Assigned At</th>
                                 <th>Completed At</th>
@@ -53,7 +53,7 @@
                         <tbody>
                             {% for task in tasks %}
                             <tr>
-                                <td>{{ task.description }}</td>
+                                <td>{{ task.name }}</td>
                                 <td>
                                     {% for cleaner in task.cleaners.all %}
                                         {{ cleaner.name }}{% if not forloop.last %}, {% endif %}
