@@ -174,15 +174,15 @@ def addCleanupRequest(request):
     if request.method == 'POST':
         cleanup_request_form = CleanupRequestForm(request.POST)
         task_formset = TaskFormSet(request.POST)
-        
+
         if cleanup_request_form.is_valid() and task_formset.is_valid():
             cleanup_request = cleanup_request_form.save(commit=False)
-            cleanup_request.client = request.user  # Auto-fill client
+            cleanup_request.client = request.user
             cleanup_request.save()
-            
+
             task_formset.instance = cleanup_request
             task_formset.save()
-            
+
             messages.success(request, "Cleanup request created successfully.")
             return redirect('base:getCleanupRequests')
     else:
