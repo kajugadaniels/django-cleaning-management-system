@@ -39,7 +39,13 @@
                                     {% endif %}
                                 </td>
                                 <td>
-                                    <a class="btn btn-primary btn-sm" href="{% url 'base:assignCleanersToTask' task.id %}">Assign Cleaners</a>
+                                    {% if cleanupRequest.completed_at %}
+                                        <!-- Show "Work Completed" if completed_at is set -->
+                                        <span class="badge bg-success">Work Completed</span>
+                                    {% else %}
+                                        <!-- Show "Assign Cleaners" button if completed_at is not set -->
+                                        <a class="btn btn-primary btn-sm" href="{% url 'base:assignCleanersToTask' task.id %}">Assign Cleaners</a>
+                                    {% endif %}
                                 </td>
                             </tr>
                             {% endfor %}
