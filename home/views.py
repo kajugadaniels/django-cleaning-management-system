@@ -288,3 +288,19 @@ def adminApproveCleanupRequest(request, request_id):
     }
 
     return render(request, 'cleanupRequests/approve.html', context)
+
+@login_required
+def viewCompanyCleanupRequests(request):
+    if request.user.role != 'Company':
+        messages.error(request, "You are not authorized to access this page.")
+        return redirect('base:dashboard')
+
+    # Retrieve cleanup requests assigned to the company
+    cleanupRequests = CleanupRequest.objects.filter(company=request.user, delete_status=False).select_related('client').prefetch_related('tasks')
+
+    context = {
+        'cleanupRequests': cleanupRequests,
+        'logged_in_user': request.user
+    }
+
+    return render(request, 'company/cleanup_requests/index.html', context)
