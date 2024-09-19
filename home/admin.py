@@ -10,9 +10,9 @@ class CleanupRequestAdmin(admin.ModelAdmin):
 
 # Customize the Task admin view
 class TaskAdmin(admin.ModelAdmin):
-    list_display = ('cleanup_request', 'description', 'assigned_at', 'completed_at')
+    list_display = ('cleanup_request', 'name', 'assigned_at', 'completed_at')
     list_filter = ('cleanup_request', 'assigned_at', 'completed_at')
-    search_fields = ('description',)
+    search_fields = ('name',)
     ordering = ('-assigned_at',)
 
 # Register models in the admin site
