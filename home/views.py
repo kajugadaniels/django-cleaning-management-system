@@ -322,3 +322,28 @@ def viewCleanupRequestDetails(request, cleanupRequestId):
     }
 
     return render(request, 'company/cleanupRequests/show.html', context)
+
+@login_required
+def assignCleanersToTask(request, taskId):
+    if request.user.role != 'Company':
+        messages.error(request, "You are not authorized to access this page.")
+        return redirect('base:dashboard')
+
+    task = get_object_or_404(Task, id=taskId, cleanup_request__company=request.user, delete_status=False)
+
+    if request.method == 'POST':
+        form = TaskCleanerForm(request.POST, instance=task)
+        if form.is_valid():
+            form.save()
+            messages.success(request, "Cleaners assigned successfully.")
+            return redirect('viewCleanupRequestDetails', cleanupRequestId=task.cleanup_request.id)
+    else:
+        form = TaskCleanerForm(instance=task)
+
+    context = {
+        'form': form,
+        'task': task,
+        'cleanupRequest': task.cleanup_request
+    }
+
+    return render(request, 'company/cleanupRequests/create.html', context)
