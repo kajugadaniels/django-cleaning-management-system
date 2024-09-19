@@ -304,3 +304,21 @@ def viewCompanyCleanupRequests(request):
     }
 
     return render(request, 'company/cleanupRequests/index.html', context)
+
+@login_required
+def viewCleanupRequestDetails(request, cleanupRequestId):
+    if request.user.role != 'Company':
+        messages.error(request, "You are not authorized to access this page.")
+        return redirect('base:dashboard')
+
+    # Retrieve the cleanup request and its tasks
+    cleanupRequest = get_object_or_404(CleanupRequest, id=cleanupRequestId, company=request.user, delete_status=False)
+    tasks = cleanupRequest.tasks.all()
+
+    context = {
+        'cleanupRequest': cleanupRequest,
+        'tasks': tasks,
+        'logged_in_user': request.user
+    }
+
+    return render(request, 'company/cleanupRequests/show.html', context)
