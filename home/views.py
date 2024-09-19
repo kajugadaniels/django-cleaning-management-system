@@ -163,3 +163,30 @@ def getCleanupRequests(request):
     }
 
     return render(request, 'cleanup_requests/index.html', context)
+
+@login_required
+def addCleanupRequest(request):
+    if request.user.role not in ['Admin', 'Client'] and not request.user.is_superuser:
+        messages.error(request, "You are not authorized to access this page.")
+        return redirect('base:dashboard')
+
+    if request.method == 'POST':
+        form = CleanupRequestForm(request.POST)
+        if form.is_valid():
+            cleanupRequest = form.save(commit=False)
+            cleanupRequest.client = request.user
+            cleanupRequest.added_by = request.user
+            cleanupRequest.save()
+            messages.success(request, "Cleanup request added successfully.")
+            return redirect('base:getCleanupRequests')
+        else:
+            for error in form.errors.values():
+                messages.error(request, error)
+    else:
+        form = CleanupRequestForm()
+
+    context = {
+        'form': form,
+        'logged_in_user': request.user
+    }
+    return render(request, 'cleanup_requests/create.html', context)
