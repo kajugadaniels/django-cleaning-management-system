@@ -143,3 +143,23 @@ def deleteUser(request, id):
         messages.error(request, "User not found or action not authorized.")
 
     return redirect('base:getUsers')
+
+@login_required
+def getCleanupRequests(request):
+    if request.user.role not in ['Admin', 'Client'] and not request.user.is_superuser:
+        messages.error(request, "You are not authorized to access this page.")
+        return redirect('base:dashboard')
+
+    if request.user.role == 'Client':
+        cleanupRequests = CleanupRequest.objects.filter(client=request.user)
+    elif request.user.role == 'Admin' or request.user.is_superuser:
+        cleanupRequests = CleanupRequest.objects.all()
+    else:
+        cleanupRequests = CleanupRequest.objects.none()
+
+    context = {
+        'cleanupRequests': cleanupRequests,
+        'logged_in_user': request.user
+    }
+
+    return render(request, 'cleanup_requests/index.html', context)
