@@ -217,3 +217,18 @@ def editCleanupRequest(request, id):
         'cleanupRequest': cleanupRequest
     }
     return render(request, 'cleanup_requests/edit.html', context)
+
+@login_required
+def deleteCleanupRequest(request, id):
+    if request.user.role not in ['Admin', 'Client'] and not request.user.is_superuser:
+        messages.error(request, "You are not authorized to access this page.")
+        return redirect('base:dashboard')
+
+    cleanupRequest = get_object_or_404(CleanupRequest, id=id)
+    if request.method == 'POST':
+        cleanupRequest.delete_status = True
+        cleanupRequest.save()
+        messages.success(request, "Cleanup request deleted successfully.")
+        return redirect('base:getCleanupRequests')
+    
+    return render(request, 'cleanup_requests/delete.html', {'cleanupRequest': cleanupRequest})
