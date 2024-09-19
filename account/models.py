@@ -11,6 +11,7 @@ from django.contrib.auth.models import AbstractBaseUser, PermissionsMixin
 def user_image_path(instance, filename):
     base_filename, file_extension = os.path.splitext(filename)
     return f'profile_images/user_{slugify(instance.name)}_{instance.phone_number}{file_extension}'
+
 class User(AbstractBaseUser, PermissionsMixin):
     ROLE_CHOICES = (
         ('Admin', 'Admin'),
