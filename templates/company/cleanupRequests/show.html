@@ -1,0 +1,48 @@
+{% extends 'layouts/app.html' %}
+{% block content %}
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-sm-12">
+            <div class="card">
+                <div class="card-body">
+                    <h4>Cleanup Request Details</h4>
+                    <p><strong>Client:</strong> {{ cleanupRequest.client.name }}</p>
+                    <p><strong>Description:</strong> {{ cleanupRequest.description }}</p>
+                    <p><strong>Status:</strong> {{ cleanupRequest.get_status_display }}</p>
+                    <p><strong>Requested At:</strong> {{ cleanupRequest.requested_at }}</p>
+                    
+                    <h5>Tasks</h5>
+                    <table class="table table-striped">
+                        <thead>
+                            <tr>
+                                <th>Task</th>
+                                <th>Assigned Cleaners</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for task in tasks %}
+                            <tr>
+                                <td>Task {{ forloop.counter }}</td>
+                                <td>
+                                    {% if task.cleaners.all %}
+                                        {% for cleaner in task.cleaners.all %}
+                                            {{ cleaner.name }}{% if not forloop.last %}, {% endif %}
+                                        {% endfor %}
+                                    {% else %}
+                                        Not assigned
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    <a class="btn btn-primary btn-sm" href="{% url 'assignCleanersToTask' task.id %}">Assign Cleaners</a>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
