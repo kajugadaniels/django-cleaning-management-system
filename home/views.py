@@ -28,8 +28,10 @@ def getUsers(request):
             except User.DoesNotExist:
                 messages.error(request, "User not found.")
 
+    # Company users can only see users they added
     if request.user.role == 'Company':
-        getUsers = User.objects.filter(role='Company')
+        getUsers = User.objects.filter(added_by=request.user)
+    # Admin and superusers can see all users
     elif request.user.role == 'Admin' or request.user.is_superuser:
         getUsers = User.objects.all()
     else:
