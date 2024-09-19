@@ -1,0 +1,47 @@
+{% extends 'layouts/app.html' %}
+{% block content %}
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-sm-12">
+            <div class="card">
+                <div class="card-body">
+                    <div class="list-product-header">
+                        <div class="d-flex justify-content-between">
+                            <h4>Assigned Cleanup Requests</h4>
+                            <a class="btn btn-primary" href="{% url 'base:dashboard' %}"><i class="fa fa-home"></i> Dashboard</a>
+                        </div>
+                    </div>
+                    <table class="table table-striped">
+                        <thead>
+                            <tr>
+                                <th>Client</th>
+                                <th>Description</th>
+                                <th>Status</th>
+                                <th>Requested At</th>
+                                <th>Approved At</th>
+                                <th>Completed At</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for request in cleanupRequests %}
+                            <tr>
+                                <td>{{ request.client.name }}</td>
+                                <td>{{ request.description }}</td>
+                                <td>{{ request.get_status_display }}</td>
+                                <td>{{ request.requested_at }}</td>
+                                <td>{{ request.approved_at|default:"Not approved yet" }}</td>
+                                <td>{{ request.completed_at|default:"Not completed yet" }}</td>
+                                <td>
+                                    <a class="btn btn-info btn-sm" href="{% url 'base:viewCleanupRequest' request.id %}">View Details</a>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

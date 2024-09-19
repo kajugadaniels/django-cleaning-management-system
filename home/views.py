@@ -303,4 +303,4 @@ def viewCompanyCleanupRequests(request):
         'logged_in_user': request.user
     }
 
-    return render(request, 'company/cleanup_requests/index.html', context)
+    return render(request, 'company/cleanupRequests/index.html', context)
