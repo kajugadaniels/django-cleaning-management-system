@@ -234,3 +234,19 @@ def viewCleanupRequest(request, cleanup_request_id):
     }
 
     return render(request, 'cleanup_requests/show.html', context)
+
+@login_required
+def adminViewCleanupRequests(request):
+    # Ensure only Admin or SuperAdmin users can access this
+    if request.user.role not in ['Admin'] and not request.user.is_superuser:
+        messages.error(request, "You are not authorized to access this page.")
+        return redirect('base:dashboard')
+    
+    # Retrieve all cleanup requests
+    cleanupRequests = CleanupRequest.objects.filter(delete_status=False).select_related('client', 'company').prefetch_related('tasks')
+
+    context = {
+        'cleanupRequests': cleanupRequests
+    }
+    
+    return render(request, 'admin/cleanupRequests/index.html', context)
