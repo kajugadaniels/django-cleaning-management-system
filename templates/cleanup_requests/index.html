@@ -45,7 +45,9 @@
                                                 <p class="f-light">{{ request.client }} </p>
                                             </td>
                                             <td>
-                                                <p class="f-light">{{ request.status }} </p>
+                                                <span class="badge {% if cleanupRequest.status == 'Approved' %}bg-success{% elif request.status == 'Rejected' %}bg-danger{% else %}bg-warning{% endif %}">
+                                                    {{ request.get_status_display }}
+                                                </span>
                                             </td>
                                             <td>
                                                 <p class="f-light">{{ request.description }}</p>

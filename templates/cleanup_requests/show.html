@@ -3,55 +3,83 @@
 <div class="container-fluid">
     <div class="row">
         <div class="col-sm-12">
-            <div class="card">
+            <div class="card shadow-lg mb-4">
                 <div class="card-body">
-                    <div class="list-product-header">
-                        <div class="d-flex justify-content-between">
-                            <h4>Cleanup Request Details</h4>
-                            <a class="btn btn-primary" href="{% url 'base:getCleanupRequests' %}"><i class="fa fa-eye"></i> Go Backs</a>
+                    <div class="d-flex justify-content-between align-items-center">
+                        <h4 class="card-title">Cleanup Request Details</h4>
+                        <a class="btn btn-primary" href="{% url 'base:getCleanupRequests' %}">
+                            <i class="fa fa-arrow-left"></i> Back to Requests
+                        </a>
+                    </div>
+                    <hr>
+
+                    <!-- Client Info -->
+                    <div class="mb-3">
+                        <strong>Client:</strong> <span class="text-muted">{{ cleanupRequest.client.name }}</span>
+                    </div>
+
+                    <!-- Company Info -->
+                    <div class="mb-3">
+                        <strong>Company:</strong> 
+                        {% if cleanupRequest.company %}
+                            <span class="text-muted">{{ cleanupRequest.company.name }}</span>
+                        {% else %}
+                            <span class="text-muted text-danger">Not assigned yet</span>
+                        {% endif %}
+                    </div>
+
+                    <!-- Request Status -->
+                    <div class="mb-3">
+                        <strong>Status:</strong> 
+                        <span class="badge {% if cleanupRequest.status == 'Approved' %}bg-success{% elif cleanupRequest.status == 'Rejected' %}bg-danger{% else %}bg-warning{% endif %}">
+                            {{ cleanupRequest.get_status_display }}
+                        </span>
+                    </div>
+
+                    <!-- Cleanup Description -->
+                    <div class="mb-3">
+                        <strong>Description:</strong>
+                        <p class="text-muted">{{ cleanupRequest.description }}</p>
+                    </div>
+
+                    <!-- Dates Information -->
+                    <div class="mb-3 row">
+                        <div class="col-md-6">
+                            <strong>Requested At:</strong> 
+                            <span class="text-muted">{{ cleanupRequest.requested_at }}</span>
+                        </div>
+                        <div class="col-md-6">
+                            <strong>Approved At:</strong> 
+                            {% if cleanupRequest.approved_at %}
+                                <span class="text-muted">{{ cleanupRequest.approved_at }}</span>
+                            {% else %}
+                                <span class="text-muted text-danger">Not approved yet</span>
+                            {% endif %}
                         </div>
                     </div>
-                    <p><strong>Client:</strong> {{ cleanupRequest.client.name }}</p>
-                    
-                    <!-- Check if company exists -->
-                    <p><strong>Company:</strong> 
-                        {% if cleanupRequest.company %}
-                            {{ cleanupRequest.company.name }}
-                        {% else %}
-                            Not assigned yet
-                        {% endif %}
-                    </p>
 
-                    <p><strong>Status:</strong> {{ cleanupRequest.get_status_display }}</p>
-                    <p><strong>Description:</strong> {{ cleanupRequest.description }}</p>
-                    <p><strong>Requested At:</strong> {{ cleanupRequest.requested_at }}</p>
+                    <div class="mb-3 row">
+                        <div class="col-md-6">
+                            <strong>Completed At:</strong> 
+                            {% if cleanupRequest.completed_at %}
+                                <span class="text-muted">{{ cleanupRequest.completed_at }}</span>
+                            {% else %}
+                                <span class="text-muted text-danger">Not completed yet</span>
+                            {% endif %}
+                        </div>
+                    </div>
 
-                    <!-- Check if approved_at exists -->
-                    <p><strong>Approved At:</strong> 
-                        {% if cleanupRequest.approved_at %}
-                            {{ cleanupRequest.approved_at }}
-                        {% else %}
-                            Not approved yet
-                        {% endif %}
-                    </p>
+                    <hr>
 
-                    <!-- Check if completed_at exists -->
-                    <p><strong>Completed At:</strong> 
-                        {% if cleanupRequest.completed_at %}
-                            {{ cleanupRequest.completed_at }}
-                        {% else %}
-                            Not completed yet
-                        {% endif %}
-                    </p>
-                    
-                    <h5>Tasks</h5>
-                    <table class="table">
-                        <thead>
+                    <!-- Task Information -->
+                    <h5 class="mb-3">Tasks</h5>
+                    <table class="table table-hover">
+                        <thead class="thead-dark">
                             <tr>
-                                <th>Name</th>
-                                <th>Assigned Cleaners</th>
-                                <th>Assigned At</th>
-                                <th>Completed At</th>
+                                <th scope="col">Task Name</th>
+                                <th scope="col">Assigned Cleaners</th>
+                                <th scope="col">Assigned At</th>
+                                <th scope="col">Completed At</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -64,21 +92,19 @@
                                     {% endfor %}
                                 </td>
 
-                                <!-- Check if assigned_at exists for each task -->
                                 <td>
                                     {% if task.assigned_at %}
                                         {{ task.assigned_at }}
                                     {% else %}
-                                        Not assigned yet
+                                        <span class="text-muted">Not assigned yet</span>
                                     {% endif %}
                                 </td>
 
-                                <!-- Check if completed_at exists for each task -->
                                 <td>
                                     {% if task.completed_at %}
                                         {{ task.completed_at }}
                                     {% else %}
-                                        Not completed yet
+                                        <span class="text-muted">Not completed yet</span>
                                     {% endif %}
                                 </td>
                             </tr>
