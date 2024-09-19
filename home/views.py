@@ -232,3 +232,37 @@ def deleteCleanupRequest(request, id):
         return redirect('base:getCleanupRequests')
     
     return render(request, 'cleanup_requests/delete.html', {'cleanupRequest': cleanupRequest})
+
+@login_required
+def getTasks(request):
+    if request.user.role not in ['Admin', 'Client'] and not request.user.is_superuser:
+        messages.error(request, "You are not authorized to access this page.")
+        return redirect('base:dashboard')
+
+    if request.method == 'POST':
+        task_id = request.POST.get('task_id')
+        if task_id:
+            try:
+                task = Task.objects.get(id=task_id)
+                if not task.delete_status:
+                    task.delete_status = True
+                    task.save()
+                    messages.success(request, "Task deleted successfully.")
+                else:
+                    messages.error(request, "Task is already deleted.")
+            except Task.DoesNotExist:
+                messages.error(request, "Task not found.")
+
+    if request.user.role == 'Client':
+        tasks = Task.objects.filter(cleanup_request__client=request.user)
+    elif request.user.role == 'Admin' or request.user.is_superuser:
+        tasks = Task.objects.all()
+    else:
+        tasks = Task.objects.none()
+
+    context = {
+        'tasks': tasks,
+        'logged_in_user': request.user
+    }
+
+    return render(request, 'tasks/index.html', context)
