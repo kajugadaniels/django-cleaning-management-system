@@ -1,5 +1,4 @@
 {% extends 'layouts/app.html' %}
-{% load static %}
 {% block content %}
 
 <div class="container-fluid">
@@ -10,14 +9,18 @@
                     <div class="list-product-header">
                         <div class="d-flex justify-content-between">
                             <h4>Request a Cleanup</h4>
-                            <a class="btn btn-primary" href="{% url 'base:getCleanupRequests' %}"><i class="fa fa-eye"></i> View Requests</a>
+                            <a class="btn btn-primary" href="{% url 'base:getCleanupRequests' %}">
+                                <i class="fa fa-eye"></i> View Requests
+                            </a>
                         </div>
                     </div>
                     <hr>
-                    <form method="post" enctype="multipart/form-data">
+
+                    <!-- CleanupRequest Form -->
+                    <form method="post" id="cleanupRequestForm">
                         {% csrf_token %}
 
-                        <!-- CleanupRequest form -->
+                        <!-- Cleanup Description -->
                         <div class="row g-3 custom-input mb-3">
                             <div class="col-sm-12">
                                 <label class="form-label">Cleanup Description</label>
@@ -25,26 +28,22 @@
                             </div>
                         </div>
 
-                        <!-- Task formset -->
+                        <!-- Dynamic Task Fields -->
                         <div class="row g-3 custom-input mb-3">
                             <div class="col-sm-12">
                                 <label class="form-label">Tasks</label>
-                                {{ task_formset.management_form }}
                                 <div id="task-forms">
-                                    {% for form in task_formset %}
+                                    <!-- Task Form Input Template -->
                                     <div class="task-form-item">
-                                        <label class="form-label">Task Name</label>
-                                        {{ form.name }}
-                                        <button type="button" class="btn btn-danger remove-task-btn">Remove Task</button>
+                                        <input type="text" name="task_name[]" class="form-control" placeholder="Task Name" required>
+                                        <button type="button" class="btn btn-danger remove-task-btn mt-2">Remove Task</button>
                                     </div>
-                                    <hr>
-                                    {% endfor %}
                                 </div>
-                                <button type="button" class="btn btn-primary add-task-btn">Add Another Task</button>
+                                <button type="button" class="btn btn-primary mt-3 add-task-btn">Add Another Task</button>
                             </div>
                         </div>
 
-                        <!-- Submit button -->
+                        <!-- Submit Button -->
                         <div class="row mt-2">
                             <div class="col text-end">
                                 <button type="submit" class="btn btn-primary me-3">Submit Request</button>
@@ -58,23 +57,44 @@
 </div>
 
 <script>
-    document.addEventListener("DOMContentLoaded", function() {
-        var formCount = {{ task_formset.total_form_count }};
-        
-        // Add another task form
-        document.querySelector('.add-task-btn').addEventListener('click', function(e) {
-            var taskForm = document.querySelector('.task-form-item').cloneNode(true);
-            formCount++;
-            document.querySelector('#id_tasks-TOTAL_FORMS').value = formCount;
-            document.querySelector('#task-forms').appendChild(taskForm);
+    document.addEventListener("DOMContentLoaded", function () {
+        let formCount = 1;  // Initial form count for tasks
+        const taskFormsContainer = document.getElementById("task-forms");
+
+        // Add new task form dynamically
+        document.querySelector('.add-task-btn').addEventListener('click', function () {
+            let taskForm = document.querySelector('.task-form-item').cloneNode(true);
+            taskForm.querySelector('input').value = '';  // Clear the input value for the new form
+            taskFormsContainer.appendChild(taskForm);
         });
-        
-        // Remove task form
-        document.addEventListener('click', function(e) {
-            if(e.target && e.target.classList.contains('remove-task-btn')) {
-                e.target.closest('.task-form-item').remove();
-                formCount--;
-                document.querySelector('#id_tasks-TOTAL_FORMS').value = formCount;
+
+        // Remove task form dynamically
+        document.addEventListener('click', function (e) {
+            if (e.target && e.target.classList.contains('remove-task-btn')) {
+                const taskForm = e.target.closest('.task-form-item');
+                if (taskFormsContainer.childElementCount > 1) {
+                    taskForm.remove();  // Remove the task form only if there's more than one
+                } else {
+                    alert("At least one task is required.");  // Ensure at least one task remains
+                }
+            }
+        });
+
+        // Validate form before submission
+        const cleanupRequestForm = document.getElementById("cleanupRequestForm");
+        cleanupRequestForm.addEventListener("submit", function (e) {
+            let taskInputs = document.querySelectorAll('input[name="task_name[]"]');
+            let valid = true;
+
+            taskInputs.forEach(input => {
+                if (!input.value.trim()) {
+                    valid = false;
+                }
+            });
+
+            if (!valid) {
+                e.preventDefault();
+                alert("Please fill out all task fields before submitting.");
             }
         });
     });
