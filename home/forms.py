@@ -1,6 +1,7 @@
 from django import forms
 from home.models import *
 from account.models import *
+from django.forms import inlineformset_factory
 
 class UserCreationForm(forms.ModelForm):
     password = forms.CharField(widget=forms.PasswordInput(attrs={'class': 'form-control', 'required': 'true'}))
@@ -47,22 +48,32 @@ class UserUpdateForm(forms.ModelForm):
 class CleanupRequestForm(forms.ModelForm):
     class Meta:
         model = CleanupRequest
-        fields = ['description', 'status', 'company']
+        fields = ['client', 'location', 'description', 'status']
+
+        widgets = {
+            'description': forms.Textarea(attrs={'class': 'form-control'}),
+            'location': forms.TextInput(attrs={'class': 'form-control'}),
+        }
 
     def __init__(self, *args, **kwargs):
         super(CleanupRequestForm, self).__init__(*args, **kwargs)
-        self.fields['description'].widget.attrs.update({'class': 'form-control', 'placeholder': 'Enter description'})
+        self.fields['client'].widget.attrs.update({'class': 'form-control'})
         self.fields['status'].widget.attrs.update({'class': 'form-control'})
-        self.fields['company'].widget.attrs.update({'class': 'form-control'})
+
 
 class TaskForm(forms.ModelForm):
     class Meta:
         model = Task
-        fields = ['description', 'cleaners', 'assigned_at', 'completed_at']
+        fields = ['title', 'description', 'assigned_cleaners']
+
+        widgets = {
+            'description': forms.Textarea(attrs={'class': 'form-control'}),
+            'title': forms.TextInput(attrs={'class': 'form-control'}),
+        }
 
     def __init__(self, *args, **kwargs):
         super(TaskForm, self).__init__(*args, **kwargs)
-        self.fields['description'].widget.attrs.update({'class': 'form-control', 'placeholder': 'Enter task description'})
-        self.fields['cleaners'].widget.attrs.update({'class': 'form-control'})
-        self.fields['assigned_at'].widget.attrs.update({'class': 'form-control', 'type': 'datetime-local'})
-        self.fields['completed_at'].widget.attrs.update({'class': 'form-control', 'type': 'datetime-local'})
+        self.fields['assigned_cleaners'].widget.attrs.update({'class': 'form-control'})
+
+# Create a formset for Task
+TaskFormSet = inlineformset_factory(CleanupRequest, Task, form=TaskForm, extra=1)
