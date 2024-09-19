@@ -40,6 +40,9 @@
                                     <a href="{% url 'base:adminApproveCleanupRequest' request.id %}" class="btn btn-sm btn-primary">
                                         <i class="fa fa-check"></i> Approve & Assign
                                     </a>
+                                    <a href="{% url 'base:viewCleanupRequest' request.id %}" class="btn btn-primary btn-sm">
+                                        View
+                                    </a>
                                 </td>
                             </tr>
                             {% endfor %}
