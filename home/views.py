@@ -208,7 +208,7 @@ def addCleanupRequest(request):
     context = {
         'cleanup_request_form': cleanup_request_form,
     }
-    return render(request, 'cleanup_requests/create.html', context)
+    return render(request, 'client/cleanupRequests/create.html', context)
 
 @login_required
 def viewCleanupRequest(request, cleanup_request_id):
@@ -233,7 +233,7 @@ def viewCleanupRequest(request, cleanup_request_id):
         'logged_in_user': request.user
     }
 
-    return render(request, 'cleanup_requests/show.html', context)
+    return render(request, 'client/cleanupRequests/show.html', context)
 
 @login_required
 def adminViewCleanupRequests(request):
@@ -249,7 +249,7 @@ def adminViewCleanupRequests(request):
         'cleanupRequests': cleanupRequests
     }
     
-    return render(request, 'cleanupRequests/index.html', context)
+    return render(request, 'admin/cleanupRequests/index.html', context)
 
 @login_required
 def adminApproveCleanupRequest(request, request_id):
@@ -287,7 +287,7 @@ def adminApproveCleanupRequest(request, request_id):
         'form': form
     }
 
-    return render(request, 'cleanupRequests/approve.html', context)
+    return render(request, 'admin/cleanupRequests/approve.html', context)
 
 @login_required
 def viewCompanyCleanupRequests(request):
