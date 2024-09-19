@@ -292,3 +292,30 @@ def addTask(request):
         'logged_in_user': request.user
     }
     return render(request, 'tasks/create.html', context)
+
+@login_required
+def editTask(request, id):
+    if request.user.role not in ['Admin', 'Client'] and not request.user.is_superuser:
+        messages.error(request, "You are not authorized to access this page.")
+        return redirect('base:dashboard')
+
+    task = get_object_or_404(Task, id=id)
+
+    if request.method == 'POST':
+        form = TaskForm(request.POST, instance=task)
+        if form.is_valid():
+            form.save()
+            messages.success(request, "Task updated successfully.")
+            return redirect('base:getTasks')
+        else:
+            for error in form.errors.values():
+                messages.error(request, error)
+    else:
+        form = TaskForm(instance=task)
+
+    context = {
+        'form': form,
+        'logged_in_user': request.user,
+        'task': task
+    }
+    return render(request, 'tasks/edit.html', context)
