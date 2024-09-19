@@ -1,0 +1,20 @@
+{% extends 'layouts/app.html' %}
+{% block content %}
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-sm-12">
+                <div class="card">
+                    <div class="card-body">
+                        <h4>Assign Cleaners to Task</h4>
+                        <form method="post">
+                            {% csrf_token %}
+                            {{ form.as_p }}
+                            <button type="submit" class="btn btn-primary">Assign Cleaners</button>
+                            <a href="{% url 'base:viewCleanupRequestDetails' cleanupRequest.id %}" class="btn btn-secondary">Back to Request</a>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
