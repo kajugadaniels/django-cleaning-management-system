@@ -3,9 +3,9 @@ from .models import CleanupRequest, Task
 
 # Customize the CleanupRequest admin view
 class CleanupRequestAdmin(admin.ModelAdmin):
-    list_display = ('client', 'company', 'status', 'requested_at', 'approved_at', 'completed_at')
-    list_filter = ('status', 'company', 'client', 'requested_at', 'approved_at', 'completed_at')
-    search_fields = ('client__username', 'company__username', 'description')
+    list_display = ('client', 'manager', 'status', 'requested_at', 'approved_at', 'completed_at')
+    list_filter = ('status', 'manager', 'client', 'requested_at', 'approved_at', 'completed_at')
+    search_fields = ('client__username', 'manager__username', 'description')
     ordering = ('-requested_at',)
 
 # Customize the Task admin view

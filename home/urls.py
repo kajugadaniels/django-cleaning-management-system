@@ -21,7 +21,7 @@ urlpatterns = [
     path('cleanup-requests/', adminViewCleanupRequests, name='adminViewCleanupRequests'),
     path('cleanup-requests/<int:request_id>/', adminApproveCleanupRequest, name='adminApproveCleanupRequest'),
 
-    path('company/viewCleanupRequests/', viewCompanyCleanupRequests, name='viewCompanyCleanupRequests'),
-    path('company/cleanupRequests/<int:cleanupRequestId>/', viewCleanupRequestDetails, name='viewCleanupRequestDetails'),
-    path('company/assignCleaners/<int:taskId>/', assignCleanersToTask, name='assignCleanersToTask'),
+    path('manager/viewCleanupRequests/', viewManagerCleanupRequests, name='viewManagerCleanupRequests'),
+    path('manager/cleanupRequests/<int:cleanupRequestId>/', viewCleanupRequestDetails, name='viewCleanupRequestDetails'),
+    path('manager/assignCleaners/<int:taskId>/', assignCleanersToTask, name='assignCleanersToTask'),
 ]  + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)+ static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

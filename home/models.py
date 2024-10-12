@@ -10,7 +10,7 @@ class CleanupRequest(models.Model):
     ]
     
     client = models.ForeignKey(User, on_delete=models.CASCADE, related_name='cleanup_requests')
-    company = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True, related_name='assigned_cleanup_requests')
+    manager = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True, related_name='assigned_cleanup_requests')
     status = models.CharField(max_length=10, choices=STATUS_CHOICES, default='Pending')
     description = models.TextField()
     requested_at = models.DateTimeField(default=timezone.now)

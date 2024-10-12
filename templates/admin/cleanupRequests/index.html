@@ -7,6 +7,9 @@
                 <div class="card-body">
                     <div class="d-flex justify-content-between align-items-center">
                         <h4 class="card-title">All Cleanup Requests</h4>
+                        <a class="btn btn-primary" href="{% url 'base:addCleanupRequest' %}"><i class="fa fa-plus"></i>
+                            Add Cleanup Request
+                        </a>
                     </div>
                     <hr>
                     <table class="table table-hover">
@@ -14,7 +17,7 @@
                             <tr>
                                 <th>Client</th>
                                 <th>Status</th>
-                                <th>Company</th>
+                                <th>Manager</th>
                                 <th>Requested At</th>
                                 <th>Actions</th>
                             </tr>
@@ -29,8 +32,8 @@
                                     </span>
                                 </td>
                                 <td>
-                                    {% if request.company %}
-                                        {{ request.company.name }}
+                                    {% if request.manager %}
+                                        {{ request.manager.name }}
                                     {% else %}
                                         <span class="text-muted">Not assigned</span>
                                     {% endif %}

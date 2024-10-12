@@ -58,23 +58,23 @@ class TaskForm(forms.Form):
 class AdminApproveCleanupRequestForm(forms.ModelForm):
     class Meta:
         model = CleanupRequest
-        fields = ['company']
+        fields = ['manager']
         
         widgets = {
-            'company': forms.Select(attrs={'class': 'form-control'}),
+            'manager': forms.Select(attrs={'class': 'form-control'}),
         }
 
     def __init__(self, *args, **kwargs):
         super(AdminApproveCleanupRequestForm, self).__init__(*args, **kwargs)
-        # Only show users with the 'Company' role in the company field
-        self.fields['company'].queryset = User.objects.filter(role='Company')
-        self.fields['company'].label = "Assign Company"
+        # Only show users with the 'Manager' role in the Manager field
+        self.fields['manager'].queryset = User.objects.filter(role='Manager')
+        self.fields['manager'].label = "Assign Manager"
 
 class TaskCleanerForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         user = kwargs.pop('user')  # Get the logged-in user from the view
         super(TaskCleanerForm, self).__init__(*args, **kwargs)
-        # Filter cleaners added by the logged-in company user
+        # Filter cleaners added by the logged-in manager user
         self.fields['cleaners'].queryset = User.objects.filter(role='Cleaner', added_by=user)
 
     cleaners = forms.ModelMultipleChoiceField(

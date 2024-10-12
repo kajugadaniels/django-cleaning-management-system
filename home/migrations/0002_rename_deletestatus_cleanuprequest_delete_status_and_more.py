@@ -30,7 +30,7 @@ class Migration(migrations.Migration):
         ),
         migrations.RemoveField(
             model_name='cleanuprequest',
-            name='assigned_company',
+            name='assigned_manager',
         ),
         migrations.RemoveField(
             model_name='cleanuprequest',
@@ -38,7 +38,7 @@ class Migration(migrations.Migration):
         ),
         migrations.RemoveField(
             model_name='cleanuprequest',
-            name='is_approved_by_company',
+            name='is_approved_by_manager',
         ),
         migrations.RemoveField(
             model_name='cleanuprequest',
@@ -71,7 +71,7 @@ class Migration(migrations.Migration):
         ),
         migrations.AddField(
             model_name='cleanuprequest',
-            name='company',
+            name='manager',
             field=models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.SET_NULL, related_name='assigned_cleanup_requests', to=settings.AUTH_USER_MODEL),
         ),
         migrations.AddField(

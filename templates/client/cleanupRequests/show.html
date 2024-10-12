@@ -18,11 +18,11 @@
                         <strong>Client:</strong> <span class="text-muted">{{ cleanupRequest.client.name }}</span>
                     </div>
 
-                    <!-- Company Info -->
+                    <!-- Manager Info -->
                     <div class="mb-3">
-                        <strong>Company:</strong> 
-                        {% if cleanupRequest.company %}
-                            <span class="text-muted">{{ cleanupRequest.company.name }}</span>
+                        <strong>Manager:</strong> 
+                        {% if cleanupRequest.manager %}
+                            <span class="text-muted">{{ cleanupRequest.manager.name }}</span>
                         {% else %}
                             <span class="text-muted text-danger">Not assigned yet</span>
                         {% endif %}
