@@ -21,7 +21,7 @@ def getUsers(request):
         user_id = request.POST.get('user_id')
         if user_id:
             try:
-                user = User.objects.get(id=user_id)
+                user = User.objects.get(id=user_id).order_by('-created_at')
                 if not user.is_staff:
                     user.delete()
                     messages.success(request, "User deleted successfully.")
@@ -32,12 +32,12 @@ def getUsers(request):
 
     # Manager users can only see users they added
     if request.user.role == 'Manager':
-        getUsers = User.objects.filter(added_by=request.user)
+        getUsers = User.objects.filter(added_by=request.user).order_by('-created_at')
     # Admin and superusers can see all users
     elif request.user.role == 'Admin' or request.user.is_superuser:
-        getUsers = User.objects.all()
+        getUsers = User.objects.all().order_by('-created_at')
     else:
-        getUsers = User.objects.none()
+        getUsers = User.objects.none().order_by('-created_at')
 
     context = {
         'getUsers': getUsers,
