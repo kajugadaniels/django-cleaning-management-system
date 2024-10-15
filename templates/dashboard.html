@@ -2,41 +2,87 @@
 {% load static %}
 {% load humanize %}
 {% block content %}
-<div class="row">
-    <div class="col-md-3">
-        <div class="card">
-            <div class="card-body">
-                <h5>Clients</h5>
-                <h2>{{ total_clients }}</h2> 
-                
+<style>
+    .card {
+        border: none;
+        border-radius: 1rem;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+        transition: transform 0.2s;
+    }
+    .card:hover {
+        transform: scale(1.05);
+    }
+    .card-body {
+        text-align: center;
+    }
+    .card-title {
+        font-size: 1.5rem;
+        font-weight: bold;
+    }
+    .card-completed{
+        font-size: 1.5rem;
+        color: white;
+        font-weight: bold;
+    }
+    
+    .card-number {
+        font-size: 2.5rem;
+        color: gray;
+        font-weight: bold;
+    }
+    .bg-clients {
+        background-color: #e3f2fd; /* Light Blue */
+    }
+    .bg-requests {
+        background-color: #abdbe3; /* Light Green */
+    }
+    .bg-completed {
+        background-color: #154c79
+    }
+    .bg-pending {
+        background-color: #fff3e0; /* Light Orange */
+    }
+</style>
+<div class="container">
+    <h1>Dashboard</h1>
+    
+    <!-- Cards for Metrics -->
+    <div class="row">
+        <div class="col-md-3">
+            <div class="card bg-clients">
+                <div class="card-body">
+                    <h5 class="card-title">Clients</h5>
+                    <h2 class="card-number">{{ total_clients }}</h2>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card bg-requests">
+                <div class="card-body">
+                    <h5 class="card-title">Total Requests</h5>
+                    <h2 class="card-number">{{ total_requests }}</h2>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card bg-completed">
+                <div class="card-body">
+                    <h5 class="card-title">Completed Work</h5>
+                    <h2 class="card-number">{{ completed_works }}</h2>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card bg-pending">
+                <div class="card-body">
+                    <h5 class="card-title">Pending Work</h5>
+                    <h2 class="card-number">{{ pending_works }}</h2>
+                </div>
             </div>
         </div>
     </div>
-    <div class="col-md-3">
-        <div class="card">
-            <div class="card-body">
-                <h5>Total Requests</h5>
-                <h2>{{ total_requests }}</h2> 
-               
-            </div>
-        </div>
-    </div>
-    <div class="col-md-3">
-        <div class="card">
-            <div class="card-body">
-                <h5>Completed Work</h5>
-                <h2>{{ completed_works }}</h2> 
-            </div>
-        </div>
-    </div>
-    <div class="col-md-3">
-        <div class="card">
-            <div class="card-body">
-                <h5>Pending Work</h5>
-                <h2>{{ pending_works }}</h2>
-               
-            </div>
-        </div>
-    </div>
+
+  
 </div>
+
 {% endblock %}
