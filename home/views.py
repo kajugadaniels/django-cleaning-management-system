@@ -45,3 +45,49 @@ def getUsers(request):
     }
 
     return render(request, 'users/index.html', context)
+
+@login_required
+def addUser(request):
+    if request.user.role not in ['Admin', 'Manager'] and not request.user.is_superuser:
+        messages.error(request, "You are not authorized to access this page.")
+        return redirect('base:dashboard')
+
+    # For 'Manager' users, they should only be able to add 'Cleaner' users
+    if request.user.role == 'Manager':
+        roles = ['Cleaner']
+    else:
+        roles = ['Admin', 'Manager', 'Client', 'Cleaner'] if request.user.role == 'Admin' or request.user.is_superuser else ['Manager']
+
+    if request.method == 'POST':
+        form = UserCreationForm(request.POST, roles=roles)
+
+        if form.is_valid():
+            required_fields = ['name', 'email', 'phone_number', 'password']
+            missing_fields = [field for field in required_fields if not form.cleaned_data.get(field)]
+
+            if missing_fields:
+                messages.error(request, f"{', '.join([field.replace('_', ' ').capitalize() for field in missing_fields])} {'is' if len(missing_fields) == 1 else 'are'} required.")
+            elif form.cleaned_data.get("password") != form.cleaned_data.get("password_confirmation"):
+                messages.error(request, "Password does not match.")
+            else:
+                user = form.save(commit=False)
+                user.set_password(form.cleaned_data["password"])
+                # Automatically set role to 'Cleaner' if the logged-in user is a 'Manager'
+                if request.user.role == 'Manager':
+                    user.role = 'Cleaner'
+                user.added_by = request.user  # Link the added user to the current user
+                user.save()
+                messages.success(request, "User added successfully.")
+                return redirect('base:getUsers')
+        else:
+            for error in form.errors.values():
+                messages.error(request, error)
+
+    else:
+        form = UserCreationForm(roles=roles)
+
+    context = {
+        'form': form,
+        'logged_in_user': request.user
+    }
+    return render(request, 'users/create.html', context)
