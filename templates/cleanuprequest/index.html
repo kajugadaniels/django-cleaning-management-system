@@ -1,0 +1,82 @@
+{% extends 'layouts/app.html' %}
+{% load static %}
+{% block content %}
+
+    <div class="container-fluid">
+        <div class="row"> 
+            <div class="col-sm-12"> 
+                <div class="card"> 
+                    <div class="card-body">
+                        <div class="list-product-header">
+                            <div class="d-flex justify-content-between">
+                                <h4>Cleanup Request</h4>
+                                <a class="btn btn-primary" href="{% url 'base:addCleanupRequest' %}"><i class="fa fa-plus"></i>
+                                    Add Cleanup Request
+                                </a>
+                            </div>
+                        </div>
+                        <hr>
+                        <div class="list-product">
+                            <table class="table" id="project-status">
+                                <thead> 
+                                    <tr> 
+                                    <th>
+                                        <div class="form-check"> 
+                                            <input class="form-check-input checkbox-primary" type="checkbox">
+                                        </div>
+                                    </th>
+                                    <th> <span class="f-light f-w-600">Client</span></th>
+                                    <th> <span class="f-light f-w-600">Status</span></th>
+                                    <th> <span class="f-light f-w-600">Descriptions</span></th>
+                                    <th> <span class="f-light f-w-600">Requested_at</span></th>
+                                    <th> <span class="f-light f-w-600">Action</span></th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    
+                                    {% for request in cleanupRequests %}
+                                        <tr class="product-removes">
+                                            <td>
+                                                <div class="form-check"> 
+                                                    <input class="form-check-input checkbox-primary" type="checkbox">
+                                                </div>
+                                            </td>
+                                            <td>
+                                                <p class="f-light">{{ request.client }} </p>
+                                            </td>
+                                            <td>
+                                                <span class="badge {% if request.status == 'Approved' %}bg-success{% elif request.status == 'Rejected' %}bg-danger{% else %}bg-warning{% endif %}">
+                                                    {{ request.get_status_display }}
+                                                </span>
+                                            </td>
+                                            <td>
+                                                <p class="f-light">{{ request.description }}</p>
+                                            </td>
+                                            <td>
+                                                <p class="f-light">{{ request.requested_at }}</p>
+                                            </td>
+                                            <td>
+                                                <div class="product-action">
+                                                    <a href="#" class="btn btn-primary btn-sm">
+                                                        View
+                                                    </a>
+                                                    {% if not request.completed_at %}
+                                                    <a href="#" class="btn btn-success btn-sm">
+                                                        Mark as Completed
+                                                    </a>
+                                                    {% endif %}
+                                                </div>
+                                            </td>
+                                            
+                                        </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+{% endblock %}

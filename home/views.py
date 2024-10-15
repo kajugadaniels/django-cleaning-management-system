@@ -170,4 +170,4 @@ def getCleanupRequests(request):
         'logged_in_user': request.user
     }
 
-    return render(request, 'client/index.html', context)
+    return render(request, 'cleanuprequest/index.html', context)
