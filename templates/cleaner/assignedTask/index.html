@@ -1,0 +1,30 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<h1>My Assigned Tasks</h1>
+
+{% if assigned_tasks %}
+    <table>
+        <thead>
+            <tr>
+                <th>Task Name</th>
+                <th>Cleanup Request</th>
+                <th>Scheduled At</th>
+                <th>Status</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for task in assigned_tasks %}
+            <tr>
+                <td>{{ task.name }}</td>
+                <td>{{ task.cleanup_request.title }}</td>
+                <td>{{ task.cleanup_request.scheduled_at }}</td>
+                <td>{{ task.get_status_display }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+{% else %}
+    <p>You have no assigned tasks at the moment.</p>
+{% endif %}
+{% endblock %}

@@ -1,7 +1,10 @@
+from urllib.request import Request
 from home.forms import *
 from home.models import *
 from account.models import *
 from django.contrib import messages
+from django.db.models import Count, Q, F  # Import necessary models
+from .models import User, CleanupRequest 
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, redirect, get_object_or_404
 
@@ -380,3 +383,43 @@ def assignCleanersToTask(request, taskId):
     }
 
     return render(request, 'manager/cleanupRequests/create.html', context)
+
+
+def dashboard(request):
+    try:
+        # Count total clients (users with role 'client')
+        total_clients = User.objects.filter(is_active=True, role='Client').count() 
+        
+        # Count total requests
+        total_requests = CleanupRequest.objects.count()
+
+        # Count completed works
+        completed_works = CleanupRequest.objects.filter(
+            tasks__completed_at__isnull=False
+        ).annotate(
+            completed_tasks=Count('tasks', filter=Q(tasks__completed_at__isnull=False)),
+            total_tasks=Count('tasks')
+        ).filter(completed_tasks=F('total_tasks')).distinct().count()
+
+        # Count pending works
+        pending_works = CleanupRequest.objects.filter(
+            tasks__completed_at__isnull=True
+        ).distinct().count()
+        
+        context = {
+            'total_clients': total_clients,
+            'total_requests': total_requests,
+            'completed_works': completed_works,
+            'pending_works': pending_works,
+        }
+        
+        return render(request, 'dashboard.html', context)
+
+    except Exception as e:
+        # Log the error (in a real application, you'd want to use proper logging)
+        print(f"Error in dashboard view: {str(e)}")
+        # Return a simple HTTP response for now
+        return HttpResponse("An error occurred while loading the dashboard. Please try again later.")
+
+   
+
