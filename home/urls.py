@@ -12,5 +12,7 @@ urlpatterns = [
     path('user/add', addUser, name='addUser'),
     path('user/edit/<int:id>/', editUser, name='editUser'),
     path('user/delete/<int:id>/', deleteUser, name='deleteUser'),
+    
+    path('cleanup-requests/', getCleanupRequests, name='getCleanupRequests'),
 
 ] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT) + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
