@@ -30,8 +30,6 @@ INSTALLED_APPS = [
     # Third party
     'django.contrib.humanize',
     'whitenoise.runserver_nostatic',
-    'ckeditor',
-    'ckeditor_uploader',
     
     # Custom apps
     'account',
