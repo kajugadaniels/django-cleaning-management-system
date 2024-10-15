@@ -39,3 +39,37 @@ def user_login(request):
 def user_logout(request):
     logout(request)
     return redirect('auth:login')
+
+@login_required
+def userProfile(request):
+    user = request.user
+
+    if request.method == 'POST':
+        if 'profile_form' in request.POST:
+            profile_form = UserProfileForm(request.POST, request.FILES, instance=user)
+            if profile_form.is_valid():
+                profile_form.save()
+                messages.success(request, 'Profile updated successfully.')
+                return redirect('auth:userProfile')
+            else:
+                password_form = PasswordChangeForm(user=user)
+        elif 'password_form' in request.POST:
+            password_form = PasswordChangeForm(user=user, data=request.POST)
+            if password_form.is_valid():
+                password_form.save()
+                update_session_auth_hash(request, password_form.user)
+                messages.success(request, 'Password changed successfully. Please log in again.')
+                logout(request)
+                return redirect('auth:login')
+            else:
+                profile_form = UserProfileForm(instance=user)
+    else:
+        profile_form = UserProfileForm(instance=user)
+        password_form = PasswordChangeForm(user=user)
+
+    context = {
+        'profile_form': profile_form,
+        'password_form': password_form
+    }
+
+    return render(request, 'auth/profile.html', context)
