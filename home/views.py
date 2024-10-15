@@ -4,7 +4,6 @@ from home.models import *
 from account.models import *
 from django.contrib import messages
 from django.db.models import Count, Q, F  # Import necessary models
-from .models import User, CleanupRequest 
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, redirect, get_object_or_404
 
