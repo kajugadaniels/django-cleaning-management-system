@@ -1,18 +1,12 @@
 from django.urls import path
 from django.conf import settings
 from django.conf.urls.static import static
-from home.views import (
-    dashboard, getUsers, addUser, editUser, deleteUser,
-    getCleanupRequests, addCleanupRequest, viewCleanupRequest, markCleanupRequestComplete,
-    adminViewCleanupRequests, adminApproveCleanupRequest,
-    viewManagerCleanupRequests, viewCleanupRequestDetails, assignCleanersToTask,
-   
-)
+from home.views import *
 
 app_name = 'base'
 
 urlpatterns = [
-    path('', dashboard, name="dashboard"),
+    path('dashboard', dashboard, name="dashboard"),
     
     path('users/', getUsers, name='getUsers'),
     path('user/add', addUser, name='addUser'),
@@ -30,6 +24,4 @@ urlpatterns = [
     path('manager/viewCleanupRequests/', viewManagerCleanupRequests, name='viewManagerCleanupRequests'),
     path('manager/cleanupRequests/<int:cleanupRequestId>/', viewCleanupRequestDetails, name='viewCleanupRequestDetails'),
     path('manager/assignCleaners/<int:taskId>/', assignCleanersToTask, name='assignCleanersToTask'),
-
-   
 ] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT) + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

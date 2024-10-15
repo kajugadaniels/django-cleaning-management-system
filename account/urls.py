@@ -6,7 +6,7 @@ from django.conf.urls.static import static
 app_name = 'auth'
 
 urlpatterns = [
-    path('login/', user_login, name="login"),
+    path('', user_login, name="login"),
     path('logout/', user_logout, name='logout'),
 
     path('profile/', userProfile, name='userProfile'),
