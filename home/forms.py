@@ -43,3 +43,15 @@ class UserUpdateForm(forms.ModelForm):
         self.fields['role'].choices = [(role, role) for role in roles]
         self.fields['role'].widget.attrs.update({'class': 'form-control', 'required': 'true'})
         self.fields['image'].widget.attrs.update({'class': 'form-control'})
+
+class CleanupRequestForm(forms.ModelForm):
+    class Meta:
+        model = CleanupRequest
+        fields = ['client', 'description']
+        widgets = {
+            'client': forms.Select(attrs={'class': 'form-control'}),
+            'description': forms.Textarea(attrs={'class': 'form-control'}),
+        }
+
+class TaskForm(forms.Form):
+    name = forms.CharField(max_length=255, widget=forms.TextInput(attrs={'class': 'form-control'}))
