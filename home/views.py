@@ -129,3 +129,19 @@ def editUser(request, id):
         'user': user
     }
     return render(request, 'users/edit.html', context)
+
+@login_required
+def deleteUser(request, id):
+    if request.user.role == 'Manager':
+        messages.error(request, "You are not authorized to delete a user.")
+        return redirect('base:getUsers')
+
+    user = User.objects.filter(id=id, is_staff=False).first()
+
+    if user:
+        user.delete()
+        messages.success(request, "User deleted successfully.")
+    else:
+        messages.error(request, "User not found or action not authorized.")
+
+    return redirect('base:getUsers')
