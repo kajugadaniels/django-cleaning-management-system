@@ -162,7 +162,7 @@ def getCleanupRequests(request):
         cleanupRequests = CleanupRequest.objects.filter(delete_status=False).select_related('client', 'Supervisor').prefetch_related('tasks').order_by('-created_at')
     elif request.user.role == 'Supervisor':
         # Client users only see their own requests
-        cleanupRequests = CleanupRequest.objects.filter(Supervisor=request.user, delete_status=False).select_related('client').prefetch_related('tasks').order_by('-created_at')
+        cleanupRequests = CleanupRequest.objects.filter(supervisor=request.user, delete_status=False).select_related('client').prefetch_related('tasks').order_by('-created_at')
     else:
         # Other roles should see none
         cleanupRequests = CleanupRequest.objects.none()
