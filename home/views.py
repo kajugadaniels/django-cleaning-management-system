@@ -149,17 +149,20 @@ def deleteUser(request, id):
 @login_required
 def getCleanupRequests(request):
     # Ensure user is either Admin, Client, or SuperAdmin
-    if request.user.role not in ['Admin', 'Manager'] and not request.user.is_superuser:
+    if request.user.role not in ['Admin', 'Manager', 'Client'] and not request.user.is_superuser:
         messages.error(request, "You are not authorized to access this page.")
         return redirect('base:dashboard')
 
     # Fetch cleanup requests based on the user role
     if request.user.role == 'Client':
         # Client users only see their own requests
-        cleanupRequests = CleanupRequest.objects.filter(client=request.user, delete_status=False).select_related('manager').prefetch_related('tasks')
+        cleanupRequests = CleanupRequest.objects.filter(client=request.user, delete_status=False).select_related('manager').prefetch_related('tasks').order_by('-created_at')
     elif request.user.role == 'Admin' or request.user.is_superuser:
         # Admin or SuperAdmin users see all requests
-        cleanupRequests = CleanupRequest.objects.filter(delete_status=False).select_related('client', 'manager').prefetch_related('tasks')
+        cleanupRequests = CleanupRequest.objects.filter(delete_status=False).select_related('client', 'manager').prefetch_related('tasks').order_by('-created_at')
+    elif request.user.role == 'Manager':
+        # Client users only see their own requests
+        cleanupRequests = CleanupRequest.objects.filter(manager=request.user, delete_status=False).select_related('client').prefetch_related('tasks').order_by('-created_at')
     else:
         # Other roles should see none
         cleanupRequests = CleanupRequest.objects.none()

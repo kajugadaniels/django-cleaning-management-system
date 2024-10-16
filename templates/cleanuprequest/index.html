@@ -78,7 +78,7 @@
                                                     <a href="{% url 'base:viewCleanupRequest' request.id %}" class="btn btn-primary btn-sm">
                                                         View
                                                     </a>
-                                                    {% if request.user.is_superuser or request.user.role in 'Admin' %}
+                                                    {% if user.is_superuser or user.role == 'Admin' %}
                                                         {% if request.completed_at %}
                                                             <span class="badge bg-success">Work Completed</span>
                                                         {% else %}
@@ -87,6 +87,8 @@
                                                                 <i class="fa fa-check"></i> Approve & Assign
                                                             </a>
                                                         {% endif %}
+                                                    {% endif %}
+                                                    {% if user.is_superuser or user.role == 'Client' %}
                                                         {% if not request.completed_at %}
                                                             <a href="#" class="btn btn-success btn-sm">
                                                                 Mark as Completed
