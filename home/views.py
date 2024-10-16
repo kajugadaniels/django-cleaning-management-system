@@ -264,7 +264,7 @@ def adminApproveCleanupRequest(request, request_id):
                 cleanupRequest.save()
                 messages.success(request, "Cleanup request rejected.")
             
-            return redirect('base:adminViewCleanupRequests')
+            return redirect('base:getCleanupRequests')
     else:
         form = AdminApproveCleanupRequestForm(instance=cleanupRequest)
 
