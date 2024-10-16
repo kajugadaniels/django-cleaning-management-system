@@ -13,7 +13,7 @@ class CleanupRequest(models.Model):
     manager = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True, related_name='assigned_cleanup_requests')
     status = models.CharField(max_length=10, choices=STATUS_CHOICES, default='Pending')
     description = models.TextField()
-    requested_at = models.DateTimeField(default=timezone.now)
+    requested_at = models.CharField(max_length=40, null=True, blank=True)
     approved_at = models.DateTimeField(null=True, blank=True)
     completed_at = models.DateTimeField(null=True, blank=True)
 

@@ -19,9 +19,13 @@
                     <form method="post" id="cleanupRequestForm">
                         {% csrf_token %}
                         <div class="row g-3 custom-input mb-3">
-                            <div class="col-sm-12">
+                            <div class="col-sm-6">
                                 <label class="form-label">Client</label>
                                 {{ cleanup_request_form.client }}
+                            </div>
+                            <div class="col-sm-6">
+                                <label class="form-label">Requested At</label>
+                                {{ cleanup_request_form.requested_at }}
                             </div>
                         </div>
 
