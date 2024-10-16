@@ -14,5 +14,6 @@ urlpatterns = [
     path('user/delete/<int:id>/', deleteUser, name='deleteUser'),
     
     path('cleanup-requests/', getCleanupRequests, name='getCleanupRequests'),
+    path('cleanup-request/add/', addCleanupRequest, name='addCleanupRequest'),
 
 ] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT) + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
