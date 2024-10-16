@@ -236,3 +236,41 @@ def viewCleanupRequest(request, cleanup_request_id):
     }
 
     return render(request, 'cleanuprequest/show.html', context)
+
+@login_required
+def adminApproveCleanupRequest(request, request_id):
+    # Ensure only Admin or SuperAdmin users can access this
+    if request.user.role not in ['Admin'] and not request.user.is_superuser:
+        messages.error(request, "You are not authorized to access this page.")
+        return redirect('base:dashboard')
+
+    # Get the cleanup request
+    cleanupRequest = get_object_or_404(CleanupRequest, pk=request_id)
+
+    # Handle form submission
+    if request.method == 'POST':
+        form = AdminApproveCleanupRequestForm(request.POST, instance=cleanupRequest)
+        
+        if form.is_valid():
+            # Check which button was pressed (Approve or Reject)
+            if 'approve' in request.POST:
+                cleanupRequest = form.save(commit=False)
+                cleanupRequest.approved_at = timezone.now()  # Automatically set approval date
+                cleanupRequest.status = 'Approved'  # Automatically mark as approved
+                cleanupRequest.save()
+                messages.success(request, "Cleanup request approved and Manager assigned successfully.")
+            elif 'reject' in request.POST:
+                cleanupRequest.status = 'Rejected'  # Mark request as rejected
+                cleanupRequest.save()
+                messages.success(request, "Cleanup request rejected.")
+            
+            return redirect('base:adminViewCleanupRequests')
+    else:
+        form = AdminApproveCleanupRequestForm(instance=cleanupRequest)
+
+    context = {
+        'cleanupRequest': cleanupRequest,
+        'form': form
+    }
+
+    return render(request, 'cleanuprequest/approve.html', context)
