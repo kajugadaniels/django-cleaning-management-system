@@ -117,7 +117,7 @@
                                             <span class="badge bg-success">Work Completed</span>
                                         {% else %}
                                             <!-- Show "Assign Cleaners" button if completed_at is not set -->
-                                            <a class="btn btn-primary btn-sm" href="#">Assign Cleaners</a>
+                                            <a class="btn btn-primary btn-sm" href="{% url 'base:assignCleanersToTask' task.id %}">Assign Cleaners</a>
                                         {% endif %}
                                     </td>
                                 {% endif %}
