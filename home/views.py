@@ -277,3 +277,31 @@ def adminApproveCleanupRequest(request, request_id):
     }
 
     return render(request, 'cleanuprequest/approve.html', context)
+
+@login_required
+def assignCleanersToTask(request, taskId):
+    if request.user.role not in ['Admin', 'Manager'] and not request.user.is_superuser:
+        messages.error(request, "You are not authorized to access this page.")
+        return redirect('base:dashboard')
+
+    task = get_object_or_404(Task, id=taskId, cleanup_request__manager=request.user, delete_status=False)
+
+    if request.method == 'POST':
+        form = TaskCleanerForm(request.POST, instance=task, user=request.user)
+        if form.is_valid():
+            task = form.save(commit=False)
+            task.assigned_at = timezone.now()  # Set the assigned_at field to the current time
+            task.save()
+            form.save_m2m()  # Save many-to-many data for cleaners
+            messages.success(request, "Cleaners assigned successfully and time recorded.")
+            return redirect('base:viewCleanupRequest', cleanupRequestId=task.cleanup_request.id)
+    else:
+        form = TaskCleanerForm(instance=task, user=request.user)
+
+    context = {
+        'form': form,
+        'task': task,
+        'cleanupRequest': task.cleanup_request
+    }
+
+    return render(request, 'tasks/create.html', context)
