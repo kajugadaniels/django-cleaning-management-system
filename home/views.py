@@ -305,3 +305,33 @@ def assignCleanersToTask(request, taskId):
     }
 
     return render(request, 'tasks/create.html', context)
+
+@login_required
+def markCleanupRequestComplete(request, cleanup_request_id):
+    # Ensure the user is a Client
+    if request.user.role not in ['Admin', 'Manager'] and not request.user.is_superuser:
+        messages.error(request, "You are not authorized to complete this request.")
+        return redirect('base:getCleanupRequests')
+
+    # Retrieve the cleanup request and associated tasks
+    cleanupRequest = get_object_or_404(CleanupRequest, id=cleanup_request_id, client=request.user, delete_status=False)
+    tasks = Task.objects.filter(cleanup_request=cleanupRequest, delete_status=False)
+
+    # If the request method is POST, update the 'completed_at' fields
+    if request.method == 'POST':
+        # Mark the cleanup request as completed
+        cleanupRequest.completed_at = timezone.now()
+        cleanupRequest.save()
+
+        # Mark all tasks as completed
+        tasks.update(completed_at=timezone.now())
+
+        messages.success(request, "Cleanup request and tasks marked as completed.")
+        return redirect('base:getCleanupRequests')
+
+    context = {
+        'cleanupRequest': cleanupRequest,
+        'tasks': tasks,
+    }
+
+    return render(request, 'cleanuprequest/complete.html', context)
