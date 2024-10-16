@@ -294,7 +294,7 @@ def assignCleanersToTask(request, taskId):
             task.save()
             form.save_m2m()  # Save many-to-many data for cleaners
             messages.success(request, "Cleaners assigned successfully and time recorded.")
-            return redirect('base:viewCleanupRequest', cleanupRequestId=task.cleanup_request.id)
+            return redirect('base:viewCleanupRequest', cleanup_request_id=task.cleanup_request.id)
     else:
         form = TaskCleanerForm(instance=task, user=request.user)
 

@@ -10,7 +10,7 @@
                             {% csrf_token %}
                             {{ form.as_p }}
                             <button type="submit" class="btn btn-primary">Assign Cleaners</button>
-                            <a href="{% url 'base:viewCleanupRequestDetails' cleanupRequest.id %}" class="btn btn-secondary">Back to Request</a>
+                            <a href="{% url 'base:viewCleanupRequest' cleanupRequest.id %}" class="btn btn-secondary">Back to Request</a>
                         </form>
                     </div>
                 </div>
