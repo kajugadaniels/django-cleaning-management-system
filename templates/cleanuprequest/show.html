@@ -1,0 +1,119 @@
+{% extends 'layouts/app.html' %}
+{% block content %}
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-sm-12">
+            <div class="card shadow-lg mb-4">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <h4 class="card-title">Cleanup Request Details</h4>
+                        <a class="btn btn-primary" href="{% url 'base:getCleanupRequests' %}">
+                            <i class="fa fa-arrow-left"></i> Back to Requests
+                        </a>
+                    </div>
+                    <hr>
+
+                    <!-- Client Info -->
+                    <div class="mb-3">
+                        <strong>Client:</strong> <span class="text-muted">{{ cleanupRequest.client.name }}</span>
+                    </div>
+
+                    <!-- Manager Info -->
+                    <div class="mb-3">
+                        <strong>Manager:</strong> 
+                        {% if cleanupRequest.manager %}
+                            <span class="text-muted">{{ cleanupRequest.manager.name }}</span>
+                        {% else %}
+                            <span class="text-muted text-danger">Not assigned yet</span>
+                        {% endif %}
+                    </div>
+
+                    <!-- Request Status -->
+                    <div class="mb-3">
+                        <strong>Status:</strong> 
+                        <span class="badge {% if cleanupRequest.status == 'Approved' %}bg-success{% elif cleanupRequest.status == 'Rejected' %}bg-danger{% else %}bg-warning{% endif %}">
+                            {{ cleanupRequest.get_status_display }}
+                        </span>
+                    </div>
+
+                    <!-- Cleanup Description -->
+                    <div class="mb-3">
+                        <strong>Description:</strong>
+                        <p class="text-muted">{{ cleanupRequest.description }}</p>
+                    </div>
+
+                    <!-- Dates Information -->
+                    <div class="mb-3 row">
+                        <div class="col-md-6">
+                            <strong>Requested At:</strong> 
+                            <span class="text-muted">{{ cleanupRequest.requested_at }}</span>
+                        </div>
+                        <div class="col-md-6">
+                            <strong>Approved At:</strong> 
+                            {% if cleanupRequest.approved_at %}
+                                <span class="text-muted">{{ cleanupRequest.approved_at }}</span>
+                            {% else %}
+                                <span class="text-muted text-danger">Not approved yet</span>
+                            {% endif %}
+                        </div>
+                    </div>
+
+                    <div class="mb-3 row">
+                        <div class="col-md-6">
+                            <strong>Completed At:</strong> 
+                            {% if cleanupRequest.completed_at %}
+                                <span class="text-muted">{{ cleanupRequest.completed_at }}</span>
+                            {% else %}
+                                <span class="text-muted text-danger">Not completed yet</span>
+                            {% endif %}
+                        </div>
+                    </div>
+
+                    <hr>
+
+                    <!-- Task Information -->
+                    <h5 class="mb-3">Tasks</h5>
+                    <table class="table table-hover">
+                        <thead class="thead-dark">
+                            <tr>
+                                <th scope="col">Task Name</th>
+                                <th scope="col">Assigned Cleaners</th>
+                                <th scope="col">Assigned At</th>
+                                <th scope="col">Completed At</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for task in tasks %}
+                            <tr>
+                                <td>{{ task.name }}</td>
+                                <td>
+                                    {% for cleaner in task.cleaners.all %}
+                                        {{ cleaner.name }}{% if not forloop.last %}, {% endif %}
+                                    {% endfor %}
+                                </td>
+
+                                <td>
+                                    {% if task.assigned_at %}
+                                        {{ task.assigned_at }}
+                                    {% else %}
+                                        <span class="text-muted">Not assigned yet</span>
+                                    {% endif %}
+                                </td>
+
+                                <td>
+                                    {% if task.completed_at %}
+                                        {{ task.completed_at }}
+                                    {% else %}
+                                        <span class="text-muted">Not completed yet</span>
+                                    {% endif %}
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
