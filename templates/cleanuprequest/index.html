@@ -26,10 +26,9 @@
                                         </div>
                                     </th>
                                     <th><span class="f-light f-w-600">Client</span></th>
+                                    <th><span class="f-light f-w-600">Manager</span></th>
                                     <th><span class="f-light f-w-600">Status</span></th>
                                     <th><span class="f-light f-w-600">Descriptions</span></th>
-                                    <th><span class="f-light f-w-600">Requested At</span></th>
-                                    <th><span class="f-light f-w-600">Approved</span></th>
                                     <th><span class="f-light f-w-600">Completed</span></th>
                                     <th><span class="f-light f-w-600">Action</span></th>
                                     </tr>
@@ -44,7 +43,16 @@
                                                 </div>
                                             </td>
                                             <td>
-                                                <p class="f-light">{{ request.client }} </p>
+                                                <p class="f-light">{{ request.client.name }} </p>
+                                            </td>
+                                            <td>
+                                                <p class="f-light">
+                                                    {% if request.manager %}
+                                                        {{ request.manager.name }}
+                                                    {% else %}
+                                                        <span class="badge bg-danger">Not approved yet</span>
+                                                    {% endif %}
+                                                </p>
                                             </td>
                                             <td>
                                                 <span class="badge {% if request.status == 'Approved' %}bg-success{% elif request.status == 'Rejected' %}bg-danger{% else %}bg-warning{% endif %}">
@@ -53,18 +61,6 @@
                                             </td>
                                             <td>
                                                 <p class="f-light">{{ request.description|truncatewords:10 }}</p>
-                                            </td>
-                                            <td>
-                                                <p class="f-light">{{ request.requested_at }}</p>
-                                            </td>
-                                            <td>
-                                                <p class="f-light">
-                                                    {% if request.approved_at %}
-                                                        {{ request.approved_at }}
-                                                    {% else %}
-                                                        <span class="badge bg-secondary">Not approved yet</span>
-                                                    {% endif %}
-                                                </p>
                                             </td>
                                             <td>
                                                 <p class="f-light">
@@ -80,6 +76,14 @@
                                                     <a href="{% url 'base:viewCleanupRequest' request.id %}" class="btn btn-primary btn-sm">
                                                         View
                                                     </a>
+                                                    {% if request.completed_at %}
+                                                        <span class="badge bg-success">Work Completed</span>
+                                                    {% else %}
+                                                        <!-- Show Approve & Assign button if completed_at is not set -->
+                                                        <a href="{% url 'base:adminApproveCleanupRequest' request.id %}" class="btn btn-sm btn-dark-gradien">
+                                                            <i class="fa fa-check"></i> Approve & Assign
+                                                        </a>
+                                                    {% endif %}
                                                     {% if not request.completed_at %}
                                                         <a href="#" class="btn btn-success btn-sm">
                                                             Mark as Completed

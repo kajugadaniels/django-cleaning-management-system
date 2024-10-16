@@ -1,0 +1,39 @@
+{% extends 'layouts/app.html' %}
+{% block content %}
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-sm-12">
+            <div class="card shadow-lg mb-4">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <h4 class="card-title">Approve or Reject Cleanup Request</h4>
+                        <a class="btn btn-primary" href="{% url 'base:getCleanupRequests' %}">
+                            <i class="fa fa-arrow-left"></i> Back to Requests
+                        </a>
+                    </div>
+                    <hr>
+                    
+                    <form method="post">
+                        {% csrf_token %}
+                        
+                        <div class="mb-3">
+                            <label for="manager" class="form-label">Assign Manager</label>
+                            {{ form.manager }}
+                        </div>
+                        
+                        <div class="d-flex justify-content-between">
+                            <button type="submit" name="approve" class="btn btn-success">
+                                <i class="fa fa-check"></i> Approve and Assign
+                            </button>
+
+                            <button type="submit" name="reject" class="btn btn-danger">
+                                <i class="fa fa-times"></i> Reject
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
