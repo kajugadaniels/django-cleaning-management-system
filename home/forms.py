@@ -53,5 +53,11 @@ class CleanupRequestForm(forms.ModelForm):
             'description': forms.Textarea(attrs={'class': 'form-control'}),
         }
 
+    def __init__(self, *args, **kwargs):
+        super(CleanupRequestForm, self).__init__(*args, **kwargs)
+        # Only show users with the 'Client' role in the Client field
+        self.fields['client'].queryset = User.objects.filter(role='Client')
+        self.fields['client'].label = "Choose Client"
+
 class TaskForm(forms.Form):
     name = forms.CharField(max_length=255, widget=forms.TextInput(attrs={'class': 'form-control'}))

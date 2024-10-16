@@ -187,7 +187,7 @@ def addCleanupRequest(request):
         if cleanup_request_form.is_valid():
             # Save the CleanupRequest
             cleanup_request = cleanup_request_form.save(commit=False)
-            cleanup_request.client = request.user  # Automatically set the client to the logged-in user
+            # cleanup_request.client = request.user  # Automatically set the client to the logged-in user
             cleanup_request.save()
 
             # Log and link tasks to the CleanupRequest
