@@ -1,0 +1,30 @@
+{% extends 'layouts/app.html' %}
+{% block content %}
+
+<div class="container-fluid">
+    <div class="row"> 
+        <div class="col-sm-12"> 
+            <div class="card"> 
+                <div class="card-body">
+                    <h4>Mark Cleanup Request as Completed</h4>
+                    <p><strong>Client:</strong> {{ cleanupRequest.client }}</p>
+                    <p><strong>Description:</strong> {{ cleanupRequest.description }}</p>
+
+                    <h5>Tasks</h5>
+                    <ul>
+                        {% for task in tasks %}
+                            <li>{{ task.name }} - {% if task.completed_at %} Completed at {{ task.completed_at }} {% else %} Not completed yet {% endif %}</li>
+                        {% endfor %}
+                    </ul>
+
+                    <form method="post">
+                        {% csrf_token %}
+                        <button type="submit" class="btn btn-success">Mark as Completed</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}
