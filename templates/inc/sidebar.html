@@ -56,7 +56,7 @@
                             <span>Dashboard</span>
                         </a>
                     </li>
-                    {% if request.user.is_superuser or request.user.role in 'Admin' or request.user.role in 'Manager' %}
+                    {% if request.user.is_superuser or request.user.role in 'Admin' or request.user.role in 'Supervisor' %}
                         <li class="sidebar-list">
                             <i class="fa fa-thumb-tack"></i>
                             <a class="sidebar-link sidebar-title link-nav" href="{% url 'base:getUsers' %}">

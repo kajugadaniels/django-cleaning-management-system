@@ -2,9 +2,9 @@ from django.contrib import admin
 from .models import CleanupRequest, Task
 
 class CleanupRequestAdmin(admin.ModelAdmin):
-    list_display = ('client', 'manager', 'status', 'requested_at', 'approved_at', 'completed_at')
-    list_filter = ('status', 'manager', 'client', 'requested_at', 'approved_at', 'completed_at')
-    search_fields = ('client__username', 'manager__username', 'description')
+    list_display = ('client', 'supervisor', 'status', 'requested_at', 'approved_at', 'completed_at')
+    list_filter = ('status', 'supervisor', 'client', 'requested_at', 'approved_at', 'completed_at')
+    search_fields = ('client__username', 'supervisor__username', 'description')
     ordering = ('-requested_at',)
 
 class TaskAdmin(admin.ModelAdmin):

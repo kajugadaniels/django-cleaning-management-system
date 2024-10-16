@@ -18,11 +18,11 @@
                         <strong>Client:</strong> <span class="text-muted">{{ cleanupRequest.client.name }}</span>
                     </div>
 
-                    <!-- Manager Info -->
+                    <!-- Supervisor Info -->
                     <div class="mb-3">
-                        <strong>Manager:</strong> 
-                        {% if cleanupRequest.manager %}
-                            <span class="text-muted">{{ cleanupRequest.manager.name }}</span>
+                        <strong>Supervisor:</strong> 
+                        {% if cleanupRequest.supervisor %}
+                            <span class="text-muted">{{ cleanupRequest.supervisor.name }}</span>
                         {% else %}
                             <span class="text-muted text-danger">Not assigned yet</span>
                         {% endif %}
@@ -80,7 +80,7 @@
                                 <th scope="col">Assigned Cleaners</th>
                                 <th scope="col">Assigned At</th>
                                 <th scope="col">Completed At</th>
-                                {% if request.user.role == 'Manager' %}
+                                {% if request.user.role == 'Supervisor' %}
                                     <th scope="col">Action</th>
                                 {% endif %}
                             </tr>
@@ -110,7 +110,7 @@
                                         <span class="text-muted">Not completed yet</span>
                                     {% endif %}
                                 </td>
-                                {% if request.user.role == 'Manager' %}
+                                {% if request.user.role == 'Supervisor' %}
                                     <td>
                                         {% if cleanupRequest.completed_at %}
                                             <!-- Show "Work Completed" if completed_at is set -->

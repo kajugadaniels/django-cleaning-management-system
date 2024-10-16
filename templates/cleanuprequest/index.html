@@ -28,7 +28,7 @@
                                         </div>
                                     </th>
                                     <th><span class="f-light f-w-600">Client</span></th>
-                                    <th><span class="f-light f-w-600">Manager</span></th>
+                                    <th><span class="f-light f-w-600">Supervisor</span></th>
                                     <th><span class="f-light f-w-600">Status</span></th>
                                     <th><span class="f-light f-w-600">Descriptions</span></th>
                                     <th><span class="f-light f-w-600">Completed</span></th>
@@ -49,8 +49,8 @@
                                             </td>
                                             <td>
                                                 <p class="f-light">
-                                                    {% if request.manager %}
-                                                        {{ request.manager.name }}
+                                                    {% if request.supervisor %}
+                                                        {{ request.supervisor.name }}
                                                     {% else %}
                                                         <span class="badge bg-danger">Not approved yet</span>
                                                     {% endif %}
