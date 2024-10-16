@@ -80,6 +80,9 @@
                                 <th scope="col">Assigned Cleaners</th>
                                 <th scope="col">Assigned At</th>
                                 <th scope="col">Completed At</th>
+                                {% if request.user.role == 'Manager' %}
+                                    <th scope="col">Action</th>
+                                {% endif %}
                             </tr>
                         </thead>
                         <tbody>
@@ -107,6 +110,17 @@
                                         <span class="text-muted">Not completed yet</span>
                                     {% endif %}
                                 </td>
+                                {% if request.user.role == 'Manager' %}
+                                    <td>
+                                        {% if cleanupRequest.completed_at %}
+                                            <!-- Show "Work Completed" if completed_at is set -->
+                                            <span class="badge bg-success">Work Completed</span>
+                                        {% else %}
+                                            <!-- Show "Assign Cleaners" button if completed_at is not set -->
+                                            <a class="btn btn-primary btn-sm" href="#">Assign Cleaners</a>
+                                        {% endif %}
+                                    </td>
+                                {% endif %}
                             </tr>
                             {% endfor %}
                         </tbody>

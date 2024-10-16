@@ -9,10 +9,12 @@
                     <div class="card-body">
                         <div class="list-product-header">
                             <div class="d-flex justify-content-between">
-                                <h4>Cleanup Request</h4>
-                                <a class="btn btn-primary" href="{% url 'base:addCleanupRequest' %}"><i class="fa fa-plus"></i>
-                                    Add Cleanup Request
-                                </a>
+                                <h4>Cleanup Requests</h4>
+                                {% if request.user.is_superuser or request.user.role in 'Admin' %}
+                                    <a class="btn btn-primary" href="{% url 'base:addCleanupRequest' %}"><i class="fa fa-plus"></i>
+                                        Add Cleanup Request
+                                    </a>
+                                {% endif %}
                             </div>
                         </div>
                         <hr>
@@ -76,18 +78,20 @@
                                                     <a href="{% url 'base:viewCleanupRequest' request.id %}" class="btn btn-primary btn-sm">
                                                         View
                                                     </a>
-                                                    {% if request.completed_at %}
-                                                        <span class="badge bg-success">Work Completed</span>
-                                                    {% else %}
-                                                        <!-- Show Approve & Assign button if completed_at is not set -->
-                                                        <a href="{% url 'base:adminApproveCleanupRequest' request.id %}" class="btn btn-sm btn-dark-gradien">
-                                                            <i class="fa fa-check"></i> Approve & Assign
-                                                        </a>
-                                                    {% endif %}
-                                                    {% if not request.completed_at %}
-                                                        <a href="#" class="btn btn-success btn-sm">
-                                                            Mark as Completed
-                                                        </a>
+                                                    {% if request.user.is_superuser or request.user.role in 'Admin' %}
+                                                        {% if request.completed_at %}
+                                                            <span class="badge bg-success">Work Completed</span>
+                                                        {% else %}
+                                                            <!-- Show Approve & Assign button if completed_at is not set -->
+                                                            <a href="{% url 'base:adminApproveCleanupRequest' request.id %}" class="btn btn-sm btn-dark-gradien">
+                                                                <i class="fa fa-check"></i> Approve & Assign
+                                                            </a>
+                                                        {% endif %}
+                                                        {% if not request.completed_at %}
+                                                            <a href="#" class="btn btn-success btn-sm">
+                                                                Mark as Completed
+                                                            </a>
+                                                        {% endif %}
                                                     {% endif %}
                                                 </div>
                                             </td>
