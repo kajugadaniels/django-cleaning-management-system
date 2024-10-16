@@ -210,4 +210,4 @@ def addCleanupRequest(request):
     context = {
         'cleanup_request_form': cleanup_request_form,
     }
-    return render(request, 'client/cleanupRequests/create.html', context)
+    return render(request, 'cleanuprequest/create.html', context)
