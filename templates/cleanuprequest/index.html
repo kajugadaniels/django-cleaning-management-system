@@ -25,11 +25,13 @@
                                             <input class="form-check-input checkbox-primary" type="checkbox">
                                         </div>
                                     </th>
-                                    <th> <span class="f-light f-w-600">Client</span></th>
-                                    <th> <span class="f-light f-w-600">Status</span></th>
-                                    <th> <span class="f-light f-w-600">Descriptions</span></th>
-                                    <th> <span class="f-light f-w-600">Requested_at</span></th>
-                                    <th> <span class="f-light f-w-600">Action</span></th>
+                                    <th><span class="f-light f-w-600">Client</span></th>
+                                    <th><span class="f-light f-w-600">Status</span></th>
+                                    <th><span class="f-light f-w-600">Descriptions</span></th>
+                                    <th><span class="f-light f-w-600">Requested At</span></th>
+                                    <th><span class="f-light f-w-600">Approved</span></th>
+                                    <th><span class="f-light f-w-600">Completed</span></th>
+                                    <th><span class="f-light f-w-600">Action</span></th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -50,10 +52,28 @@
                                                 </span>
                                             </td>
                                             <td>
-                                                <p class="f-light">{{ request.description }}</p>
+                                                <p class="f-light">{{ request.description|truncatewords:10 }}</p>
                                             </td>
                                             <td>
                                                 <p class="f-light">{{ request.requested_at }}</p>
+                                            </td>
+                                            <td>
+                                                <p class="f-light">
+                                                    {% if request.approved_at %}
+                                                        {{ request.approved_at }}
+                                                    {% else %}
+                                                        <span class="badge bg-secondary">Not approved yet</span>
+                                                    {% endif %}
+                                                </p>
+                                            </td>
+                                            <td>
+                                                <p class="f-light">
+                                                    {% if request.completed_at %}
+                                                        <span class="badge bg-success">Completed</span>
+                                                    {% else %}
+                                                        <span class="badge bg-danger">Not completed yet</span>
+                                                    {% endif %}
+                                                </p>
                                             </td>
                                             <td>
                                                 <div class="product-action">
@@ -61,9 +81,9 @@
                                                         View
                                                     </a>
                                                     {% if not request.completed_at %}
-                                                    <a href="#" class="btn btn-success btn-sm">
-                                                        Mark as Completed
-                                                    </a>
+                                                        <a href="#" class="btn btn-success btn-sm">
+                                                            Mark as Completed
+                                                        </a>
                                                     {% endif %}
                                                 </div>
                                             </td>
