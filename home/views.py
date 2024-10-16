@@ -13,9 +13,9 @@ def dashboard(request):
 
 @login_required
 def getUsers(request):
-    if request.user.role not in ['Admin', 'Manager'] and not request.user.is_superuser:
-        messages.error(request, "You are not authorized to access this page.")
-        return redirect('base:dashboard')
+    # if request.user.role not in ['Admin', 'Manager'] and not request.user.is_superuser:
+    #     messages.error(request, "You are not authorized to access this page.")
+    #     return redirect('base:dashboard')
 
     if request.method == 'POST':
         user_id = request.POST.get('user_id')
@@ -48,9 +48,9 @@ def getUsers(request):
 
 @login_required
 def addUser(request):
-    if request.user.role not in ['Admin', 'Manager'] and not request.user.is_superuser:
-        messages.error(request, "You are not authorized to access this page.")
-        return redirect('base:dashboard')
+    # if request.user.role not in ['Admin', 'Manager'] and not request.user.is_superuser:
+    #     messages.error(request, "You are not authorized to access this page.")
+    #     return redirect('base:dashboard')
 
     # For 'Manager' users, they should only be able to add 'Cleaner' users
     if request.user.role == 'Manager':
@@ -94,9 +94,9 @@ def addUser(request):
 
 @login_required
 def editUser(request, id):
-    if request.user.role == 'Manager':
-        messages.error(request, "You are not authorized to access this page.")
-        return redirect('base:dashboard')
+    # if request.user.role == 'Manager':
+    #     messages.error(request, "You are not authorized to access this page.")
+    #     return redirect('base:dashboard')
 
     user = User.objects.get(id=id)
     roles = ['Admin', 'Manager', 'Client', 'Cleaner'] if request.user.role == 'Admin' or request.user.is_superuser else ['Manager']
@@ -132,9 +132,9 @@ def editUser(request, id):
 
 @login_required
 def deleteUser(request, id):
-    if request.user.role == 'Manager':
-        messages.error(request, "You are not authorized to delete a user.")
-        return redirect('base:getUsers')
+    # if request.user.role == 'Manager':
+    #     messages.error(request, "You are not authorized to delete a user.")
+    #     return redirect('base:getUsers')
 
     user = User.objects.filter(id=id, is_staff=False).first()
 
@@ -149,9 +149,9 @@ def deleteUser(request, id):
 @login_required
 def getCleanupRequests(request):
     # Ensure user is either Admin, Client, or SuperAdmin
-    if request.user.role not in ['Admin', 'Manager', 'Client'] and not request.user.is_superuser:
-        messages.error(request, "You are not authorized to access this page.")
-        return redirect('base:dashboard')
+    # if request.user.role not in ['Admin', 'Manager', 'Client'] and not request.user.is_superuser:
+    #     messages.error(request, "You are not authorized to access this page.")
+    #     return redirect('base:dashboard')
 
     # Fetch cleanup requests based on the user role
     if request.user.role == 'Client':
@@ -177,9 +177,9 @@ def getCleanupRequests(request):
 
 @login_required
 def addCleanupRequest(request):
-    if request.user.role not in ['Admin', 'Manager'] and not request.user.is_superuser:
-        messages.error(request, "You are not authorized to access this page.")
-        return redirect('base:dashboard')
+    # if request.user.role not in ['Admin', 'Manager'] and not request.user.is_superuser:
+    #     messages.error(request, "You are not authorized to access this page.")
+    #     return redirect('base:dashboard')
 
     if request.method == 'POST':
         cleanup_request_form = CleanupRequestForm(request.POST)
@@ -228,9 +228,9 @@ def viewCleanupRequest(request, cleanup_request_id):
     if request.user.role == 'Client' and cleanupRequest.client != request.user:
         messages.error(request, "You are not authorized to view this cleanup request.")
         return redirect('base:dashboard')
-    elif request.user.role not in ['Admin', 'Manager'] and not request.user.is_superuser:
-        messages.error(request, "You are not authorized to access this page.")
-        return redirect('base:dashboard')
+    # elif request.user.role not in ['Admin', 'Manager'] and not request.user.is_superuser:
+    #     messages.error(request, "You are not authorized to access this page.")
+    #     return redirect('base:dashboard')
 
     context = {
         'cleanupRequest': cleanupRequest,
@@ -243,9 +243,9 @@ def viewCleanupRequest(request, cleanup_request_id):
 @login_required
 def adminApproveCleanupRequest(request, request_id):
     # Ensure only Admin or SuperAdmin users can access this
-    if request.user.role not in ['Admin'] and not request.user.is_superuser:
-        messages.error(request, "You are not authorized to access this page.")
-        return redirect('base:dashboard')
+    # if request.user.role not in ['Admin'] and not request.user.is_superuser:
+    #     messages.error(request, "You are not authorized to access this page.")
+    #     return redirect('base:dashboard')
 
     # Get the cleanup request
     cleanupRequest = get_object_or_404(CleanupRequest, pk=request_id)
@@ -280,9 +280,9 @@ def adminApproveCleanupRequest(request, request_id):
 
 @login_required
 def assignCleanersToTask(request, taskId):
-    if request.user.role not in ['Admin', 'Manager'] and not request.user.is_superuser:
-        messages.error(request, "You are not authorized to access this page.")
-        return redirect('base:dashboard')
+    # if request.user.role not in ['Admin', 'Manager'] and not request.user.is_superuser:
+    #     messages.error(request, "You are not authorized to access this page.")
+    #     return redirect('base:dashboard')
 
     task = get_object_or_404(Task, id=taskId, cleanup_request__manager=request.user, delete_status=False)
 
@@ -309,9 +309,9 @@ def assignCleanersToTask(request, taskId):
 @login_required
 def markCleanupRequestComplete(request, cleanup_request_id):
     # Ensure the user is a Client
-    if request.user.role not in ['Admin', 'Manager'] and not request.user.is_superuser:
-        messages.error(request, "You are not authorized to complete this request.")
-        return redirect('base:getCleanupRequests')
+    # if request.user.role not in ['Admin', 'Client'] and not request.user.is_superuser:
+    #     messages.error(request, "You are not authorized to complete this request.")
+    #     return redirect('base:getCleanupRequests')
 
     # Retrieve the cleanup request and associated tasks
     cleanupRequest = get_object_or_404(CleanupRequest, id=cleanup_request_id, client=request.user, delete_status=False)
