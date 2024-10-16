@@ -211,3 +211,28 @@ def addCleanupRequest(request):
         'cleanup_request_form': cleanup_request_form,
     }
     return render(request, 'cleanuprequest/create.html', context)
+
+@login_required
+def viewCleanupRequest(request, cleanup_request_id):
+    try:
+        # Fetch the cleanup request and its related tasks
+        cleanupRequest = CleanupRequest.objects.select_related('client', 'manager').prefetch_related('tasks').get(id=cleanup_request_id, delete_status=False)
+    except CleanupRequest.DoesNotExist:
+        messages.error(request, "Cleanup request not found.")
+        return redirect('cleanup:getCleanupRequests')
+
+    # Ensure only authorized users can view the details
+    if request.user.role == 'Client' and cleanupRequest.client != request.user:
+        messages.error(request, "You are not authorized to view this cleanup request.")
+        return redirect('base:dashboard')
+    elif request.user.role not in ['Admin', 'Manager'] and not request.user.is_superuser:
+        messages.error(request, "You are not authorized to access this page.")
+        return redirect('base:dashboard')
+
+    context = {
+        'cleanupRequest': cleanupRequest,
+        'tasks': cleanupRequest.tasks.all(),
+        'logged_in_user': request.user
+    }
+
+    return render(request, 'cleanuprequest/show.html', context)
