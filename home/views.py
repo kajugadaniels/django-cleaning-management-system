@@ -211,7 +211,7 @@ def addCleanupRequest(request):
 def viewCleanupRequest(request, cleanup_request_id):
     try:
         # Fetch the cleanup request and its related tasks
-        cleanupRequest = CleanupRequest.objects.select_related('client', 'Supervisor').prefetch_related('tasks').get(id=cleanup_request_id, delete_status=False)
+        cleanupRequest = CleanupRequest.objects.select_related('client', 'supervisor').prefetch_related('tasks').get(id=cleanup_request_id, delete_status=False)
     except CleanupRequest.DoesNotExist:
         messages.error(request, "Cleanup request not found.")
         return redirect('cleanup:getCleanupRequests')
