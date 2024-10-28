@@ -177,34 +177,26 @@ def getCleanupRequests(request):
 
 @login_required
 def addCleanupRequest(request):
-    # if request.user.role not in ['Admin', 'Supervisor'] and not request.user.is_superuser:
-    #     messages.error(request, "You are not authorized to access this page.")
-    #     return redirect('base:dashboard')
-
     if request.method == 'POST':
-        cleanup_request_form = CleanupRequestForm(request.POST)
-        
-        # Manually handle multiple tasks submitted via the form
-        task_names = request.POST.getlist('task_name[]')  # Get the list of task names dynamically submitted
+        cleanup_request_form = CleanupRequestForm(request.POST, request.FILES)
+
+        task_names = request.POST.getlist('task_name[]')
 
         if cleanup_request_form.is_valid():
-            # Save the CleanupRequest
             cleanup_request = cleanup_request_form.save(commit=False)
-            # cleanup_request.client = request.user  # Automatically set the client to the logged-in user
             cleanup_request.save()
 
-            # Log and link tasks to the CleanupRequest
             for name in task_names:
-                name = name.strip()  # Clean any extra whitespace
-                if name:  # Ensure valid task names
+                name = name.strip()
+                if name:
                     Task.objects.create(
-                        cleanup_request=cleanup_request,  # Link task to the saved CleanupRequest
-                        name=name,  # Use the name field for each task
+                        cleanup_request=cleanup_request,
+                        name=name,
                         added_by=request.user
                     )
 
             messages.success(request, "Cleanup request created successfully with its associated tasks.")
-            return redirect('base:getCleanupRequests')  # Redirect after success
+            return redirect('base:getCleanupRequests')
         else:
             messages.error(request, "Error submitting the form. Please try again.")
     else:
