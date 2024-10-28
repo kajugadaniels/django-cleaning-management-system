@@ -156,10 +156,10 @@ def getCleanupRequests(request):
     # Fetch cleanup requests based on the user role
     if request.user.role == 'Client':
         # Client users only see their own requests
-        cleanupRequests = CleanupRequest.objects.filter(client=request.user, delete_status=False).select_related('Supervisor').prefetch_related('tasks').order_by('-created_at')
+        cleanupRequests = CleanupRequest.objects.filter(client=request.user, delete_status=False).select_related('supervisor').prefetch_related('tasks').order_by('-created_at')
     elif request.user.role == 'Admin' or request.user.is_superuser:
         # Admin or SuperAdmin users see all requests
-        cleanupRequests = CleanupRequest.objects.filter(delete_status=False).select_related('client', 'Supervisor').prefetch_related('tasks').order_by('-created_at')
+        cleanupRequests = CleanupRequest.objects.filter(delete_status=False).select_related('client', 'supervisor').prefetch_related('tasks').order_by('-created_at')
     elif request.user.role == 'Supervisor':
         # Client users only see their own requests
         cleanupRequests = CleanupRequest.objects.filter(supervisor=request.user, delete_status=False).select_related('client').prefetch_related('tasks').order_by('-created_at')
