@@ -50,9 +50,8 @@ class CleanupRequestForm(forms.ModelForm):
         fields = ['client', 'description', 'requested_at', 'invoice']
         widgets = {
             'client': forms.Select(attrs={'class': 'form-control'}),
-            'invoice': forms.FileField(attrs={'class': 'form-control'}),
             'description': forms.Textarea(attrs={'class': 'form-control'}),
-            'requested_at': forms.DateInput(attrs={'class': 'form-control'}),
+            'requested_at': forms.DateInput(attrs={'class': 'form-control', 'type': 'date'}),
         }
 
     def __init__(self, *args, **kwargs):
