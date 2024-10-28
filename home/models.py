@@ -16,6 +16,7 @@ class CleanupRequest(models.Model):
     requested_at = models.CharField(max_length=40, null=True, blank=True)
     approved_at = models.DateTimeField(null=True, blank=True)
     completed_at = models.DateTimeField(null=True, blank=True)
+    invoice = models.FileField(upload_to='invoices/', null=True, blank=True)
 
     added_by = models.ForeignKey(User, on_delete=models.CASCADE, related_name='requests_added', null=True, blank=True)
     modified_by = models.ForeignKey(User, on_delete=models.CASCADE, related_name='requests_modified', null=True, blank=True)
