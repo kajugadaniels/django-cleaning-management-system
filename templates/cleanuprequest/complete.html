@@ -19,7 +19,13 @@
 
                     <form method="post">
                         {% csrf_token %}
-                        <button type="submit" class="btn btn-success">Mark as Completed</button>
+                        
+                        <div class="form-group">
+                            <label for="feedback">Feedback (optional):</label>
+                            <textarea name="feedback" id="feedback" class="form-control" rows="4" placeholder="Provide your feedback here...">{{ cleanupRequest.feedback }}</textarea>
+                        </div>
+
+                        <button type="submit" class="btn btn-success mt-3">Mark as Completed</button>
                     </form>
                 </div>
             </div>
