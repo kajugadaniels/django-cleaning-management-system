@@ -30,7 +30,9 @@
                                     <th><span class="f-light f-w-600">Client</span></th>
                                     <th><span class="f-light f-w-600">Supervisor</span></th>
                                     <th><span class="f-light f-w-600">Status</span></th>
-                                    <th><span class="f-light f-w-600">Descriptions</span></th>
+                                    {% if user.is_superuser or user.role == 'Admin' %}
+                                        <th><span class="f-light f-w-600">Supervisor Report</span></th>
+                                    {% endif %}
                                     <th><span class="f-light f-w-600">Completed</span></th>
                                     <th><span class="f-light f-w-600">Action</span></th>
                                     </tr>
@@ -61,9 +63,17 @@
                                                     {{ request.get_status_display }}
                                                 </span>
                                             </td>
-                                            <td>
-                                                <p class="f-light">{{ request.description|truncatewords:10 }}</p>
-                                            </td>
+                                            {% if user.is_superuser or user.role == 'Admin' %}
+                                                    <td>
+                                                        {% if request.supervisor_report %}
+                                                            <a href="{{ request.supervisor_report.url }}" target="_blank" class="f-light">
+                                                                <span class="badge bg-success">View Supervisor Report</span>
+                                                            </a>
+                                                        {% else %}
+                                                            <span class="badge bg-warning">Report not submitted</span>
+                                                        {% endif %}
+                                                    </td>
+                                                {% endif %}
                                             <td>
                                                 <p class="f-light">
                                                     {% if request.completed_at %}
