@@ -9,10 +9,16 @@
                     <div class="card-body">
                         <div class="list-product-header">
                             <div class="d-flex justify-content-between">
-                                <h4>Cleanup Requests</h4>
+                                {% if user.is_superuser or user.role == 'Admin' %}
+                                    <h4>Requests</h4>
+                                {% elif user.is_superuser or user.role == 'Supervisor' %}
+                                    <h4>Cleaning Requests</h4>
+                                {% elif user.is_superuser or user.role == 'Client' %}
+                                    <h4>Cleaning Requests</h4>
+                                {% endif %}
                                 {% if request.user.is_superuser or request.user.role in 'Admin' %}
                                     <a class="btn btn-primary" href="{% url 'base:addCleanupRequest' %}"><i class="fa fa-plus"></i>
-                                        Add Cleanup Request
+                                        Add Request
                                     </a>
                                 {% endif %}
                             </div>
