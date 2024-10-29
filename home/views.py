@@ -276,7 +276,7 @@ def assignCleanersToTask(request, taskId):
     #     messages.error(request, "You are not authorized to access this page.")
     #     return redirect('base:dashboard')
 
-    task = get_object_or_404(Task, id=taskId, cleanup_request__Supervisor=request.user, delete_status=False)
+    task = get_object_or_404(Task, id=taskId, cleanup_request__supervisor=request.user, delete_status=False)
 
     if request.method == 'POST':
         form = TaskCleanerForm(request.POST, instance=task, user=request.user)
