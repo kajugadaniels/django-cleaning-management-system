@@ -300,19 +300,14 @@ def assignCleanersToTask(request, taskId):
 
 @login_required
 def markCleanupRequestComplete(request, cleanup_request_id):
-    # Ensure the user is a Client
-    # if request.user.role not in ['Admin', 'Client'] and not request.user.is_superuser:
-    #     messages.error(request, "You are not authorized to complete this request.")
-    #     return redirect('base:getCleanupRequests')
-
-    # Retrieve the cleanup request and associated tasks
     cleanupRequest = get_object_or_404(CleanupRequest, id=cleanup_request_id, client=request.user, delete_status=False)
     tasks = Task.objects.filter(cleanup_request=cleanupRequest, delete_status=False)
 
-    # If the request method is POST, update the 'completed_at' fields
     if request.method == 'POST':
-        # Mark the cleanup request as completed
+        # Get the feedback from the form and save it
+        feedback = request.POST.get('feedback')
         cleanupRequest.completed_at = timezone.now()
+        cleanupRequest.feedback = feedback
         cleanupRequest.save()
 
         # Mark all tasks as completed
