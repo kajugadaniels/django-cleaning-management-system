@@ -19,5 +19,6 @@ urlpatterns = [
     path('cleanup-requests/<int:request_id>/', adminApproveCleanupRequest, name='adminApproveCleanupRequest'),
     path('cleanup-requests/task/<int:taskId>/', assignCleanersToTask, name='assignCleanersToTask'),
     path('cleanup-request/<int:cleanup_request_id>/complete/', markCleanupRequestComplete, name='markCleanupRequestComplete'),
+    path('cleanup-request/<int:cleanup_request_id>/submit_report/', submitSupervisorReport, name='submitSupervisorReport'),
 
 ] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT) + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
