@@ -1,0 +1,27 @@
+{% extends 'layouts/app.html' %}
+{% block content %}
+
+<div class="container-fluid">
+    <div class="row"> 
+        <div class="col-sm-12"> 
+            <div class="card"> 
+                <div class="card-body">
+                    <h4>Submit Supervisor Report for Cleanup Request</h4>
+                    <p><strong>Client:</strong> {{ cleanupRequest.client }}</p>
+                    <p><strong>Description:</strong> {{ cleanupRequest.description }}</p>
+
+                    <form method="post" enctype="multipart/form-data">
+                        {% csrf_token %}
+                        <div class="form-group">
+                            <label for="supervisor_report">Upload Report (PDF only):</label>
+                            <input type="file" name="supervisor_report" id="supervisor_report" class="form-control" accept="application/pdf" required>
+                        </div>
+                        <button type="submit" class="btn btn-success mt-3">Submit Report</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}
