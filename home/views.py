@@ -322,3 +322,21 @@ def markCleanupRequestComplete(request, cleanup_request_id):
     }
 
     return render(request, 'cleanuprequest/complete.html', context)
+
+@login_required
+def submitSupervisorReport(request, cleanup_request_id):
+    cleanupRequest = get_object_or_404(CleanupRequest, id=cleanup_request_id, supervisor=request.user)
+
+    if request.method == 'POST':
+        # Get the uploaded report file from the form
+        report_file = request.FILES.get('supervisor_report')
+        
+        if report_file:
+            cleanupRequest.supervisor_report = report_file
+            cleanupRequest.save()
+            messages.success(request, "Report successfully submitted.")
+            return redirect('base:getCleanupRequests')
+        else:
+            messages.error(request, "Please upload a report file.")
+
+    return render(request, 'cleanuprequest/submit_report.html', {'cleanupRequest': cleanupRequest})
