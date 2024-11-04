@@ -21,4 +21,9 @@ urlpatterns = [
     path('cleanup-request/<int:cleanup_request_id>/complete/', markCleanupRequestComplete, name='markCleanupRequestComplete'),
     path('cleanup-request/<int:cleanup_request_id>/submit_report/', submitSupervisorReport, name='submitSupervisorReport'),
 
+    path('invoices/', getInvoices, name='getInvoices'),
+    path('invoices/create/', createInvoice, name='createInvoice'),
+    path('invoices/edit/<int:id>/', editInvoice, name='editInvoice'),
+    path('invoices/delete/<int:id>/', deleteInvoice, name='deleteInvoice'),
+
 ] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT) + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
