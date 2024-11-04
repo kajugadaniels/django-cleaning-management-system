@@ -370,3 +370,25 @@ def createInvoice(request):
     }
 
     return render(request, 'invoices/create.html', context)
+
+@login_required
+def editInvoice(request, id):
+    invoice = get_object_or_404(Invoice, id=id)
+    if request.method == 'POST':
+        form = InvoiceForm(request.POST, request.FILES, instance=invoice)
+        if form.is_valid():
+            form.save()
+            messages.success(request, "Invoice updated successfully.")
+            return redirect('base:getInvoices')
+        else:
+            for error in form.errors.values():
+                messages.error(request, error)
+    else:
+        form = InvoiceForm(instance=invoice)
+
+    context = {
+        'form': form,
+        'invoice': invoice
+    }
+
+    return render(request, 'invoices/edit.html', context)
