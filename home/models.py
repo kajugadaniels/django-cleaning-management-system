@@ -1,3 +1,4 @@
+import random
 from account.models import *
 from django.db import models
 from django.utils import timezone
@@ -47,6 +48,11 @@ class Task(models.Model):
     def __str__(self):
         return f'Task {self.name} for Request {self.cleanup_request}'
 
+def invoice_file_path(instance, filename):
+    random_number = random.randint(10000, 99999)
+    client_name_slug = instance.client.name.replace(" ", "_").lower()
+    return f'invoices/{client_name_slug}_{random_number}.pdf'
+
 class Invoice(models.Model):
     client = models.ForeignKey(
         User,
@@ -57,6 +63,12 @@ class Invoice(models.Model):
     invoice_date = models.DateField(default=timezone.now)
     due_date = models.DateField()
     amount = models.DecimalField(max_digits=10, decimal_places=2)
+    file = models.FileField(
+        upload_to=invoice_file_path,
+        null=True,
+        blank=True,
+        help_text="Upload only PDF files"
+    )
     is_paid = models.BooleanField(default=False)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
