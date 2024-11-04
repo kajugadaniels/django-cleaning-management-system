@@ -21,6 +21,8 @@ urlpatterns = [
     path('cleanup-request/<int:cleanup_request_id>/complete/', markCleanupRequestComplete, name='markCleanupRequestComplete'),
     path('cleanup-request/<int:cleanup_request_id>/submit_report/', submitSupervisorReport, name='submitSupervisorReport'),
 
+    path('tasks/assigned/', getAssignedTasks, name='getAssignedTasks'),
+
     path('invoices/', getInvoices, name='getInvoices'),
     path('invoices/create/', createInvoice, name='createInvoice'),
     path('invoices/edit/<int:id>/', editInvoice, name='editInvoice'),
