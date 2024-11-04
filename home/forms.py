@@ -105,5 +105,5 @@ class InvoiceForm(forms.ModelForm):
             'due_date': forms.DateInput(attrs={'class': 'form-control', 'type': 'date'}),
             'amount': forms.NumberInput(attrs={'class': 'form-control'}),
             'file': forms.ClearableFileInput(attrs={'class': 'form-control'}),
-            'is_paid': forms.CheckboxInput(attrs={'class': 'form-control'}),
+            'is_paid': forms.CheckboxInput(),
         }
