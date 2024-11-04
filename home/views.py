@@ -340,3 +340,13 @@ def submitSupervisorReport(request, cleanup_request_id):
             messages.error(request, "Please upload a report file.")
 
     return render(request, 'cleanuprequest/submit_report.html', {'cleanupRequest': cleanupRequest})
+
+@login_required
+def getInvoices(request):
+    invoices = Invoice.objects.all().order_by('-invoice_date')
+
+    context = {
+        'invoices': invoices
+    }
+
+    return render(request, 'invoices/index.html', context)
