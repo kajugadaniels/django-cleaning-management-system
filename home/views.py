@@ -350,3 +350,23 @@ def getInvoices(request):
     }
 
     return render(request, 'invoices/index.html', context)
+
+@login_required
+def createInvoice(request):
+    if request.method == 'POST':
+        form = InvoiceForm(request.POST, request.FILES)
+        if form.is_valid():
+            form.save()
+            messages.success(request, "Invoice created successfully.")
+            return redirect('base:getInvoices')
+        else:
+            for error in form.errors.values():
+                messages.error(request, error)
+    else:
+        form = InvoiceForm()
+
+    context = {
+        'form': form
+    }
+
+    return render(request, 'invoices/create.html', context)
