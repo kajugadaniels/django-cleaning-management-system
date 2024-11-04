@@ -94,3 +94,16 @@ class TaskCleanerForm(forms.ModelForm):
     class Meta:
         model = Task
         fields = ['cleaners']
+
+class InvoiceForm(forms.ModelForm):
+    class Meta:
+        model = Invoice
+        fields = ['client', 'invoice_date', 'due_date', 'amount', 'file', 'is_paid']
+        widgets = {
+            'client': forms.Select(attrs={'class': 'form-control'}),
+            'invoice_date': forms.DateInput(attrs={'class': 'form-control', 'type': 'date'}),
+            'due_date': forms.DateInput(attrs={'class': 'form-control', 'type': 'date'}),
+            'amount': forms.NumberInput(attrs={'class': 'form-control'}),
+            'file': forms.ClearableFileInput(attrs={'class': 'form-control'}),
+            'is_paid': forms.CheckboxInput(attrs={'class': 'form-control'}),
+        }
