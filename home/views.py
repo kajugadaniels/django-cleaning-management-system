@@ -392,3 +392,10 @@ def editInvoice(request, id):
     }
 
     return render(request, 'invoices/edit.html', context)
+
+@login_required
+def deleteInvoice(request, id):
+    invoice = get_object_or_404(Invoice, id=id)
+    invoice.delete()
+    messages.success(request, "Invoice deleted successfully.")
+    return redirect('base:getInvoices')
