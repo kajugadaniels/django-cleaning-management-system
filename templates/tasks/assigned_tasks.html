@@ -1,0 +1,53 @@
+{% extends 'layouts/app.html' %}
+{% block content %}
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-sm-12">
+            <div class="card">
+                <div class="card-body">
+                    <div class="list-product-header">
+                        <div class="d-flex justify-content-between">
+                            <h4>My Assigned Tasks</h4>
+                        </div>
+                    </div>
+                    <hr>
+                    <div class="list-product">
+                        {% if assigned_tasks %}
+                            <table class="table">
+                                <thead>
+                                    <tr>
+                                        <th>Task Name</th>
+                                        <th>Cleanup Request</th>
+                                        <th>Assigned At</th>
+                                        <th>Completed At</th>
+                                        <th>Status</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for task in assigned_tasks %}
+                                        <tr>
+                                            <td>{{ task.name }}</td>
+                                            <td>{{ task.cleanup_request }}</td>
+                                            <td>{{ task.assigned_at|date:"M d, Y H:i" }}</td>
+                                            <td>{{ task.completed_at|date:"M d, Y H:i" }}</td>
+                                            <td>
+                                                {% if task.completed_at %}
+                                                    <span class="badge bg-success">Completed</span>
+                                                {% else %}
+                                                    <span class="badge bg-warning">Pending</span>
+                                                {% endif %}
+                                            </td>
+                                        </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        {% else %}
+                            <p class="text-center">No tasks assigned to you.</p>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
