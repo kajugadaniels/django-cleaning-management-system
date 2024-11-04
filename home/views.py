@@ -343,7 +343,11 @@ def submitSupervisorReport(request, cleanup_request_id):
 
 @login_required
 def getInvoices(request):
-    invoices = Invoice.objects.all().order_by('-invoice_date')
+    # Check if the logged-in user is a "Client"
+    if request.user.role == 'Client':
+        invoices = Invoice.objects.filter(client=request.user).order_by('-invoice_date')
+    else:
+        invoices = Invoice.objects.all().order_by('-invoice_date')
 
     context = {
         'invoices': invoices
