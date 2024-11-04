@@ -46,3 +46,25 @@ class Task(models.Model):
 
     def __str__(self):
         return f'Task {self.name} for Request {self.cleanup_request}'
+
+class Invoice(models.Model):
+    client = models.ForeignKey(
+        User,
+        on_delete=models.CASCADE,
+        limit_choices_to={'role': 'Client'},
+        related_name='invoices'
+    )
+    invoice_date = models.DateField(default=timezone.now)
+    due_date = models.DateField()
+    amount = models.DecimalField(max_digits=10, decimal_places=2)
+    is_paid = models.BooleanField(default=False)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        ordering = ['-invoice_date']
+        verbose_name = 'Invoice'
+        verbose_name_plural = 'Invoices'
+
+    def __str__(self):
+        return f"Invoice {self.id} - {self.client.email}"
