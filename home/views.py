@@ -342,6 +342,18 @@ def submitSupervisorReport(request, cleanup_request_id):
     return render(request, 'cleanuprequest/submit_report.html', {'cleanupRequest': cleanupRequest})
 
 @login_required
+def getAssignedTasks(request):
+    # Fetch tasks assigned to the logged-in user
+    assigned_tasks = Task.objects.filter(cleaners=request.user, delete_status=False).select_related('cleanup_request').order_by('-created_at')
+
+    context = {
+        'assigned_tasks': assigned_tasks,
+        'logged_in_user': request.user
+    }
+
+    return render(request, 'tasks/assigned_tasks.html', context)
+
+@login_required
 def getInvoices(request):
     # Check if the logged-in user is a "Client"
     if request.user.role == 'Client':
