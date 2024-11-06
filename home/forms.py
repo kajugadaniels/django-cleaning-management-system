@@ -94,7 +94,7 @@ class TaskCleanerForm(forms.ModelForm):
         user = kwargs.pop('user')  # Get the logged-in user from the view
         super(TaskCleanerForm, self).__init__(*args, **kwargs)
         # Filter cleaners added by the logged-in Supervisor user
-        self.fields['cleaners'].queryset = User.objects.filter(role='Cleaner', added_by=user)
+        self.fields['cleaners'].queryset = User.objects.filter(role='Cleaner')
 
     cleaners = forms.ModelMultipleChoiceField(
         queryset=User.objects.none(),  # Default to none, will be populated in __init__
