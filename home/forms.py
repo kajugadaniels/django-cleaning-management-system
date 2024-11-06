@@ -47,7 +47,7 @@ class UserUpdateForm(forms.ModelForm):
 class CleanupRequestForm(forms.ModelForm):
     class Meta:
         model = CleanupRequest
-        fields = ['client', 'description', 'requested_at', 'invoice']
+        fields = ['client', 'description', 'requested_at']
         widgets = {
             'client': forms.Select(attrs={'class': 'form-control'}),
             'description': forms.Textarea(attrs={'class': 'form-control'}),
