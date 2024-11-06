@@ -1,8 +1,187 @@
-    {% extends 'layouts/app.html' %}
-    {% load static %}
-    {% load humanize %}
-    {% block content %}
-        <div class="container">
-            <h1>Dashboard</h1>
+{% extends 'layouts/app.html' %}
+{% load static %}
+{% block content %}
+<div class="container-fluid">
+    <h1 class="mt-4">Dashboard</h1>
+    <hr>
+
+    <!-- Admin Dashboard -->
+    {% if user.role == 'Admin' or user.is_superuser %}
+    <div class="row">
+        <div class="col-md-3">
+            <div class="card text-white bg-primary mb-3">
+                <div class="card-body">
+                    <h5 class="card-title">Total Cleanup Requests</h5>
+                    <p class="card-text">{{ total_cleanup_requests }}</p>
+                </div>
+            </div>
         </div>
-    {% endblock %}
+        <div class="col-md-3">
+            <div class="card text-white bg-warning mb-3">
+                <div class="card-body">
+                    <h5 class="card-title">Pending Cleanup Requests</h5>
+                    <p class="card-text">{{ pending_cleanup_requests }}</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card text-white bg-success mb-3">
+                <div class="card-body">
+                    <h5 class="card-title">Approved Cleanup Requests</h5>
+                    <p class="card-text">{{ approved_cleanup_requests }}</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card text-white bg-info mb-3">
+                <div class="card-body">
+                    <h5 class="card-title">Total Revenue</h5>
+                    <p class="card-text">${{ total_revenue|floatformat:2 }}</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-4">
+        <div class="card mb-4">
+            <div class="card-header">
+                <h5>Cleanup Requests Status Overview</h5>
+            </div>
+            <div class="card-body">
+                <canvas id="cleanupRequestChart"></canvas>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+
+    <!-- Client Dashboard -->
+    {% if user.role == 'Client' %}
+    <div class="row">
+        <div class="col-md-4">
+            <div class="card text-white bg-info mb-3">
+                <div class="card-body">
+                    <h5 class="card-title">My Cleanup Requests</h5>
+                    <p class="card-text">{{ my_cleanup_requests }}</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card text-white bg-success mb-3">
+                <div class="card-body">
+                    <h5 class="card-title">Completed Requests</h5>
+                    <p class="card-text">{{ my_completed_cleanup_requests }}</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card text-white bg-warning mb-3">
+                <div class="card-body">
+                    <h5 class="card-title">Pending Requests</h5>
+                    <p class="card-text">{{ my_pending_cleanup_requests }}</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="card mb-4">
+        <div class="card-header">
+            <h5>My Invoices</h5>
+        </div>
+        <div class="card-body">
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <th>Date</th>
+                        <th>Amount</th>
+                        <th>Status</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for invoice in my_invoices %}
+                    <tr>
+                        <td>{{ invoice.invoice_date }}</td>
+                        <td>${{ invoice.amount }}</td>
+                        <td>{{ invoice.is_paid|yesno:"Paid,Unpaid" }}</td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="3" class="text-center">No invoices found.</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+    {% endif %}
+
+    <!-- Supervisor Dashboard -->
+    {% if user.role == 'Supervisor' %}
+    <div class="row">
+        <div class="col-md-4">
+            <div class="card text-white bg-info mb-3">
+                <div class="card-body">
+                    <h5 class="card-title">Assigned Cleanup Requests</h5>
+                    <p class="card-text">{{ assigned_cleanup_requests }}</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card text-white bg-success mb-3">
+                <div class="card-body">
+                    <h5 class="card-title">Completed Requests</h5>
+                    <p class="card-text">{{ completed_cleanup_requests }}</p>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+
+    <!-- Cleaner Dashboard -->
+    {% if user.role == 'Cleaner' %}
+    <div class="row">
+        <div class="col-md-4">
+            <div class="card text-white bg-info mb-3">
+                <div class="card-body">
+                    <h5 class="card-title">Assigned Tasks</h5>
+                    <p class="card-text">{{ assigned_tasks }}</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card text-white bg-success mb-3">
+                <div class="card-body">
+                    <h5 class="card-title">Completed Tasks</h5>
+                    <p class="card-text">{{ completed_tasks }}</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card text-white bg-warning mb-3">
+                <div class="card-body">
+                    <h5 class="card-title">Pending Tasks</h5>
+                    <p class="card-text">{{ pending_tasks }}</p>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+</div>
+
+{% if cleanup_request_data %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+    var ctx = document.getElementById('cleanupRequestChart').getContext('2d');
+    var cleanupRequestChart = new Chart(ctx, {
+        type: 'doughnut',
+        data: {
+            labels: {{ cleanup_request_data.labels|safe }},
+            datasets: [{
+                label: 'Cleanup Requests',
+                data: {{ cleanup_request_data.data|safe }},
+                backgroundColor: ['#ffc107', '#28a745', '#dc3545', '#17a2b8']
+            }]
+        }
+    });
+</script>
+{% endif %}
+{% endblock %}
