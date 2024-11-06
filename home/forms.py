@@ -66,8 +66,8 @@ class CleanupRequestForm(forms.ModelForm):
                 self.fields['client'].initial = user.id
                 self.fields['client'].widget.attrs['readonly'] = True
                 self.fields['client'].widget.attrs['disabled'] = True
-            elif user.role in ['Admin', 'Superuser']:
-                # Allow selection from all clients
+            elif user.role == 'Admin' or user.is_superuser:
+                # Allow only users with the 'Client' role to be selectable
                 self.fields['client'].queryset = User.objects.filter(role='Client')
                 self.fields['client'].label = "Choose Client"
 
