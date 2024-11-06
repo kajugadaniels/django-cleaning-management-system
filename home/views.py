@@ -254,6 +254,11 @@ def addCleanupRequest(request):
 
         if cleanup_request_form.is_valid():
             cleanup_request = cleanup_request_form.save(commit=False)
+            
+            # Set the client field manually if the user is a Client
+            if request.user.role == 'Client':
+                cleanup_request.client = request.user
+
             cleanup_request.save()
 
             for name in task_names:
