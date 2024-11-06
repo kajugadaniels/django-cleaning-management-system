@@ -17,22 +17,32 @@ def dashboard(request):
         context['total_cleanup_requests'] = CleanupRequest.objects.count()
         context['pending_cleanup_requests'] = CleanupRequest.objects.filter(status='Pending').count()
         context['approved_cleanup_requests'] = CleanupRequest.objects.filter(status='Approved').count()
+        context['rejected_cleanup_requests'] = CleanupRequest.objects.filter(status='Rejected').count()
         context['completed_cleanup_requests'] = CleanupRequest.objects.filter(completed_at__isnull=False).count()
+
+        # Client, Supervisor, and Cleaner counts
         context['total_clients'] = User.objects.filter(role='Client').count()
         context['total_supervisors'] = User.objects.filter(role='Supervisor').count()
         context['total_cleaners'] = User.objects.filter(role='Cleaner').count()
 
         # Financial insight (sum of all invoices)
-        context['total_revenue'] = Invoice.objects.aggregate(Sum('amount'))['amount__sum']
+        total_revenue = Invoice.objects.aggregate(Sum('amount'))['amount__sum']
+        context['total_revenue'] = total_revenue if total_revenue else 0
 
-        # Cleanup requests by status chart data
+        # Weekly performance insight (approved requests in the last 7 days)
+        last_week = timezone.now() - timezone.timedelta(days=7)
+        context['weekly_approved_requests'] = CleanupRequest.objects.filter(
+            status='Approved', approved_at__gte=last_week
+        ).count()
+
+        # Status distribution chart data
         context['cleanup_request_data'] = {
             'labels': ['Pending', 'Approved', 'Rejected', 'Completed'],
             'data': [
-                CleanupRequest.objects.filter(status='Pending').count(),
-                CleanupRequest.objects.filter(status='Approved').count(),
-                CleanupRequest.objects.filter(status='Rejected').count(),
-                CleanupRequest.objects.filter(completed_at__isnull=False).count()
+                context['pending_cleanup_requests'],
+                context['approved_cleanup_requests'],
+                context['rejected_cleanup_requests'],
+                context['completed_cleanup_requests']
             ]
         }
 
