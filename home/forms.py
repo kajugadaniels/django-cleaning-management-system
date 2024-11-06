@@ -55,10 +55,21 @@ class CleanupRequestForm(forms.ModelForm):
         }
 
     def __init__(self, *args, **kwargs):
+        # Accept the user as a keyword argument
+        user = kwargs.pop('user', None)
         super(CleanupRequestForm, self).__init__(*args, **kwargs)
-        # Only show users with the 'Client' role in the Client field
-        self.fields['client'].queryset = User.objects.filter(role='Client')
-        self.fields['client'].label = "Choose Client"
+
+        if user:
+            if user.role == 'Client':
+                # Set the client field to the logged-in user's ID and make it read-only
+                self.fields['client'].queryset = User.objects.filter(id=user.id)
+                self.fields['client'].initial = user.id
+                self.fields['client'].widget.attrs['readonly'] = True
+                self.fields['client'].widget.attrs['disabled'] = True
+            elif user.role in ['Admin', 'Superuser']:
+                # Allow selection from all clients
+                self.fields['client'].queryset = User.objects.filter(role='Client')
+                self.fields['client'].label = "Choose Client"
 
 class TaskForm(forms.Form):
     name = forms.CharField(max_length=255, widget=forms.TextInput(attrs={'class': 'form-control'}))
