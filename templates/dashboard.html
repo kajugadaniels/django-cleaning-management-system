@@ -172,7 +172,7 @@
             <p>Assigned Tasks: <span class="fw-bold">{{ my_assigned_tasks }}</span></p>
             <p>Completed Tasks: <span class="fw-bold text-success">{{ my_completed_tasks }}</span></p>
             <div class="progress">
-                <div class="progress-bar bg-success" role="progressbar" style="width: {{ my_completed_tasks|div:my_assigned_tasks|default:0|multiply:100 }}%" aria-valuenow="{{ my_completed_tasks }}" aria-valuemin="0" aria-valuemax="{{ my_assigned_tasks }}">{{ my_completed_tasks|div:my_assigned_tasks|default:0|multiply:100 }}%</div>
+                <div class="progress-bar bg-success" role="progressbar" style="width: {{ task_completion_percentage }}%" aria-valuenow="{{ my_completed_tasks }}" aria-valuemin="0" aria-valuemax="{{ my_assigned_tasks }}">{{ task_completion_percentage }}%</div>
             </div>
         </div>
     </div>
@@ -213,7 +213,7 @@
         </div>
         <div class="card-body">
             <div class="progress">
-                <div class="progress-bar bg-success" role="progressbar" style="width: {{ completed_tasks|div:assigned_tasks|default:0|multiply:100 }}%" aria-valuenow="{{ completed_tasks }}" aria-valuemin="0" aria-valuemax="{{ assigned_tasks }}">{{ completed_tasks|div:assigned_tasks|default:0|multiply:100 }}%</div>
+                <div class="progress-bar bg-success" role="progressbar" style="width: {{ task_completion_percentage }}%" aria-valuenow="{{ my_completed_tasks }}" aria-valuemin="0" aria-valuemax="{{ my_assigned_tasks }}">{{ task_completion_percentage }}%</div>
             </div>
         </div>
     </div>

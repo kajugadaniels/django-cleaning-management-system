@@ -55,16 +55,30 @@ def dashboard(request):
 
     elif user.role == 'Supervisor':
         # Supervisor insights
-        context['assigned_cleanup_requests'] = CleanupRequest.objects.filter(supervisor=user).count()
-        context['completed_cleanup_requests'] = CleanupRequest.objects.filter(supervisor=user, completed_at__isnull=False).count()
-        context['my_assigned_tasks'] = Task.objects.filter(cleanup_request__supervisor=user).count()
-        context['my_completed_tasks'] = Task.objects.filter(cleanup_request__supervisor=user, completed_at__isnull=False).count()
+        assigned_tasks = Task.objects.filter(cleanup_request__supervisor=user).count()
+        completed_tasks = Task.objects.filter(cleanup_request__supervisor=user, completed_at__isnull=False).count()
+        task_completion_percentage = (completed_tasks / assigned_tasks * 100) if assigned_tasks > 0 else 0
+        
+        context.update({
+            'assigned_cleanup_requests': CleanupRequest.objects.filter(supervisor=user).count(),
+            'completed_cleanup_requests': CleanupRequest.objects.filter(supervisor=user, completed_at__isnull=False).count(),
+            'my_assigned_tasks': assigned_tasks,
+            'my_completed_tasks': completed_tasks,
+            'task_completion_percentage': task_completion_percentage,
+        })
 
     elif user.role == 'Cleaner':
         # Cleaner insights
-        context['assigned_tasks'] = Task.objects.filter(cleaners=user).count()
-        context['completed_tasks'] = Task.objects.filter(cleaners=user, completed_at__isnull=False).count()
-        context['pending_tasks'] = Task.objects.filter(cleaners=user, completed_at__isnull=True).count()
+        assigned_tasks = Task.objects.filter(cleaners=user).count()
+        completed_tasks = Task.objects.filter(cleaners=user, completed_at__isnull=False).count()
+        task_completion_percentage = (completed_tasks / assigned_tasks * 100) if assigned_tasks > 0 else 0
+        
+        context.update({
+            'assigned_tasks': assigned_tasks,
+            'completed_tasks': completed_tasks,
+            'pending_tasks': assigned_tasks - completed_tasks,
+            'task_completion_percentage': task_completion_percentage,
+        })
 
     return render(request, 'dashboard.html', context)
 
