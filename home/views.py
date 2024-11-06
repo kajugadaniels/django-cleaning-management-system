@@ -249,8 +249,7 @@ def getCleanupRequests(request):
 @login_required
 def addCleanupRequest(request):
     if request.method == 'POST':
-        cleanup_request_form = CleanupRequestForm(request.POST, request.FILES)
-
+        cleanup_request_form = CleanupRequestForm(request.POST, request.FILES, user=request.user)
         task_names = request.POST.getlist('task_name[]')
 
         if cleanup_request_form.is_valid():
@@ -271,7 +270,7 @@ def addCleanupRequest(request):
         else:
             messages.error(request, "Error submitting the form. Please try again.")
     else:
-        cleanup_request_form = CleanupRequestForm()
+        cleanup_request_form = CleanupRequestForm(user=request.user)
 
     context = {
         'cleanup_request_form': cleanup_request_form,
