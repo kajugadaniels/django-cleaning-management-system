@@ -55,16 +55,15 @@ class CleanupRequestForm(forms.ModelForm):
         }
 
     def __init__(self, *args, **kwargs):
-        # Accept the user as a keyword argument
         user = kwargs.pop('user', None)
         super(CleanupRequestForm, self).__init__(*args, **kwargs)
 
         if user:
             if user.role == 'Client':
-                # Set the client field to the logged-in user's ID and add a hidden class
+                # Set the client field to the logged-in user's ID and add a readonly class
                 self.fields['client'].queryset = User.objects.filter(id=user.id)
                 self.fields['client'].initial = user.id
-                self.fields['client'].widget.attrs['class'] += ' hidden-client-field'  # Add a hidden class
+                self.fields['client'].widget.attrs['class'] += ' readonly-field'  # Add custom CSS class
             elif user.role == 'Admin' or user.is_superuser:
                 # Allow only users with the 'Client' role to be selectable
                 self.fields['client'].queryset = User.objects.filter(role='Client')

@@ -1,6 +1,14 @@
 {% extends 'layouts/app.html' %}
 {% block content %}
 
+<style>
+    /* Hide the client field for 'Client' users and make it appear read-only */
+    .readonly-field {
+        pointer-events: none;
+        background-color: #e9ecef; /* Bootstrap's gray background color for disabled elements */
+    }
+</style>
+
 <div class="container-fluid">
     <div class="row">
         <div class="col-sm-12">
@@ -40,7 +48,6 @@
                             <div class="col-sm-12">
                                 <label class="form-label">Tasks</label>
                                 <div id="task-forms">
-                                    <!-- Task Form Input Template -->
                                     <div class="task-form-item">
                                         <input type="text" name="task_name[]" class="form-control" placeholder="Task Name" required>
                                         <button type="button" class="btn btn-danger remove-task-btn mt-2">Remove Task</button>
@@ -66,14 +73,12 @@
     document.addEventListener("DOMContentLoaded", function () {
         const taskFormsContainer = document.getElementById("task-forms");
 
-        // Add new task form dynamically
         document.querySelector('.add-task-btn').addEventListener('click', function () {
             let taskForm = document.querySelector('.task-form-item').cloneNode(true);
             taskForm.querySelector('input').value = '';  // Clear the input value for the new form
             taskFormsContainer.appendChild(taskForm);
         });
 
-        // Remove task form dynamically
         document.addEventListener('click', function (e) {
             if (e.target && e.target.classList.contains('remove-task-btn')) {
                 const taskForm = e.target.closest('.task-form-item');
