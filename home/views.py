@@ -92,7 +92,7 @@ def getUsers(request):
         user_id = request.POST.get('user_id')
         if user_id:
             try:
-                user = User.objects.get(id=user_id).order_by('-created_at')
+                user = User.objects.get(id=user_id).order_by('-id')
                 if not user.is_staff:
                     user.delete()
                     messages.success(request, "User deleted successfully.")
