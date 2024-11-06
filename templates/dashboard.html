@@ -1,54 +1,83 @@
 {% extends 'layouts/app.html' %}
 {% load static %}
 {% block content %}
-<div class="container-fluid">
-    <h1 class="mt-4">Dashboard</h1>
-    <hr>
+
+<div class="container-fluid my-4">
+    <h1 class="display-4 text-center mb-4">Dashboard</h1>
 
     <!-- Admin Dashboard -->
     {% if user.role == 'Admin' or user.is_superuser %}
-    <div class="row">
+    <div class="row g-3 mb-4">
         <div class="col-md-3">
-            <div class="card text-white bg-primary mb-3">
+            <div class="card text-center shadow border-0">
                 <div class="card-body">
                     <h5 class="card-title">Total Cleanup Requests</h5>
-                    <p class="card-text">{{ total_cleanup_requests }}</p>
+                    <h3 class="display-6">{{ total_cleanup_requests }}</h3>
+                    <p class="text-muted">Overall requests in the system</p>
                 </div>
             </div>
         </div>
         <div class="col-md-3">
-            <div class="card text-white bg-warning mb-3">
+            <div class="card text-center shadow border-0">
                 <div class="card-body">
-                    <h5 class="card-title">Pending Cleanup Requests</h5>
-                    <p class="card-text">{{ pending_cleanup_requests }}</p>
+                    <h5 class="card-title text-warning">Pending Requests</h5>
+                    <h3 class="display-6 text-warning">{{ pending_cleanup_requests }}</h3>
+                    <p class="text-muted">Currently awaiting approval</p>
                 </div>
             </div>
         </div>
         <div class="col-md-3">
-            <div class="card text-white bg-success mb-3">
+            <div class="card text-center shadow border-0">
                 <div class="card-body">
-                    <h5 class="card-title">Approved Cleanup Requests</h5>
-                    <p class="card-text">{{ approved_cleanup_requests }}</p>
+                    <h5 class="card-title text-success">Approved Requests</h5>
+                    <h3 class="display-6 text-success">{{ approved_cleanup_requests }}</h3>
+                    <p class="text-muted">Requests approved to date</p>
                 </div>
             </div>
         </div>
         <div class="col-md-3">
-            <div class="card text-white bg-info mb-3">
+            <div class="card text-center shadow border-0">
                 <div class="card-body">
-                    <h5 class="card-title">Total Revenue</h5>
-                    <p class="card-text">${{ total_revenue|floatformat:2 }}</p>
+                    <h5 class="card-title text-info">Total Revenue</h5>
+                    <h3 class="display-6 text-info">${{ total_revenue|floatformat:2 }}</h3>
+                    <p class="text-muted">Revenue from cleanup services</p>
                 </div>
             </div>
         </div>
     </div>
 
-    <div class="col-md-4">
-        <div class="card mb-4">
-            <div class="card-header">
-                <h5>Cleanup Requests Status Overview</h5>
+    <div class="row g-3 mb-4">
+        <div class="col-md-4">
+            <div class="card shadow border-0">
+                <div class="card-header bg-transparent">
+                    <h5>Cleanup Requests Status Overview</h5>
+                </div>
+                <div class="card-body">
+                    <canvas id="cleanupRequestChart"></canvas>
+                </div>
             </div>
-            <div class="card-body">
-                <canvas id="cleanupRequestChart"></canvas>
+        </div>
+        <div class="col-md-8">
+            <div class="card shadow border-0">
+                <div class="card-header bg-transparent">
+                    <h5>User Roles Summary</h5>
+                </div>
+                <div class="card-body">
+                    <ul class="list-group">
+                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                            Clients
+                            <span class="badge bg-primary rounded-pill">{{ total_clients }}</span>
+                        </li>
+                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                            Supervisors
+                            <span class="badge bg-success rounded-pill">{{ total_supervisors }}</span>
+                        </li>
+                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                            Cleaners
+                            <span class="badge bg-info rounded-pill">{{ total_cleaners }}</span>
+                        </li>
+                    </ul>
+                </div>
             </div>
         </div>
     </div>
@@ -56,39 +85,39 @@
 
     <!-- Client Dashboard -->
     {% if user.role == 'Client' %}
-    <div class="row">
+    <div class="row g-3 mb-4">
         <div class="col-md-4">
-            <div class="card text-white bg-info mb-3">
+            <div class="card shadow border-0 text-center">
                 <div class="card-body">
                     <h5 class="card-title">My Cleanup Requests</h5>
-                    <p class="card-text">{{ my_cleanup_requests }}</p>
+                    <h3 class="display-6">{{ my_cleanup_requests }}</h3>
                 </div>
             </div>
         </div>
         <div class="col-md-4">
-            <div class="card text-white bg-success mb-3">
+            <div class="card shadow border-0 text-center">
                 <div class="card-body">
-                    <h5 class="card-title">Completed Requests</h5>
-                    <p class="card-text">{{ my_completed_cleanup_requests }}</p>
+                    <h5 class="card-title text-success">Completed Requests</h5>
+                    <h3 class="display-6 text-success">{{ my_completed_cleanup_requests }}</h3>
                 </div>
             </div>
         </div>
         <div class="col-md-4">
-            <div class="card text-white bg-warning mb-3">
+            <div class="card shadow border-0 text-center">
                 <div class="card-body">
-                    <h5 class="card-title">Pending Requests</h5>
-                    <p class="card-text">{{ my_pending_cleanup_requests }}</p>
+                    <h5 class="card-title text-warning">Pending Requests</h5>
+                    <h3 class="display-6 text-warning">{{ my_pending_cleanup_requests }}</h3>
                 </div>
             </div>
         </div>
     </div>
 
-    <div class="card mb-4">
-        <div class="card-header">
+    <div class="card shadow border-0 mb-4">
+        <div class="card-header bg-transparent">
             <h5>My Invoices</h5>
         </div>
         <div class="card-body">
-            <table class="table table-striped">
+            <table class="table table-hover">
                 <thead>
                     <tr>
                         <th>Date</th>
@@ -100,8 +129,8 @@
                     {% for invoice in my_invoices %}
                     <tr>
                         <td>{{ invoice.invoice_date }}</td>
-                        <td>${{ invoice.amount }}</td>
-                        <td>{{ invoice.is_paid|yesno:"Paid,Unpaid" }}</td>
+                        <td>${{ invoice.amount|floatformat:2 }}</td>
+                        <td><span class="badge {% if invoice.is_paid %}bg-success{% else %}bg-danger{% endif %}">{{ invoice.is_paid|yesno:"Paid,Unpaid" }}</span></td>
                     </tr>
                     {% empty %}
                     <tr>
@@ -116,21 +145,34 @@
 
     <!-- Supervisor Dashboard -->
     {% if user.role == 'Supervisor' %}
-    <div class="row">
-        <div class="col-md-4">
-            <div class="card text-white bg-info mb-3">
+    <div class="row g-3 mb-4">
+        <div class="col-md-6">
+            <div class="card shadow border-0 text-center">
                 <div class="card-body">
                     <h5 class="card-title">Assigned Cleanup Requests</h5>
-                    <p class="card-text">{{ assigned_cleanup_requests }}</p>
+                    <h3 class="display-6">{{ assigned_cleanup_requests }}</h3>
                 </div>
             </div>
         </div>
-        <div class="col-md-4">
-            <div class="card text-white bg-success mb-3">
+        <div class="col-md-6">
+            <div class="card shadow border-0 text-center">
                 <div class="card-body">
-                    <h5 class="card-title">Completed Requests</h5>
-                    <p class="card-text">{{ completed_cleanup_requests }}</p>
+                    <h5 class="card-title text-success">Completed Requests</h5>
+                    <h3 class="display-6 text-success">{{ completed_cleanup_requests }}</h3>
                 </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="card shadow border-0 mb-4">
+        <div class="card-header bg-transparent">
+            <h5>Task Summary</h5>
+        </div>
+        <div class="card-body">
+            <p>Assigned Tasks: <span class="fw-bold">{{ my_assigned_tasks }}</span></p>
+            <p>Completed Tasks: <span class="fw-bold text-success">{{ my_completed_tasks }}</span></p>
+            <div class="progress">
+                <div class="progress-bar bg-success" role="progressbar" style="width: {{ my_completed_tasks|div:my_assigned_tasks|default:0|multiply:100 }}%" aria-valuenow="{{ my_completed_tasks }}" aria-valuemin="0" aria-valuemax="{{ my_assigned_tasks }}">{{ my_completed_tasks|div:my_assigned_tasks|default:0|multiply:100 }}%</div>
             </div>
         </div>
     </div>
@@ -138,50 +180,63 @@
 
     <!-- Cleaner Dashboard -->
     {% if user.role == 'Cleaner' %}
-    <div class="row">
+    <div class="row g-3 mb-4">
         <div class="col-md-4">
-            <div class="card text-white bg-info mb-3">
+            <div class="card shadow border-0 text-center">
                 <div class="card-body">
                     <h5 class="card-title">Assigned Tasks</h5>
-                    <p class="card-text">{{ assigned_tasks }}</p>
+                    <h3 class="display-6">{{ assigned_tasks }}</h3>
                 </div>
             </div>
         </div>
         <div class="col-md-4">
-            <div class="card text-white bg-success mb-3">
+            <div class="card shadow border-0 text-center">
                 <div class="card-body">
-                    <h5 class="card-title">Completed Tasks</h5>
-                    <p class="card-text">{{ completed_tasks }}</p>
+                    <h5 class="card-title text-success">Completed Tasks</h5>
+                    <h3 class="display-6 text-success">{{ completed_tasks }}</h3>
                 </div>
             </div>
         </div>
         <div class="col-md-4">
-            <div class="card text-white bg-warning mb-3">
+            <div class="card shadow border-0 text-center">
                 <div class="card-body">
-                    <h5 class="card-title">Pending Tasks</h5>
-                    <p class="card-text">{{ pending_tasks }}</p>
+                    <h5 class="card-title text-warning">Pending Tasks</h5>
+                    <h3 class="display-6 text-warning">{{ pending_tasks }}</h3>
                 </div>
             </div>
         </div>
     </div>
+
+    <div class="card shadow border-0">
+        <div class="card-header bg-transparent">
+            <h5>Task Progress</h5>
+        </div>
+        <div class="card-body">
+            <div class="progress">
+                <div class="progress-bar bg-success" role="progressbar" style="width: {{ completed_tasks|div:assigned_tasks|default:0|multiply:100 }}%" aria-valuenow="{{ completed_tasks }}" aria-valuemin="0" aria-valuemax="{{ assigned_tasks }}">{{ completed_tasks|div:assigned_tasks|default:0|multiply:100 }}%</div>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+
+    <!-- Chart for Admin (if data available) -->
+    {% if cleanup_request_data %}
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+        var ctx = document.getElementById('cleanupRequestChart').getContext('2d');
+        new Chart(ctx, {
+            type: 'doughnut',
+            data: {
+                labels: {{ cleanup_request_data.labels|safe }},
+                datasets: [{
+                    data: {{ cleanup_request_data.data|safe }},
+                    backgroundColor: ['#ffc107', '#28a745', '#dc3545', '#17a2b8'],
+                    hoverOffset: 4
+                }]
+            }
+        });
+    </script>
     {% endif %}
 </div>
 
-{% if cleanup_request_data %}
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-<script>
-    var ctx = document.getElementById('cleanupRequestChart').getContext('2d');
-    var cleanupRequestChart = new Chart(ctx, {
-        type: 'doughnut',
-        data: {
-            labels: {{ cleanup_request_data.labels|safe }},
-            datasets: [{
-                label: 'Cleanup Requests',
-                data: {{ cleanup_request_data.data|safe }},
-                backgroundColor: ['#ffc107', '#28a745', '#dc3545', '#17a2b8']
-            }]
-        }
-    });
-</script>
-{% endif %}
 {% endblock %}
