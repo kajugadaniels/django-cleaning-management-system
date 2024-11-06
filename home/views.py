@@ -1,15 +1,62 @@
-from urllib.request import Request
 from home.forms import *
 from home.models import *
 from account.models import *
+from django.db.models import Sum
+from urllib.request import Request
 from django.contrib import messages
-from django.db.models import Count, Q, F  # Import necessary models
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, redirect, get_object_or_404
 
 @login_required
 def dashboard(request):
-    return render(request, 'dashboard.html')
+    user = request.user
+    context = {}
+
+    if user.role == 'Admin' or user.is_superuser:
+        # Admin insights
+        context['total_cleanup_requests'] = CleanupRequest.objects.count()
+        context['pending_cleanup_requests'] = CleanupRequest.objects.filter(status='Pending').count()
+        context['approved_cleanup_requests'] = CleanupRequest.objects.filter(status='Approved').count()
+        context['completed_cleanup_requests'] = CleanupRequest.objects.filter(completed_at__isnull=False).count()
+        context['total_clients'] = User.objects.filter(role='Client').count()
+        context['total_supervisors'] = User.objects.filter(role='Supervisor').count()
+        context['total_cleaners'] = User.objects.filter(role='Cleaner').count()
+
+        # Financial insight (sum of all invoices)
+        context['total_revenue'] = Invoice.objects.aggregate(Sum('amount'))['amount__sum']
+
+        # Cleanup requests by status chart data
+        context['cleanup_request_data'] = {
+            'labels': ['Pending', 'Approved', 'Rejected', 'Completed'],
+            'data': [
+                CleanupRequest.objects.filter(status='Pending').count(),
+                CleanupRequest.objects.filter(status='Approved').count(),
+                CleanupRequest.objects.filter(status='Rejected').count(),
+                CleanupRequest.objects.filter(completed_at__isnull=False).count()
+            ]
+        }
+
+    elif user.role == 'Client':
+        # Client-specific insights
+        context['my_cleanup_requests'] = CleanupRequest.objects.filter(client=user).count()
+        context['my_completed_cleanup_requests'] = CleanupRequest.objects.filter(client=user, completed_at__isnull=False).count()
+        context['my_pending_cleanup_requests'] = CleanupRequest.objects.filter(client=user, status='Pending').count()
+        context['my_invoices'] = Invoice.objects.filter(client=user)
+
+    elif user.role == 'Supervisor':
+        # Supervisor insights
+        context['assigned_cleanup_requests'] = CleanupRequest.objects.filter(supervisor=user).count()
+        context['completed_cleanup_requests'] = CleanupRequest.objects.filter(supervisor=user, completed_at__isnull=False).count()
+        context['my_assigned_tasks'] = Task.objects.filter(cleanup_request__supervisor=user).count()
+        context['my_completed_tasks'] = Task.objects.filter(cleanup_request__supervisor=user, completed_at__isnull=False).count()
+
+    elif user.role == 'Cleaner':
+        # Cleaner insights
+        context['assigned_tasks'] = Task.objects.filter(cleaners=user).count()
+        context['completed_tasks'] = Task.objects.filter(cleaners=user, completed_at__isnull=False).count()
+        context['pending_tasks'] = Task.objects.filter(cleaners=user, completed_at__isnull=True).count()
+
+    return render(request, 'dashboard.html', context)
 
 @login_required
 def getUsers(request):
