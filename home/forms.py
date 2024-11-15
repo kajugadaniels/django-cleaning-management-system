@@ -21,7 +21,7 @@ class UserCreationForm(forms.ModelForm):
         super(UserCreationForm, self).__init__(*args, **kwargs)
         self.fields['email'].widget.attrs.update({'class': 'form-control', 'required': 'true', 'type': 'email'})
         self.fields['phone_number'].widget.attrs.update({'class': 'form-control', 'required': 'true', 'type': 'number'})
-        self.fields['profession'].widget.attrs.update({'class': 'form-control', 'required': 'true'})
+        self.fields['profession'].widget.attrs.update({'class': 'form-control'})
         self.fields['role'].choices = [(role, role) for role in roles]
         self.fields['role'].widget.attrs.update({'class': 'form-control', 'required': 'true'})
 
@@ -64,7 +64,7 @@ class UserUpdateForm(forms.ModelForm):
             self.fields['lastname'].initial = " ".join(name_parts[1:]) if len(name_parts) > 1 else ''
         self.fields['email'].widget.attrs.update({'class': 'form-control', 'required': 'true', 'type': 'email'})
         self.fields['phone_number'].widget.attrs.update({'class': 'form-control', 'required': 'true', 'type': 'number'})
-        self.fields['profession'].widget.attrs.update({'class': 'form-control', 'required': 'true'})
+        self.fields['profession'].widget.attrs.update({'class': 'form-control'})
         self.fields['role'].choices = [(role, role) for role in roles]
         self.fields['role'].widget.attrs.update({'class': 'form-control', 'required': 'true'})
 
