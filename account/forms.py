@@ -23,18 +23,24 @@ class LoginForm(forms.Form):
                 raise forms.ValidationError("Invalid email or password")
         return cleaned_data
 
-class UserProfileForm(forms.ModelForm):
+class UserUpdateForm(forms.ModelForm):
     class Meta:
         model = User
-        fields = ['name', 'email', 'phone_number', 'dob', 'profession', 'image']
+        fields = ['name', 'email', 'phone_number', 'dob', 'profession', 'image', 'role']  # Added dob and profession fields
         widgets = {
-            'name': forms.TextInput(attrs={'class': 'form-control'}),
-            'email': forms.EmailInput(attrs={'class': 'form-control', 'type': 'email'}),
-            'phone_number': forms.TextInput(attrs={'class': 'form-control', 'type': 'number'}),
-            'dob': forms.DateInput(attrs={'class': 'form-control', 'type': 'date'}),
-            'profession': forms.TextInput(attrs={'class': 'form-control'}),
-            'image': forms.FileInput(attrs={'class': 'form-control', 'type': 'file'})
+            'dob': forms.DateInput(attrs={'class': 'form-control', 'type': 'date', 'required': 'true'}),  # Specify DateInput widget for dob
+            'image': forms.FileInput(attrs={'class': 'form-control'}),  # Ensure FileInput widget for image
         }
+
+    def __init__(self, *args, **kwargs):
+        roles = kwargs.pop('roles', [])
+        super(UserUpdateForm, self).__init__(*args, **kwargs)
+        self.fields['name'].widget.attrs.update({'class': 'form-control', 'required': 'true'})
+        self.fields['email'].widget.attrs.update({'class': 'form-control', 'required': 'true'})
+        self.fields['phone_number'].widget.attrs.update({'class': 'form-control', 'required': 'true'})
+        self.fields['profession'].widget.attrs.update({'class': 'form-control', 'required': 'true'})  # Assuming you want the profession editable
+        self.fields['role'].choices = [(role, role) for role in roles]
+        self.fields['role'].widget.attrs.update({'class': 'form-control', 'required': 'true'})
 
 class PasswordChangeForm(PasswordChangeForm):
     old_password = forms.CharField(widget=forms.PasswordInput(attrs={'class': 'form-control', 'placeholder': 'Ancien mot de passe'}))
