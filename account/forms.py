@@ -26,12 +26,14 @@ class LoginForm(forms.Form):
 class UserProfileForm(forms.ModelForm):
     class Meta:
         model = User
-        fields = ['name', 'email', 'phone_number', 'image']
+        fields = ['name', 'email', 'phone_number', 'dob', 'profession', 'image']
         widgets = {
             'name': forms.TextInput(attrs={'class': 'form-control'}),
-            'email': forms.EmailInput(attrs={'class': 'form-control'}),
-            'phone_number': forms.TextInput(attrs={'class': 'form-control'}),
-            'image': forms.FileInput(attrs={'class': 'form-control'})
+            'email': forms.EmailInput(attrs={'class': 'form-control', 'type': 'email'}),
+            'phone_number': forms.TextInput(attrs={'class': 'form-control', 'type': 'number'}),
+            'dob': forms.DateInput(attrs={'class': 'form-control', 'type': 'date'}),
+            'profession': forms.TextInput(attrs={'class': 'form-control'}),
+            'image': forms.FileInput(attrs={'class': 'form-control', 'type': 'file'})
         }
 
 class PasswordChangeForm(PasswordChangeForm):
