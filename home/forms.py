@@ -8,7 +8,7 @@ class UserCreationForm(forms.ModelForm):
 
     class Meta:
         model = User
-        fields = ['name', 'email', 'phone_number', 'role', 'password']
+        fields = ['name', 'email', 'phone_number', 'dob', 'profession', 'role', 'password']
 
     def __init__(self, *args, **kwargs):
         roles = kwargs.pop('roles', [])
