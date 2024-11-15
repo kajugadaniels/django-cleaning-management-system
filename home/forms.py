@@ -14,8 +14,10 @@ class UserCreationForm(forms.ModelForm):
         roles = kwargs.pop('roles', [])
         super(UserCreationForm, self).__init__(*args, **kwargs)
         self.fields['name'].widget.attrs.update({'class': 'form-control', 'required': 'true'})
-        self.fields['email'].widget.attrs.update({'class': 'form-control', 'required': 'true'})
-        self.fields['phone_number'].widget.attrs.update({'class': 'form-control', 'required': 'true'})
+        self.fields['email'].widget.attrs.update({'class': 'form-control', 'required': 'true', 'type': 'email'})
+        self.fields['phone_number'].widget.attrs.update({'class': 'form-control', 'required': 'true', 'type': 'number'})
+        self.fields['dob'].widget.attrs.update({'class': 'form-control', 'required': 'true', 'type': 'date'})
+        self.fields['profession'].widget.attrs.update({'class': 'form-control', 'required': 'true'})
         self.fields['role'].choices = [(role, role) for role in roles]
         self.fields['role'].widget.attrs.update({'class': 'form-control', 'required': 'true'})
 
