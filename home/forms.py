@@ -9,6 +9,9 @@ class UserCreationForm(forms.ModelForm):
     class Meta:
         model = User
         fields = ['name', 'email', 'phone_number', 'dob', 'profession', 'role', 'password']
+        widgets = {
+            'dob': forms.DateInput(attrs={'class': 'form-control', 'type': 'date', 'required': 'true'}),
+        }
 
     def __init__(self, *args, **kwargs):
         roles = kwargs.pop('roles', [])
@@ -16,7 +19,6 @@ class UserCreationForm(forms.ModelForm):
         self.fields['name'].widget.attrs.update({'class': 'form-control', 'required': 'true'})
         self.fields['email'].widget.attrs.update({'class': 'form-control', 'required': 'true', 'type': 'email'})
         self.fields['phone_number'].widget.attrs.update({'class': 'form-control', 'required': 'true', 'type': 'number'})
-        self.fields['dob'].widget.attrs.update({'class': 'form-control', 'required': 'true', 'type': 'date'})
         self.fields['profession'].widget.attrs.update({'class': 'form-control', 'required': 'true'})
         self.fields['role'].choices = [(role, role) for role in roles]
         self.fields['role'].widget.attrs.update({'class': 'form-control', 'required': 'true'})
