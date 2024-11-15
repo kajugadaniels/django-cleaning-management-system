@@ -42,9 +42,12 @@ class UserCreationForm(forms.ModelForm):
         return user
 
 class UserUpdateForm(forms.ModelForm):
+    firstname = forms.CharField(max_length=255, widget=forms.TextInput(attrs={'class': 'form-control', 'required': 'true'}), label="First Name")
+    lastname = forms.CharField(max_length=255, widget=forms.TextInput(attrs={'class': 'form-control', 'required': 'true'}), label="Last Name")
+
     class Meta:
         model = User
-        fields = ['name', 'email', 'nid', 'phone_number', 'dob', 'profession', 'image', 'role']
+        fields = ['email', 'nid', 'phone_number', 'dob', 'profession', 'image', 'role']
         widgets = {
             'nid': forms.NumberInput(attrs={'class': 'form-control', 'type': 'number', 'required': 'true'}),
             'dob': forms.DateInput(attrs={'class': 'form-control', 'type': 'date', 'required': 'true'}),
@@ -52,15 +55,36 @@ class UserUpdateForm(forms.ModelForm):
         }
 
     def __init__(self, *args, **kwargs):
-        roles = kwargs.pop('roles', [])
+        roles = kwargs.pop('roles', [])  # Pop 'roles' before calling super
         super(UserUpdateForm, self).__init__(*args, **kwargs)
-        self.fields['name'].widget.attrs.update({'class': 'form-control', 'required': 'true'})
-        self.fields['email'].widget.attrs.update({'class': 'form-control', 'required': 'true'})
-        self.fields['phone_number'].widget.attrs.update({'class': 'form-control', 'required': 'true'})
+        # Initialize firstname and lastname from name if instance is provided
+        if self.instance and self.instance.name:
+            name_parts = self.instance.name.split()
+            self.fields['firstname'].initial = name_parts[0]
+            self.fields['lastname'].initial = " ".join(name_parts[1:]) if len(name_parts) > 1 else ''
+        self.fields['email'].widget.attrs.update({'class': 'form-control', 'required': 'true', 'type': 'email'})
+        self.fields['phone_number'].widget.attrs.update({'class': 'form-control', 'required': 'true', 'type': 'number'})
         self.fields['profession'].widget.attrs.update({'class': 'form-control', 'required': 'true'})
         self.fields['role'].choices = [(role, role) for role in roles]
         self.fields['role'].widget.attrs.update({'class': 'form-control', 'required': 'true'})
 
+    def clean(self):
+        cleaned_data = super().clean()
+        firstname = cleaned_data.get("firstname")
+        lastname = cleaned_data.get("lastname")
+        # Create the full name from parts and set it in cleaned_data if both parts are present
+        if firstname and lastname:
+            cleaned_data['name'] = f"{firstname} {lastname}"
+        else:
+            raise forms.ValidationError("Both first name and last name are required.")
+        return cleaned_data
+
+    def save(self, commit=True):
+        user = super(UserUpdateForm, self).save(commit=False)
+        user.name = f"{self.cleaned_data['firstname']} {self.cleaned_data['lastname']}"
+        if commit:
+            user.save()
+        return user
 
 class CleanupRequestForm(forms.ModelForm):
     class Meta:
