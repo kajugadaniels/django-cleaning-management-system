@@ -36,7 +36,11 @@ class UserCreationForm(forms.ModelForm):
 class UserUpdateForm(forms.ModelForm):
     class Meta:
         model = User
-        fields = ['name', 'email', 'phone_number', 'image', 'role']
+        fields = ['name', 'email', 'phone_number', 'dob', 'profession', 'image', 'role']
+        widgets = {
+            'dob': forms.DateInput(attrs={'class': 'form-control', 'type': 'date', 'required': 'true'}),
+            'image': forms.FileInput(attrs={'class': 'form-control'}),
+        }
 
     def __init__(self, *args, **kwargs):
         roles = kwargs.pop('roles', [])
@@ -44,9 +48,10 @@ class UserUpdateForm(forms.ModelForm):
         self.fields['name'].widget.attrs.update({'class': 'form-control', 'required': 'true'})
         self.fields['email'].widget.attrs.update({'class': 'form-control', 'required': 'true'})
         self.fields['phone_number'].widget.attrs.update({'class': 'form-control', 'required': 'true'})
+        self.fields['profession'].widget.attrs.update({'class': 'form-control', 'required': 'true'})
         self.fields['role'].choices = [(role, role) for role in roles]
         self.fields['role'].widget.attrs.update({'class': 'form-control', 'required': 'true'})
-        self.fields['image'].widget.attrs.update({'class': 'form-control'})
+
 
 class CleanupRequestForm(forms.ModelForm):
     class Meta:
