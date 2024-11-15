@@ -8,8 +8,9 @@ class UserCreationForm(forms.ModelForm):
 
     class Meta:
         model = User
-        fields = ['name', 'email', 'phone_number', 'dob', 'profession', 'role', 'password']
+        fields = ['name', 'email', 'nid', 'phone_number', 'dob', 'profession', 'role', 'password']
         widgets = {
+            'nid': forms.NumberInput(attrs={'class': 'form-control', 'type': 'number', 'required': 'true'}),
             'dob': forms.DateInput(attrs={'class': 'form-control', 'type': 'date', 'required': 'true'}),
         }
 
@@ -36,8 +37,9 @@ class UserCreationForm(forms.ModelForm):
 class UserUpdateForm(forms.ModelForm):
     class Meta:
         model = User
-        fields = ['name', 'email', 'phone_number', 'dob', 'profession', 'image', 'role']
+        fields = ['name', 'email', 'nid', 'phone_number', 'dob', 'profession', 'image', 'role']
         widgets = {
+            'nid': forms.NumberInput(attrs={'class': 'form-control', 'type': 'number', 'required': 'true'}),
             'dob': forms.DateInput(attrs={'class': 'form-control', 'type': 'date', 'required': 'true'}),
             'image': forms.FileInput(attrs={'class': 'form-control'}),
         }
