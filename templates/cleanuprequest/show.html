@@ -38,10 +38,10 @@
 
                     {% if request.user.role == 'Client' %}
                         <!-- Cleanup Invoice -->
-                        <div class="mb-3">
+                        {% comment %} <div class="mb-3">
                             <strong>Invoice:</strong>
                             <a class="text-muted" href="{{ cleanupRequest.invoice.url }}" target="_blank">Invoice</a>
-                        </div>
+                        </div> {% endcomment %}
                     {% endif %}
 
                     <!-- Cleanup Description -->
