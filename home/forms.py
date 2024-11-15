@@ -3,12 +3,14 @@ from home.models import *
 from account.models import *
 
 class UserCreationForm(forms.ModelForm):
+    firstname = forms.CharField(max_length=255, widget=forms.TextInput(attrs={'class': 'form-control', 'required': 'true'}), label="First Name")
+    lastname = forms.CharField(max_length=255, widget=forms.TextInput(attrs={'class': 'form-control', 'required': 'true'}), label="Last Name")
     password = forms.CharField(widget=forms.PasswordInput(attrs={'class': 'form-control', 'required': 'true'}))
     password_confirmation = forms.CharField(widget=forms.PasswordInput(attrs={'class': 'form-control', 'required': 'true'}), label="Password Confirmation")
 
     class Meta:
         model = User
-        fields = ['name', 'email', 'nid', 'phone_number', 'dob', 'profession', 'role', 'password']
+        fields = ['email', 'nid', 'phone_number', 'dob', 'profession', 'role', 'password']
         widgets = {
             'nid': forms.NumberInput(attrs={'class': 'form-control', 'type': 'number', 'required': 'true'}),
             'dob': forms.DateInput(attrs={'class': 'form-control', 'type': 'date', 'required': 'true'}),
@@ -17,7 +19,6 @@ class UserCreationForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         roles = kwargs.pop('roles', [])
         super(UserCreationForm, self).__init__(*args, **kwargs)
-        self.fields['name'].widget.attrs.update({'class': 'form-control', 'required': 'true'})
         self.fields['email'].widget.attrs.update({'class': 'form-control', 'required': 'true', 'type': 'email'})
         self.fields['phone_number'].widget.attrs.update({'class': 'form-control', 'required': 'true', 'type': 'number'})
         self.fields['profession'].widget.attrs.update({'class': 'form-control', 'required': 'true'})
@@ -25,14 +26,20 @@ class UserCreationForm(forms.ModelForm):
         self.fields['role'].widget.attrs.update({'class': 'form-control', 'required': 'true'})
 
     def clean(self):
-        cleaned_data = super().clean()
-        password = cleaned_data.get("password")
-        password_confirmation = cleaned_data.get("password_confirmation")
-
-        if password and password_confirmation and password != password_confirmation:
-            raise forms.ValidationError("Passwords do not match")
-
+        cleaned_data = super(UserCreationForm, self).clean()
+        firstname = cleaned_data.get("firstname")
+        lastname = cleaned_data.get("lastname")
+        # Ensure both firstname and lastname are present before setting the name
+        if firstname and lastname:
+            cleaned_data['name'] = f"{firstname} {lastname}"  # Combine into name
         return cleaned_data
+
+    def save(self, commit=True):
+        user = super(UserCreationForm, self).save(commit=False)
+        user.name = self.cleaned_data.get('name')  # Ensure the name is set from cleaned_data
+        if commit:
+            user.save()
+        return user
 
 class UserUpdateForm(forms.ModelForm):
     class Meta:
