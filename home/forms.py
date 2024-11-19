@@ -44,10 +44,11 @@ class UserCreationForm(forms.ModelForm):
 class UserUpdateForm(forms.ModelForm):
     firstname = forms.CharField(max_length=255, widget=forms.TextInput(attrs={'class': 'form-control', 'required': 'true'}), label="First Name")
     lastname = forms.CharField(max_length=255, widget=forms.TextInput(attrs={'class': 'form-control', 'required': 'true'}), label="Last Name")
+    gender = forms.ChoiceField(choices=User.GENDER_CHOICES, widget=forms.Select(attrs={'class': 'form-control', 'required': 'true'}), label="Gender")
 
     class Meta:
         model = User
-        fields = ['email', 'nid', 'phone_number', 'dob', 'profession', 'image', 'role']
+        fields = ['email', 'nid', 'phone_number', 'dob', 'profession', 'image', 'role', 'gender']
         widgets = {
             'nid': forms.NumberInput(attrs={'class': 'form-control', 'type': 'number', 'required': 'true'}),
             'dob': forms.DateInput(attrs={'class': 'form-control', 'type': 'date', 'required': 'true'}),
@@ -57,7 +58,6 @@ class UserUpdateForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         roles = kwargs.pop('roles', [])  # Pop 'roles' before calling super
         super(UserUpdateForm, self).__init__(*args, **kwargs)
-        # Initialize firstname and lastname from name if instance is provided
         if self.instance and self.instance.name:
             name_parts = self.instance.name.split()
             self.fields['firstname'].initial = name_parts[0]
@@ -72,7 +72,6 @@ class UserUpdateForm(forms.ModelForm):
         cleaned_data = super().clean()
         firstname = cleaned_data.get("firstname")
         lastname = cleaned_data.get("lastname")
-        # Create the full name from parts and set it in cleaned_data if both parts are present
         if firstname and lastname:
             cleaned_data['name'] = f"{firstname} {lastname}"
         else:
