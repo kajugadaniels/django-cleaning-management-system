@@ -116,10 +116,26 @@ class UserCreationForm(forms.ModelForm):
         return user
 
 class UserUpdateForm(forms.ModelForm):
-    firstname = forms.CharField(max_length=255, widget=forms.TextInput(attrs={'class': 'form-control', 'required': 'true'}), label="First Name")
-    lastname = forms.CharField(max_length=255, widget=forms.TextInput(attrs={'class': 'form-control', 'required': 'true'}), label="Last Name")
-    gender = forms.ChoiceField(choices=User.GENDER_CHOICES, widget=forms.Select(attrs={'class': 'form-control', 'required': 'true'}), label="Gender")
-    address = forms.CharField(max_length=255, widget=forms.TextInput(attrs={'class': 'form-control', 'required': 'true'}), label="Address")
+    firstname = forms.CharField(
+        max_length=255,
+        widget=forms.TextInput(attrs={'class': 'form-control', 'required': 'true'}),
+        label="First Name"
+    )
+    lastname = forms.CharField(
+        max_length=255,
+        widget=forms.TextInput(attrs={'class': 'form-control', 'required': 'true'}),
+        label="Last Name"
+    )
+    gender = forms.ChoiceField(
+        choices=User.GENDER_CHOICES,
+        widget=forms.Select(attrs={'class': 'form-control', 'required': 'true'}),
+        label="Gender"
+    )
+    address = forms.CharField(
+        max_length=255,
+        widget=forms.TextInput(attrs={'class': 'form-control', 'required': 'true'}),
+        label="Address"
+    )
 
     class Meta:
         model = User
@@ -137,23 +153,62 @@ class UserUpdateForm(forms.ModelForm):
             name_parts = self.instance.name.split()
             self.fields['firstname'].initial = name_parts[0]
             self.fields['lastname'].initial = " ".join(name_parts[1:]) if len(name_parts) > 1 else ''
-        self.fields['email'].widget.attrs.update({'class': 'form-control', 'required': 'true', 'type': 'email'})
-        self.fields['phone_number'].widget.attrs.update({'class': 'form-control', 'required': 'true', 'type': 'number'})
+        self.fields['email'].widget.attrs.update({
+            'class': 'form-control',
+            'required': 'true',
+            'type': 'email'
+        })
+        self.fields['phone_number'].widget.attrs.update({
+            'class': 'form-control',
+            'required': 'true',
+            'type': 'number'
+        })
         self.fields['profession'].widget.attrs.update({'class': 'form-control'})
         self.fields['role'].choices = [(role, role) for role in roles]
         self.fields['role'].widget.attrs.update({'class': 'form-control', 'required': 'true'})
+        self.fields['address'].widget.attrs.update({'class': 'form-control', 'required': 'true'})
+
+    def clean_phone_number(self):
+        """
+        Validates that the phone number starts with 078, 072, or 073 and is exactly 10 digits long.
+        """
+        phone_number = self.cleaned_data.get('phone_number')
+        pattern = re.compile(r'^(078|072|073)\d{7}$')
+        if not pattern.match(phone_number):
+            raise ValidationError("Phone number must start with 078, 072, or 073 and be exactly 10 digits long.")
+        return phone_number
+
+    def clean_dob(self):
+        """
+        Validates that the user is at least 18 years old.
+        """
+        dob = self.cleaned_data.get('dob')
+        if dob:
+            today = timezone.now().date()
+            age = today - dob
+            if age < timedelta(days=18*365):
+                raise ValidationError("User must be at least 18 years old.")
+        return dob
 
     def clean(self):
+        """
+        Ensures that the firstname and lastname fields are present and sets the full name.
+        """
         cleaned_data = super().clean()
         firstname = cleaned_data.get("firstname")
         lastname = cleaned_data.get("lastname")
+
         if firstname and lastname:
             cleaned_data['name'] = f"{firstname} {lastname}"
         else:
             raise forms.ValidationError("Both first name and last name are required.")
+
         return cleaned_data
 
     def save(self, commit=True):
+        """
+        Saves the user instance with the combined name.
+        """
         user = super(UserUpdateForm, self).save(commit=False)
         user.name = f"{self.cleaned_data['firstname']} {self.cleaned_data['lastname']}"
         if commit:
