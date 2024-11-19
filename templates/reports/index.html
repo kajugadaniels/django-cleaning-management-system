@@ -1,0 +1,46 @@
+{% extends 'layouts/app.html' %}
+{% block content %}
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-sm-12">
+            <div class="card">
+                <div class="card-body">
+                    <div class="list-product-header">
+                        <div class="d-flex justify-content-between">
+                            <h4>Weekly Report</h4>
+                            {% if request.user.role in 'Supervisor' %}
+                                <a class="btn btn-primary" href="{% url 'base:sendReport' %}">
+                                    <i class="fa fa-plus"></i> Send Report
+                                </a>
+                            {% endif %}
+                        </div>
+                    </div>
+                    <hr>
+                    <div class="list-product">
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th>Supervisor</th>
+                                    <th>Report</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for report in reports %}
+                                    <tr>
+                                        <td>{{ report.supervisor.name }}</td>
+                                        <td>
+                                            <a href="{{ report.file.url }}" target="_blank">
+                                                View file
+                                            </a>
+                                        </td>
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
