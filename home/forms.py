@@ -297,3 +297,18 @@ class WeeklyReportForm(forms.ModelForm):
             'file': forms.ClearableFileInput(attrs={'class': 'form-control'}),
             'description': forms.TextInput(attrs={'class': 'form-control'}),
         }
+
+    def __init__(self, *args, **kwargs):
+        user = kwargs.pop('user', None)
+        super(WeeklyReportForm, self).__init__(*args, **kwargs)
+
+        if user:
+            if user.role == 'Supervisor':
+                # Set the supervisor field to the logged-in user's ID and add a readonly class
+                self.fields['supervisor'].queryset = User.objects.filter(id=user.id)
+                self.fields['supervisor'].initial = user.id
+                self.fields['supervisor'].widget.attrs['class'] += ' readonly-field'  # Add custom CSS class
+            elif user.role == 'Admin' or user.is_superuser:
+                # Allow only users with the 'supervisor' role to be selectable
+                self.fields['supervisor'].queryset = User.objects.filter(role='Supervisor')
+                self.fields['supervisor'].label = "Choose Supervisor"
