@@ -78,7 +78,7 @@
                                 <div class="col">
                                     <div class="text-end">
                                         <button class="btn btn-primary me-3">
-                                            Add New User
+                                            Update User
                                         </button>
                                     </div>
                                 </div>
@@ -99,6 +99,7 @@
         const nidField = document.getElementById('div_nid');
         const dobField = document.getElementById('div_dob');
         const genderField = document.getElementById('div_gender');
+        const addressField = document.getElementById('div_address');
 
         /**
          * Function to toggle visibility of form fields based on selected role.
@@ -111,24 +112,28 @@
                     nidField.style.display = 'block';
                     dobField.style.display = 'block';
                     genderField.style.display = 'block';
+                    addressField.style.display = 'none';
                     break;
                 case 'Client':
                     professionField.style.display = 'none';
                     nidField.style.display = 'none';
                     dobField.style.display = 'none';
                     genderField.style.display = 'none';
+                    addressField.style.display = 'block';
                     break;
                 case 'Supervisor':
                     professionField.style.display = 'none';
                     nidField.style.display = 'block';
                     dobField.style.display = 'block';
                     genderField.style.display = 'block';
+                    addressField.style.display = 'none';
                     break;
                 case 'Cleaner':
                     professionField.style.display = 'block';
                     nidField.style.display = 'block';
                     dobField.style.display = 'block';
                     genderField.style.display = 'block';
+                    addressField.style.display = 'none';
                     break;
                 default:
                     // Hide all optional fields if role is not recognized
@@ -136,6 +141,7 @@
                     nidField.style.display = 'none';
                     dobField.style.display = 'none';
                     genderField.style.display = 'none';
+                    addressField.style.display = 'none';
             }
         }
 
