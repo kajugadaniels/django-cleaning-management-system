@@ -7,11 +7,12 @@ class UserCreationForm(forms.ModelForm):
     lastname = forms.CharField(max_length=255, widget=forms.TextInput(attrs={'class': 'form-control', 'required': 'true'}), label="Last Name")
     password = forms.CharField(widget=forms.PasswordInput(attrs={'class': 'form-control', 'required': 'true'}))
     password_confirmation = forms.CharField(widget=forms.PasswordInput(attrs={'class': 'form-control', 'required': 'true'}), label="Password Confirmation")
+    address = forms.CharField(max_length=255, widget=forms.TextInput(attrs={'class': 'form-control', 'required': 'true'}), label="Address")
     gender = forms.ChoiceField(choices=User.GENDER_CHOICES, widget=forms.Select(attrs={'class': 'form-control', 'required': 'true'}), label="Gender")
 
     class Meta:
         model = User
-        fields = ['email', 'nid', 'phone_number', 'dob', 'profession', 'role', 'gender', 'password']
+        fields = ['email', 'nid', 'phone_number', 'dob', 'profession', 'role', 'gender', 'address', 'password']
         widgets = {
             'nid': forms.NumberInput(attrs={'class': 'form-control', 'type': 'number', 'required': 'true'}),
             'dob': forms.DateInput(attrs={'class': 'form-control', 'type': 'date', 'required': 'true'}),
@@ -45,10 +46,11 @@ class UserUpdateForm(forms.ModelForm):
     firstname = forms.CharField(max_length=255, widget=forms.TextInput(attrs={'class': 'form-control', 'required': 'true'}), label="First Name")
     lastname = forms.CharField(max_length=255, widget=forms.TextInput(attrs={'class': 'form-control', 'required': 'true'}), label="Last Name")
     gender = forms.ChoiceField(choices=User.GENDER_CHOICES, widget=forms.Select(attrs={'class': 'form-control', 'required': 'true'}), label="Gender")
+    address = forms.CharField(max_length=255, widget=forms.TextInput(attrs={'class': 'form-control', 'required': 'true'}), label="Address")
 
     class Meta:
         model = User
-        fields = ['email', 'nid', 'phone_number', 'dob', 'profession', 'image', 'role', 'gender']
+        fields = ['email', 'nid', 'phone_number', 'dob', 'profession', 'image', 'role', 'gender', 'address']
         widgets = {
             'nid': forms.NumberInput(attrs={'class': 'form-control', 'type': 'number', 'required': 'true'}),
             'dob': forms.DateInput(attrs={'class': 'form-control', 'type': 'date', 'required': 'true'}),
