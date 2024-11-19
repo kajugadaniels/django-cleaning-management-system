@@ -20,43 +20,43 @@
                         <form class="price-wrapper" method="post" enctype="multipart/form-data">
                             {% csrf_token %}
                             <div class="row g-3 custom-input mb-3">
-                                <div class="col-sm-3">
+                                <div class="col-sm-3" id="div_firstname">
                                     <label class="form-label">First Name</label>
                                     {{ form.firstname }}
                                 </div>
-                                <div class="col-sm-3">
+                                <div class="col-sm-3" id="div_lastname">
                                     <label class="form-label">Last Name</label>
                                     {{ form.lastname }}
                                 </div>
-                                <div class="col-sm-3">
+                                <div class="col-sm-3" id="div_email">
                                     <label class="form-label">Email</label>
                                     {{ form.email }}
                                 </div>
-                                <div class="col-sm-3">
+                                <div class="col-sm-3" id="div_gender">
                                     <label class="form-label">Gender</label>
                                     {{ form.gender }}
                                 </div>
                             </div>
                             <div class="row g-3 custom-input mb-3">
-                                <div class="col-sm-4">
+                                <div class="col-sm-4" id="div_nid">
                                     <label class="form-label">National ID</label>
                                     {{ form.nid }}
                                 </div>
-                                <div class="col-sm-4">
+                                <div class="col-sm-4" id="div_dob">
                                     <label class="form-label">DOB</label>
                                     {{ form.dob }}
                                 </div>
-                                <div class="col-sm-4">
+                                <div class="col-sm-4" id="div_profession">
                                     <label class="form-label">Profession</label>
                                     {{ form.profession }}
                                 </div>
                             </div>
                             <div class="row g-3 custom-input mb-3">
-                                <div class="col-sm-6">
+                                <div class="col-sm-6" id="div_phone_number">
                                     <label class="form-label">Phone Number</label>
                                     {{ form.phone_number }}
                                 </div>
-                                <div class="col-sm-6">
+                                <div class="col-sm-6" id="div_role">
                                     <label class="form-label">Role</label>
                                     <div class="input-group flatpicker-calender product-date">
                                         {% if logged_in_user.role == 'Company' %}
@@ -68,11 +68,11 @@
                                 </div>
                             </div>
                             <div class="row g-3 custom-input mb-3">
-                                <div class="col-sm-6">
+                                <div class="col-sm-6" id="div_password">
                                     <label class="form-label">Password</label>
                                     {{ form.password }}
                                 </div>
-                                <div class="col-sm-6">
+                                <div class="col-sm-6" id="div_password_confirmation">
                                     <label class="form-label">Password Confirmation</label>
                                     {{ form.password_confirmation }}
                                 </div>
@@ -93,4 +93,63 @@
         </div>
     </div>
 </div>
+
+<!-- JavaScript for Dynamic Field Visibility Based on Role -->
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const roleField = document.querySelector('#id_role');
+        const professionField = document.getElementById('div_profession');
+        const nidField = document.getElementById('div_nid');
+        const dobField = document.getElementById('div_dob');
+        const genderField = document.getElementById('div_gender');
+
+        /**
+         * Function to toggle visibility of form fields based on selected role.
+         * @param {string} role - The selected user role.
+         */
+        function toggleFields(role) {
+            switch(role) {
+                case 'Admin':
+                    professionField.style.display = 'none';
+                    nidField.style.display = 'block';
+                    dobField.style.display = 'block';
+                    genderField.style.display = 'block';
+                    break;
+                case 'Client':
+                    professionField.style.display = 'none';
+                    nidField.style.display = 'none';
+                    dobField.style.display = 'none';
+                    genderField.style.display = 'none';
+                    break;
+                case 'Supervisor':
+                    professionField.style.display = 'none';
+                    nidField.style.display = 'block';
+                    dobField.style.display = 'block';
+                    genderField.style.display = 'block';
+                    break;
+                case 'Cleaner':
+                    professionField.style.display = 'block';
+                    nidField.style.display = 'block';
+                    dobField.style.display = 'block';
+                    genderField.style.display = 'block';
+                    break;
+                default:
+                    // Hide all optional fields if role is not recognized
+                    professionField.style.display = 'none';
+                    nidField.style.display = 'none';
+                    dobField.style.display = 'none';
+                    genderField.style.display = 'none';
+            }
+        }
+
+        // Initial toggle based on the current role value
+        toggleFields(roleField.value);
+
+        // Event listener for role field changes
+        roleField.addEventListener('change', function() {
+            toggleFields(this.value);
+        });
+    });
+</script>
+
 {% endblock %}
