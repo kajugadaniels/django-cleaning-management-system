@@ -521,3 +521,17 @@ def deleteInvoice(request, id):
     invoice.delete()
     messages.success(request, "Invoice deleted successfully.")
     return redirect('base:getInvoices')
+
+@login_required
+def getReports(request):
+    # Check if the logged-in user is a "Supervisor"
+    if request.user.role == 'Supervisor':
+        reports = WeeklyReport.objects.filter(supervisor=request.user).order_by('-id')
+    else:
+        reports = WeeklyReport.objects.all().order_by('-id')
+
+    context = {
+        'reports': reports
+    }
+
+    return render(request, 'reports/index.html', context)
