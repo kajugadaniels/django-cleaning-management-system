@@ -42,7 +42,7 @@ class User(AbstractBaseUser, PermissionsMixin):
     role = models.CharField(max_length=30, choices=ROLE_CHOICES)
     gender = models.CharField(max_length=6, choices=GENDER_CHOICES, null=True, blank=True)
     slug = models.SlugField(unique=True, max_length=255, null=True, blank=True)
-    
+    address = models.TextField(null=True, blank=True)
     added_by = models.ForeignKey('self', on_delete=models.CASCADE, null=True, blank=True, related_name='added_users')
 
     is_active = models.BooleanField(default=True)
