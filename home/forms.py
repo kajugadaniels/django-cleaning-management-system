@@ -7,10 +7,11 @@ class UserCreationForm(forms.ModelForm):
     lastname = forms.CharField(max_length=255, widget=forms.TextInput(attrs={'class': 'form-control', 'required': 'true'}), label="Last Name")
     password = forms.CharField(widget=forms.PasswordInput(attrs={'class': 'form-control', 'required': 'true'}))
     password_confirmation = forms.CharField(widget=forms.PasswordInput(attrs={'class': 'form-control', 'required': 'true'}), label="Password Confirmation")
+    gender = forms.ChoiceField(choices=User.GENDER_CHOICES, widget=forms.Select(attrs={'class': 'form-control', 'required': 'true'}), label="Gender")
 
     class Meta:
         model = User
-        fields = ['email', 'nid', 'phone_number', 'dob', 'profession', 'role', 'password']
+        fields = ['email', 'nid', 'phone_number', 'dob', 'profession', 'role', 'gender', 'password']
         widgets = {
             'nid': forms.NumberInput(attrs={'class': 'form-control', 'type': 'number', 'required': 'true'}),
             'dob': forms.DateInput(attrs={'class': 'form-control', 'type': 'date', 'required': 'true'}),
@@ -29,14 +30,13 @@ class UserCreationForm(forms.ModelForm):
         cleaned_data = super(UserCreationForm, self).clean()
         firstname = cleaned_data.get("firstname")
         lastname = cleaned_data.get("lastname")
-        # Ensure both firstname and lastname are present before setting the name
         if firstname and lastname:
             cleaned_data['name'] = f"{firstname} {lastname}"  # Combine into name
         return cleaned_data
 
     def save(self, commit=True):
         user = super(UserCreationForm, self).save(commit=False)
-        user.name = self.cleaned_data.get('name')  # Ensure the name is set from cleaned_data
+        user.name = self.cleaned_data.get('name')
         if commit:
             user.save()
         return user
