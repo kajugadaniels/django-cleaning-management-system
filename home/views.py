@@ -535,3 +535,23 @@ def getReports(request):
     }
 
     return render(request, 'reports/index.html', context)
+
+@login_required
+def sendReport(request):
+    if request.method == 'POST':
+        form = WeeklyReportForm(request.POST, request.FILES)
+        if form.is_valid():
+            form.save()
+            messages.success(request, "Report sent successfully.")
+            return redirect('base:getReports')
+        else:
+            for error in form.errors.values():
+                messages.error(request, error)
+    else:
+        form = WeeklyReportForm()
+
+    context = {
+        'form': form
+    }
+
+    return render(request, 'reports/create.html', context)
