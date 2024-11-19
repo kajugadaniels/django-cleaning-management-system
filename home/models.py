@@ -80,3 +80,20 @@ class Invoice(models.Model):
 
     def __str__(self):
         return f"Invoice {self.id} - {self.client.email}"
+
+class WeeklyReport(models.Model):
+    supervisor = models.ForeignKey(
+        User,
+        on_delete=models.CASCADE,
+        limit_choices_to={'role': 'Supervisor'},
+        related_name='weeklyreports'
+    )
+    description = models.TextField(null=True, blank=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        verbose_name_plural = 'Weekly Reports'
+
+    def __str__(self):
+        return f"Invoice {self.id} - {self.supervisor.email}"
