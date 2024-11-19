@@ -295,7 +295,7 @@ class WeeklyReportForm(forms.ModelForm):
         widgets = {
             'supervisor': forms.Select(attrs={'class': 'form-control'}),
             'file': forms.ClearableFileInput(attrs={'class': 'form-control'}),
-            'description': forms.TextInput(attrs={'class': 'form-control'}),
+            'description': forms.Textarea(attrs={'class': 'form-control', 'rows': 4}),
         }
 
     def __init__(self, *args, **kwargs):
@@ -304,11 +304,61 @@ class WeeklyReportForm(forms.ModelForm):
 
         if user:
             if user.role == 'Supervisor':
-                # Set the supervisor field to the logged-in user's ID and add a readonly class
+                # Set the supervisor field to the logged-in user's ID and make it readonly
                 self.fields['supervisor'].queryset = User.objects.filter(id=user.id)
                 self.fields['supervisor'].initial = user.id
                 self.fields['supervisor'].widget.attrs['class'] += ' readonly-field'  # Add custom CSS class
+                self.fields['supervisor'].widget.attrs['readonly'] = True  # HTML readonly attribute
+                self.fields['supervisor'].required = False  # Will set in clean method
             elif user.role == 'Admin' or user.is_superuser:
-                # Allow only users with the 'supervisor' role to be selectable
+                # Allow only users with the 'Supervisor' role to be selectable
                 self.fields['supervisor'].queryset = User.objects.filter(role='Supervisor')
                 self.fields['supervisor'].label = "Choose Supervisor"
+                self.fields['supervisor'].required = True  # Ensure it's required
+        # Commit Message:
+        # feat(forms): Modify WeeklyReportForm to handle supervisor field based on user role
+
+    def clean_supervisor(self):
+        """
+        Ensures that Supervisors cannot change the supervisor field and Admins/Superusers must select a supervisor.
+        """
+        supervisor = self.cleaned_data.get('supervisor')
+        user = self.initial.get('user')  # Retrieve the user passed during form initialization
+
+        if user:
+            if user.role == 'Supervisor':
+                # For Supervisors, ensure the supervisor is themselves
+                if supervisor != user:
+                    raise ValidationError("Supervisors can only assign themselves as supervisors.")
+                return user  # Return the logged-in user
+            elif user.role == 'Admin' or user.is_superuser:
+                # For Admins/Superusers, ensure a supervisor is selected
+                if not supervisor:
+                    raise ValidationError("Supervisor is required.")
+                return supervisor
+        return supervisor
+
+    def clean(self):
+        """
+        Additional cleaning if necessary.
+        """
+        cleaned_data = super().clean()
+        # Any additional cleaning can be done here
+        return cleaned_data
+    # Commit Message:
+    # fix(forms): Add clean_supervisor method to enforce supervisor field constraints
+
+    def save(self, commit=True):
+        """
+        Saves the WeeklyReport instance, ensuring supervisor field integrity.
+        """
+        weekly_report = super(WeeklyReportForm, self).save(commit=False)
+        user = self.initial.get('user')
+
+        if user and user.role == 'Supervisor':
+            # Ensure supervisor is set to the logged-in user
+            weekly_report.supervisor = user
+
+        if commit:
+            weekly_report.save()
+        return weekly_report
