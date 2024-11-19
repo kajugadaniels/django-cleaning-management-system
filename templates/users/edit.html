@@ -19,17 +19,21 @@
                         <form class="price-wrapper" method="post" enctype="multipart/form-data">
                             {% csrf_token %}
                             <div class="row g-3 custom-input mb-3">
-                                <div class="col-sm-4">
+                                <div class="col-sm-3">
                                     <label class="form-label">First Name</label>
                                     {{ form.firstname }}
                                 </div>
-                                <div class="col-sm-4">
+                                <div class="col-sm-3">
                                     <label class="form-label">Last Name</label>
                                     {{ form.lastname }}
                                 </div>
-                                <div class="col-sm-4">
+                                <div class="col-sm-3">
                                     <label class="form-label">Email</label>
                                     {{ form.email }}
+                                </div>
+                                <div class="col-sm-3">
+                                    <label class="form-label">Gender</label>
+                                    {{ form.gender }}
                                 </div>
                             </div>
                             <div class="row g-3 custom-input mb-3">
