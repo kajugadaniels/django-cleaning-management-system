@@ -375,27 +375,58 @@ def assignCleanersToTask(request, taskId):
 
 @login_required
 def markCleanupRequestComplete(request, cleanup_request_id):
-    cleanupRequest = get_object_or_404(CleanupRequest, id=cleanup_request_id, client=request.user, delete_status=False)
-    tasks = Task.objects.filter(cleanup_request=cleanupRequest, delete_status=False)
+    """
+    Marks a CleanupRequest as completed. Accessible by Clients (for their own requests),
+    Supervisors, Admins, and SuperAdmins based on their roles.
+    """
+    # Retrieve the CleanupRequest without filtering by client initially
+    cleanupRequest = get_object_or_404(CleanupRequest, id=cleanup_request_id, delete_status=False)
+    
+    # Determine if the user has permission to mark this request as complete
+    user = request.user
+    has_permission = False
 
+    if user.is_superuser:
+        has_permission = True
+    elif user.role == 'Admin':
+        has_permission = True
+    elif user.role == 'Supervisor':
+        # Supervisors can mark requests they supervise as complete
+        if cleanupRequest.supervisor == user:
+            has_permission = True
+    elif user.role == 'Client':
+        # Clients can mark their own requests as complete
+        if cleanupRequest.client == user:
+            has_permission = True
+
+    if not has_permission:
+        messages.error(request, "You are not authorized to perform this action.")
+        return redirect('base:getCleanupRequests')
+    
+    tasks = Task.objects.filter(cleanup_request=cleanupRequest, delete_status=False)
+    
     if request.method == 'POST':
         # Get the feedback from the form and save it
         feedback = request.POST.get('feedback')
+        if not feedback:
+            messages.error(request, "Feedback is required to complete the request.")
+            return redirect('base:markCleanupRequestComplete', cleanup_request_id=cleanup_request_id)
+        
         cleanupRequest.completed_at = timezone.now()
         cleanupRequest.feedback = feedback
         cleanupRequest.save()
-
+    
         # Mark all tasks as completed
         tasks.update(completed_at=timezone.now())
-
+    
         messages.success(request, "Cleanup request and tasks marked as completed.")
         return redirect('base:getCleanupRequests')
-
+    
     context = {
         'cleanupRequest': cleanupRequest,
         'tasks': tasks,
     }
-
+    
     return render(request, 'cleanuprequest/complete.html', context)
 
 @login_required
