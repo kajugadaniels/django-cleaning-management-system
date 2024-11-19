@@ -1,5 +1,14 @@
 {% extends 'layouts/app.html' %}
+{% load static %}
 {% block content %}
+
+<style>
+    .readonly-field {
+        pointer-events: none;
+        background-color: #e9ecef;
+    }
+</style>
+
 <div class="container-fluid">
     <div class="row">
         <div class="col-sm-12">
@@ -20,14 +29,29 @@
                             <div class="mb-3">
                                 <label class="form-label">Supervisor</label>
                                 {{ form.supervisor }}
+                                {% if form.supervisor.errors %}
+                                    <div class="text-danger">
+                                        {{ form.supervisor.errors }}
+                                    </div>
+                                {% endif %}
                             </div>
                             <div class="mb-3">
                                 <label class="form-label">File (PDF only)</label>
                                 {{ form.file }}
+                                {% if form.file.errors %}
+                                    <div class="text-danger">
+                                        {{ form.file.errors }}
+                                    </div>
+                                {% endif %}
                             </div>
                             <div class="mb-3">
                                 <label class="form-label">Description</label>
                                 {{ form.description }}
+                                {% if form.description.errors %}
+                                    <div class="text-danger">
+                                        {{ form.description.errors }}
+                                    </div>
+                                {% endif %}
                             </div>
                             <div class="text-end">
                                 <button type="submit" class="btn btn-primary">Send Report</button>
