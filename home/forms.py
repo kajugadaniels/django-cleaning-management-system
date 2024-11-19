@@ -8,30 +8,30 @@ from django.core.exceptions import ValidationError
 class UserCreationForm(forms.ModelForm):
     firstname = forms.CharField(
         max_length=255,
-        widget=forms.TextInput(attrs={'class': 'form-control', 'required': 'true'}),
+        widget=forms.TextInput(attrs={'class': 'form-control'}),
         label="First Name"
     )
     lastname = forms.CharField(
         max_length=255,
-        widget=forms.TextInput(attrs={'class': 'form-control', 'required': 'true'}),
+        widget=forms.TextInput(attrs={'class': 'form-control'}),
         label="Last Name"
     )
     password = forms.CharField(
-        widget=forms.PasswordInput(attrs={'class': 'form-control', 'required': 'true'}),
+        widget=forms.PasswordInput(attrs={'class': 'form-control'}),
         label="Password"
     )
     password_confirmation = forms.CharField(
-        widget=forms.PasswordInput(attrs={'class': 'form-control', 'required': 'true'}),
+        widget=forms.PasswordInput(attrs={'class': 'form-control'}),
         label="Password Confirmation"
     )
     address = forms.CharField(
         max_length=255,
-        widget=forms.TextInput(attrs={'class': 'form-control', 'required': 'true'}),
+        widget=forms.TextInput(attrs={'class': 'form-control'}),
         label="Address"
     )
     gender = forms.ChoiceField(
         choices=User.GENDER_CHOICES,
-        widget=forms.Select(attrs={'class': 'form-control', 'required': 'true'}),
+        widget=forms.Select(attrs={'class': 'form-control'}),
         label="Gender"
     )
 
@@ -39,8 +39,8 @@ class UserCreationForm(forms.ModelForm):
         model = User
         fields = ['email', 'nid', 'phone_number', 'dob', 'profession', 'role', 'gender', 'address', 'password']
         widgets = {
-            'nid': forms.NumberInput(attrs={'class': 'form-control', 'type': 'number', 'required': 'true'}),
-            'dob': forms.DateInput(attrs={'class': 'form-control', 'type': 'date', 'required': 'true'}),
+            'nid': forms.NumberInput(attrs={'class': 'form-control', 'type': 'number'}),
+            'dob': forms.DateInput(attrs={'class': 'form-control', 'type': 'date'}),
         }
 
     def __init__(self, *args, **kwargs):
@@ -58,8 +58,8 @@ class UserCreationForm(forms.ModelForm):
         })
         self.fields['profession'].widget.attrs.update({'class': 'form-control'})
         self.fields['role'].choices = [(role, role) for role in roles]
-        self.fields['role'].widget.attrs.update({'class': 'form-control', 'required': 'true'})
-        self.fields['address'].widget.attrs.update({'class': 'form-control', 'required': 'true'})
+        self.fields['role'].widget.attrs.update({'class': 'form-control'})
+        self.fields['address'].widget.attrs.update({'class': 'form-control'})
 
     def clean_phone_number(self):
         """
@@ -118,22 +118,22 @@ class UserCreationForm(forms.ModelForm):
 class UserUpdateForm(forms.ModelForm):
     firstname = forms.CharField(
         max_length=255,
-        widget=forms.TextInput(attrs={'class': 'form-control', 'required': 'true'}),
+        widget=forms.TextInput(attrs={'class': 'form-control'}),
         label="First Name"
     )
     lastname = forms.CharField(
         max_length=255,
-        widget=forms.TextInput(attrs={'class': 'form-control', 'required': 'true'}),
+        widget=forms.TextInput(attrs={'class': 'form-control'}),
         label="Last Name"
     )
     gender = forms.ChoiceField(
         choices=User.GENDER_CHOICES,
-        widget=forms.Select(attrs={'class': 'form-control', 'required': 'true'}),
+        widget=forms.Select(attrs={'class': 'form-control'}),
         label="Gender"
     )
     address = forms.CharField(
         max_length=255,
-        widget=forms.TextInput(attrs={'class': 'form-control', 'required': 'true'}),
+        widget=forms.TextInput(attrs={'class': 'form-control'}),
         label="Address"
     )
 
@@ -141,8 +141,8 @@ class UserUpdateForm(forms.ModelForm):
         model = User
         fields = ['email', 'nid', 'phone_number', 'dob', 'profession', 'image', 'role', 'gender', 'address']
         widgets = {
-            'nid': forms.NumberInput(attrs={'class': 'form-control', 'type': 'number', 'required': 'true'}),
-            'dob': forms.DateInput(attrs={'class': 'form-control', 'type': 'date', 'required': 'true'}),
+            'nid': forms.NumberInput(attrs={'class': 'form-control', 'type': 'number'}),
+            'dob': forms.DateInput(attrs={'class': 'form-control', 'type': 'date'}),
             'image': forms.FileInput(attrs={'class': 'form-control'}),
         }
 
@@ -165,8 +165,8 @@ class UserUpdateForm(forms.ModelForm):
         })
         self.fields['profession'].widget.attrs.update({'class': 'form-control'})
         self.fields['role'].choices = [(role, role) for role in roles]
-        self.fields['role'].widget.attrs.update({'class': 'form-control', 'required': 'true'})
-        self.fields['address'].widget.attrs.update({'class': 'form-control', 'required': 'true'})
+        self.fields['role'].widget.attrs.update({'class': 'form-control'})
+        self.fields['address'].widget.attrs.update({'class': 'form-control'})
 
     def clean_phone_number(self):
         """
