@@ -81,12 +81,23 @@ class Invoice(models.Model):
     def __str__(self):
         return f"Invoice {self.id} - {self.client.email}"
 
+def report_file_path(instance, filename):
+    random_number = random.randint(10000, 99999)
+    client_name_slug = instance.client.name.replace(" ", "_").lower()
+    return f'invoices/{client_name_slug}_{random_number}.pdf'
+
 class WeeklyReport(models.Model):
     supervisor = models.ForeignKey(
         User,
         on_delete=models.CASCADE,
         limit_choices_to={'role': 'Supervisor'},
         related_name='weeklyreports'
+    )
+    file = models.FileField(
+        upload_to=report_file_path,
+        null=True,
+        blank=True,
+        help_text="Upload only PDF files"
     )
     description = models.TextField(null=True, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
