@@ -287,3 +287,13 @@ class InvoiceForm(forms.ModelForm):
             'file': forms.ClearableFileInput(attrs={'class': 'form-control'}),
             'is_paid': forms.CheckboxInput(),
         }
+
+class WeeklyReportForm(forms.ModelForm):
+    class Meta:
+        model = WeeklyReport
+        fields = ['supervisor', 'file', 'description']
+        widgets = {
+            'supervisor': forms.Select(attrs={'class': 'form-control'}),
+            'file': forms.ClearableFileInput(attrs={'class': 'form-control'}),
+            'description': forms.TextInput(attrs={'class': 'form-control'}),
+        }
