@@ -83,8 +83,8 @@ class Invoice(models.Model):
 
 def report_file_path(instance, filename):
     random_number = random.randint(10000, 99999)
-    client_name_slug = instance.client.name.replace(" ", "_").lower()
-    return f'invoices/{client_name_slug}_{random_number}.pdf'
+    supervisor_name_slug = instance.supervisor.name.replace(" ", "_").lower()
+    return f'invoices/{supervisor_name_slug}_{random_number}.pdf'
 
 class WeeklyReport(models.Model):
     supervisor = models.ForeignKey(
