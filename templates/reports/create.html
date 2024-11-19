@@ -1,0 +1,42 @@
+{% extends 'layouts/app.html' %}
+{% block content %}
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-sm-12">
+            <div class="card">
+                <div class="card-body">
+                    <div class="list-product-header">
+                        <div class="d-flex justify-content-between">
+                            <h4>Send Report</h4>
+                            <a class="btn btn-primary" href="{% url 'base:getReports' %}">
+                                <i class="fa fa-eye"></i> Go Back
+                            </a>
+                        </div>
+                    </div>
+                    <hr>
+                    <div class="form theme-form">
+                        <form method="post" enctype="multipart/form-data">
+                            {% csrf_token %}
+                            <div class="mb-3">
+                                <label class="form-label">Client</label>
+                                {{ form.client }}
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">File (PDF only)</label>
+                                {{ form.file }}
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Description</label>
+                                {{ form.description }}
+                            </div>
+                            <div class="text-end">
+                                <button type="submit" class="btn btn-primary">Send Report</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
