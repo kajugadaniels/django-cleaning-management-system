@@ -104,7 +104,7 @@
                                                             </a>
                                                         {% endif %}
                                                     {% endif %}
-                                                    {% if user.is_superuser or user.role == 'Client' %}
+                                                    {% if user.role == 'Client' %}
                                                         {% if not request.completed_at %}
                                                             <a href="{% url 'base:markCleanupRequestComplete' request.id %}" class="btn btn-success btn-sm">
                                                                 Mark as Completed
