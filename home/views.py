@@ -539,7 +539,7 @@ def getReports(request):
 @login_required
 def sendReport(request):
     if request.method == 'POST':
-        form = WeeklyReportForm(request.POST, request.FILES)
+        form = WeeklyReportForm(request.POST, request.FILES, user=request.user)
         if form.is_valid():
             form.save()
             messages.success(request, "Report sent successfully.")
@@ -548,7 +548,7 @@ def sendReport(request):
             for error in form.errors.values():
                 messages.error(request, error)
     else:
-        form = WeeklyReportForm()
+        form = WeeklyReportForm(user=request.user)
 
     context = {
         'form': form
