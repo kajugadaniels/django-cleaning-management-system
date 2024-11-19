@@ -19,25 +19,23 @@
                     <div class="form theme-form">
                         <form class="price-wrapper" method="post" enctype="multipart/form-data">
                             {% csrf_token %}
-                            <div class="row g-3 custom-input mb-3">
-                                <div class="col-sm-3" id="div_firstname">
+                            <div class="row">
+                                <div class="col-sm-4" id="div_firstname">
                                     <label class="form-label">First Name</label>
                                     {{ form.firstname }}
                                 </div>
-                                <div class="col-sm-3" id="div_lastname">
+                                <div class="col-sm-4" id="div_lastname">
                                     <label class="form-label">Last Name</label>
                                     {{ form.lastname }}
                                 </div>
-                                <div class="col-sm-3" id="div_email">
+                                <div class="col-sm-4" id="div_email">
                                     <label class="form-label">Email</label>
                                     {{ form.email }}
                                 </div>
-                                <div class="col-sm-3" id="div_gender">
+                                <div class="col-sm-4" id="div_gender">
                                     <label class="form-label">Gender</label>
                                     {{ form.gender }}
                                 </div>
-                            </div>
-                            <div class="row g-3 custom-input mb-3">
                                 <div class="col-sm-4" id="div_nid">
                                     <label class="form-label">National ID</label>
                                     {{ form.nid }}
@@ -50,13 +48,15 @@
                                     <label class="form-label">Profession</label>
                                     {{ form.profession }}
                                 </div>
-                            </div>
-                            <div class="row g-3 custom-input mb-3">
-                                <div class="col-sm-6" id="div_phone_number">
+                                <div class="col-sm-4" id="div_address">
+                                    <label class="form-label">Address</label>
+                                    {{ form.address }}
+                                </div>
+                                <div class="col-sm-4" id="div_phone_number">
                                     <label class="form-label">Phone Number</label>
                                     {{ form.phone_number }}
                                 </div>
-                                <div class="col-sm-6" id="div_role">
+                                <div class="col-sm-4" id="div_role">
                                     <label class="form-label">Role</label>
                                     <div class="input-group flatpicker-calender product-date">
                                         {% if logged_in_user.role == 'Company' %}
@@ -66,13 +66,11 @@
                                         {% endif %}
                                     </div>
                                 </div>
-                            </div>
-                            <div class="row g-3 custom-input mb-3">
-                                <div class="col-sm-6" id="div_password">
+                                <div class="col-sm-4" id="div_password">
                                     <label class="form-label">Password</label>
                                     {{ form.password }}
                                 </div>
-                                <div class="col-sm-6" id="div_password_confirmation">
+                                <div class="col-sm-4" id="div_password_confirmation">
                                     <label class="form-label">Password Confirmation</label>
                                     {{ form.password_confirmation }}
                                 </div>
@@ -102,6 +100,7 @@
         const nidField = document.getElementById('div_nid');
         const dobField = document.getElementById('div_dob');
         const genderField = document.getElementById('div_gender');
+        const addressField = document.getElementById('div_address');
 
         /**
          * Function to toggle visibility of form fields based on selected role.
@@ -114,24 +113,28 @@
                     nidField.style.display = 'block';
                     dobField.style.display = 'block';
                     genderField.style.display = 'block';
+                    addressField.style.display = 'none';
                     break;
                 case 'Client':
                     professionField.style.display = 'none';
                     nidField.style.display = 'none';
                     dobField.style.display = 'none';
                     genderField.style.display = 'none';
+                    addressField.style.display = 'block';
                     break;
                 case 'Supervisor':
                     professionField.style.display = 'none';
                     nidField.style.display = 'block';
                     dobField.style.display = 'block';
                     genderField.style.display = 'block';
+                    addressField.style.display = 'none';
                     break;
                 case 'Cleaner':
                     professionField.style.display = 'block';
                     nidField.style.display = 'block';
                     dobField.style.display = 'block';
                     genderField.style.display = 'block';
+                    addressField.style.display = 'none';
                     break;
                 default:
                     // Hide all optional fields if role is not recognized
@@ -139,6 +142,7 @@
                     nidField.style.display = 'none';
                     dobField.style.display = 'none';
                     genderField.style.display = 'none';
+                    addressField.style.display = 'none';
             }
         }
 

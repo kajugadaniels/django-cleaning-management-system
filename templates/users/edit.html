@@ -18,25 +18,23 @@
                     <div class="form theme-form">
                         <form class="price-wrapper" method="post" enctype="multipart/form-data">
                             {% csrf_token %}
-                            <div class="row g-3 custom-input mb-3">
-                                <div class="col-sm-3" id="div_firstname">
+                            <div class="row">
+                                <div class="col-sm-4" id="div_firstname">
                                     <label class="form-label">First Name</label>
                                     {{ form.firstname }}
                                 </div>
-                                <div class="col-sm-3" id="div_lastname">
+                                <div class="col-sm-4" id="div_lastname">
                                     <label class="form-label">Last Name</label>
                                     {{ form.lastname }}
                                 </div>
-                                <div class="col-sm-3" id="div_email">
+                                <div class="col-sm-4" id="div_email">
                                     <label class="form-label">Email</label>
                                     {{ form.email }}
                                 </div>
-                                <div class="col-sm-3" id="div_gender">
+                                <div class="col-sm-4" id="div_gender">
                                     <label class="form-label">Gender</label>
                                     {{ form.gender }}
                                 </div>
-                            </div>
-                            <div class="row g-3 custom-input mb-3">
                                 <div class="col-sm-4" id="div_nid">
                                     <label class="form-label">National ID</label>
                                     {{ form.nid }}
@@ -49,13 +47,15 @@
                                     <label class="form-label">Profession</label>
                                     {{ form.profession }}
                                 </div>
-                            </div>
-                            <div class="row g-3 custom-input mb-3">
-                                <div class="col-sm-6" id="div_phone_number">
+                                <div class="col-sm-4" id="div_address">
+                                    <label class="form-label">Address</label>
+                                    {{ form.address }}
+                                </div>
+                                <div class="col-sm-4" id="div_phone_number">
                                     <label class="form-label">Phone Number</label>
                                     {{ form.phone_number }}
                                 </div>
-                                <div class="col-sm-6" id="div_role">
+                                <div class="col-sm-4" id="div_role">
                                     <label class="form-label">Role</label>
                                     <div class="input-group flatpicker-calender product-date">
                                         {% if logged_in_user.role == 'Company' %}
@@ -65,12 +65,20 @@
                                         {% endif %}
                                     </div>
                                 </div>
+                                <div class="col-sm-4" id="div_password">
+                                    <label class="form-label">Password</label>
+                                    {{ form.password }}
+                                </div>
+                                <div class="col-sm-4" id="div_password_confirmation">
+                                    <label class="form-label">Password Confirmation</label>
+                                    {{ form.password_confirmation }}
+                                </div>
                             </div>
                             <div class="row mt-2">
                                 <div class="col">
                                     <div class="text-end">
                                         <button class="btn btn-primary me-3">
-                                            Update a User
+                                            Add New User
                                         </button>
                                     </div>
                                 </div>
