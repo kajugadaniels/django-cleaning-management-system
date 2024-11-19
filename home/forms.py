@@ -1,14 +1,39 @@
+import re
 from django import forms
 from home.models import *
 from account.models import *
+from datetime import date, timedelta
+from django.core.exceptions import ValidationError
 
 class UserCreationForm(forms.ModelForm):
-    firstname = forms.CharField(max_length=255, widget=forms.TextInput(attrs={'class': 'form-control', 'required': 'true'}), label="First Name")
-    lastname = forms.CharField(max_length=255, widget=forms.TextInput(attrs={'class': 'form-control', 'required': 'true'}), label="Last Name")
-    password = forms.CharField(widget=forms.PasswordInput(attrs={'class': 'form-control', 'required': 'true'}))
-    password_confirmation = forms.CharField(widget=forms.PasswordInput(attrs={'class': 'form-control', 'required': 'true'}), label="Password Confirmation")
-    address = forms.CharField(max_length=255, widget=forms.TextInput(attrs={'class': 'form-control', 'required': 'true'}), label="Address")
-    gender = forms.ChoiceField(choices=User.GENDER_CHOICES, widget=forms.Select(attrs={'class': 'form-control', 'required': 'true'}), label="Gender")
+    firstname = forms.CharField(
+        max_length=255,
+        widget=forms.TextInput(attrs={'class': 'form-control', 'required': 'true'}),
+        label="First Name"
+    )
+    lastname = forms.CharField(
+        max_length=255,
+        widget=forms.TextInput(attrs={'class': 'form-control', 'required': 'true'}),
+        label="Last Name"
+    )
+    password = forms.CharField(
+        widget=forms.PasswordInput(attrs={'class': 'form-control', 'required': 'true'}),
+        label="Password"
+    )
+    password_confirmation = forms.CharField(
+        widget=forms.PasswordInput(attrs={'class': 'form-control', 'required': 'true'}),
+        label="Password Confirmation"
+    )
+    address = forms.CharField(
+        max_length=255,
+        widget=forms.TextInput(attrs={'class': 'form-control', 'required': 'true'}),
+        label="Address"
+    )
+    gender = forms.ChoiceField(
+        choices=User.GENDER_CHOICES,
+        widget=forms.Select(attrs={'class': 'form-control', 'required': 'true'}),
+        label="Gender"
+    )
 
     class Meta:
         model = User
@@ -21,23 +46,71 @@ class UserCreationForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         roles = kwargs.pop('roles', [])
         super(UserCreationForm, self).__init__(*args, **kwargs)
-        self.fields['email'].widget.attrs.update({'class': 'form-control', 'required': 'true', 'type': 'email'})
-        self.fields['phone_number'].widget.attrs.update({'class': 'form-control', 'required': 'true', 'type': 'number'})
+        self.fields['email'].widget.attrs.update({
+            'class': 'form-control',
+            'required': 'true',
+            'type': 'email'
+        })
+        self.fields['phone_number'].widget.attrs.update({
+            'class': 'form-control',
+            'required': 'true',
+            'type': 'number'
+        })
         self.fields['profession'].widget.attrs.update({'class': 'form-control'})
         self.fields['role'].choices = [(role, role) for role in roles]
         self.fields['role'].widget.attrs.update({'class': 'form-control', 'required': 'true'})
+        self.fields['address'].widget.attrs.update({'class': 'form-control', 'required': 'true'})
+
+    def clean_phone_number(self):
+        """
+        Validates that the phone number starts with 078, 072, or 073 and is exactly 10 digits long.
+        """
+        phone_number = self.cleaned_data.get('phone_number')
+        pattern = re.compile(r'^(078|072|073)\d{7}$')
+        if not pattern.match(phone_number):
+            raise ValidationError("Phone number must start with 078, 072, or 073 and be exactly 10 digits long.")
+        return phone_number
+
+    def clean_dob(self):
+        """
+        Validates that the user is at least 18 years old.
+        """
+        dob = self.cleaned_data.get('dob')
+        if dob:
+            today = timezone.now().date()
+            age = today - dob
+            if age < timedelta(days=18*365):
+                raise ValidationError("User must be at least 18 years old.")
+        return dob
 
     def clean(self):
+        """
+        Ensures that the password and password_confirmation fields match and sets the name.
+        """
         cleaned_data = super(UserCreationForm, self).clean()
         firstname = cleaned_data.get("firstname")
         lastname = cleaned_data.get("lastname")
+        password = cleaned_data.get("password")
+        password_confirmation = cleaned_data.get("password_confirmation")
+
         if firstname and lastname:
             cleaned_data['name'] = f"{firstname} {lastname}"  # Combine into name
+
+        if password and password_confirmation:
+            if password != password_confirmation:
+                self.add_error('password_confirmation', "Passwords do not match.")
+
         return cleaned_data
 
     def save(self, commit=True):
+        """
+        Saves the user instance with the combined name and hashed password.
+        """
         user = super(UserCreationForm, self).save(commit=False)
         user.name = self.cleaned_data.get('name')
+        password = self.cleaned_data.get('password')
+        if password:
+            user.set_password(password)
         if commit:
             user.save()
         return user
