@@ -20,6 +20,11 @@ class User(AbstractBaseUser, PermissionsMixin):
         ('Cleaner', 'Cleaner'),
     )
 
+    GENDER_CHOICES = (
+        ('Male', 'Male'),
+        ('Female', 'Female'),
+    )
+
     email = models.EmailField(unique=True)
     name = models.CharField(max_length=255)
     phone_number = models.CharField(max_length=15, unique=True)
@@ -35,6 +40,7 @@ class User(AbstractBaseUser, PermissionsMixin):
         blank=True,
     )
     role = models.CharField(max_length=30, choices=ROLE_CHOICES)
+    gender = models.CharField(max_length=6, choices=GENDER_CHOICES, null=True, blank=True)
     slug = models.SlugField(unique=True, max_length=255, null=True, blank=True)
     
     added_by = models.ForeignKey('self', on_delete=models.CASCADE, null=True, blank=True, related_name='added_users')
