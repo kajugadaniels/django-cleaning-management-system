@@ -20,57 +20,55 @@
                         <form class="price-wrapper" method="post" enctype="multipart/form-data">
                             {% csrf_token %}
                             <div class="row">
-                                <div class="col-sm-4" id="div_firstname">
+                                <div class="col-sm-4" id="div_role">
+                                    <label class="form-label">Role</label>
+                                    {{ form.role }}
+                                </div>
+                                <div class="col-sm-4" id="div_firstname" style="display: none;">
                                     <label class="form-label">First Name</label>
                                     {{ form.firstname }}
                                 </div>
-                                <div class="col-sm-4" id="div_lastname">
+                                <div class="col-sm-4" id="div_lastname" style="display: none;">
                                     <label class="form-label">Last Name</label>
                                     {{ form.lastname }}
                                 </div>
-                                <div class="col-sm-4" id="div_email">
+                                <div class="col-sm-4" id="div_company_name" style="display: none;">
+                                    <label class="form-label">Company Name</label>
+                                    <input type="text" class="form-control" id="company_name" readonly>
+                                </div>
+                                <div class="col-sm-4" id="div_email" style="display: none;">
                                     <label class="form-label">Email</label>
                                     {{ form.email }}
                                 </div>
-                                <div class="col-sm-4" id="div_gender">
+                                <div class="col-sm-4" id="div_gender" style="display: none;">
                                     <label class="form-label">Gender</label>
                                     {{ form.gender }}
                                 </div>
-                                <div class="col-sm-4" id="div_nid">
+                                <div class="col-sm-4" id="div_nid" style="display: none;">
                                     <label class="form-label">National ID</label>
                                     {{ form.nid }}
                                 </div>
-                                <div class="col-sm-4" id="div_dob">
+                                <div class="col-sm-4" id="div_dob" style="display: none;">
                                     <label class="form-label">DOB</label>
                                     {{ form.dob }}
                                 </div>
-                                <div class="col-sm-4" id="div_profession">
+                                <div class="col-sm-4" id="div_profession" style="display: none;">
                                     <label class="form-label">Profession</label>
                                     {{ form.profession }}
                                 </div>
-                                <div class="col-sm-4" id="div_address">
+                                <div class="col-sm-4" id="div_address" style="display: none;">
                                     <label class="form-label">Address</label>
                                     {{ form.address }}
                                 </div>
-                                <div class="col-sm-4" id="div_phone_number">
+                                <div class="col-sm-4" id="div_phone_number" style="display: none;">
                                     <label class="form-label">Phone Number</label>
                                     {{ form.phone_number }}
                                 </div>
-                                <div class="col-sm-4" id="div_role">
-                                    <label class="form-label">Role</label>
-                                    <div class="input-group flatpicker-calender product-date">
-                                        {% if logged_in_user.role == 'Company' %}
-                                            <input type="text" class="form-control" value="Cleaner" name="role" readonly>
-                                        {% else %}
-                                            {{ form.role }}
-                                        {% endif %}
-                                    </div>
-                                </div>
-                                <div class="col-sm-4" id="div_password">
+                                <div class="col-sm-4" id="div_password" style="display: none;">
                                     <label class="form-label">Password</label>
                                     {{ form.password }}
                                 </div>
-                                <div class="col-sm-4" id="div_password_confirmation">
+                                <div class="col-sm-4" id="div_password_confirmation" style="display: none;">
                                     <label class="form-label">Password Confirmation</label>
                                     {{ form.password_confirmation }}
                                 </div>
@@ -78,7 +76,7 @@
                             <div class="row mt-2">
                                 <div class="col">
                                     <div class="text-end">
-                                        <button class="btn btn-primary me-3">
+                                        <button class="btn btn-primary me-3" type="submit">
                                             Add New User
                                         </button>
                                     </div>
@@ -96,63 +94,106 @@
 <script>
     document.addEventListener('DOMContentLoaded', function() {
         const roleField = document.querySelector('#id_role');
-        const professionField = document.getElementById('div_profession');
+        const firstnameField = document.getElementById('div_firstname');
+        const lastnameField = document.getElementById('div_lastname');
+        const companyNameField = document.getElementById('div_company_name');
+        const emailField = document.getElementById('div_email');
+        const genderField = document.getElementById('div_gender');
         const nidField = document.getElementById('div_nid');
         const dobField = document.getElementById('div_dob');
-        const genderField = document.getElementById('div_gender');
+        const professionField = document.getElementById('div_profession');
         const addressField = document.getElementById('div_address');
+        const phoneNumberField = document.getElementById('div_phone_number');
+        const passwordField = document.getElementById('div_password');
+        const passwordConfirmationField = document.getElementById('div_password_confirmation');
+        const companyNameInput = document.getElementById('company_name');
 
         /**
-         * Function to toggle visibility of form fields based on selected role.
+         * Function to hide all fields except role
+         */
+        function hideAllFields() {
+            firstnameField.style.display = 'none';
+            lastnameField.style.display = 'none';
+            companyNameField.style.display = 'none';
+            emailField.style.display = 'none';
+            genderField.style.display = 'none';
+            nidField.style.display = 'none';
+            dobField.style.display = 'none';
+            professionField.style.display = 'none';
+            addressField.style.display = 'none';
+            phoneNumberField.style.display = 'none';
+            passwordField.style.display = 'none';
+            passwordConfirmationField.style.display = 'none';
+            companyNameInput.value = '';
+        }
+
+        /**
+         * Function to show fields based on selected role
          * @param {string} role - The selected user role.
          */
         function toggleFields(role) {
+            hideAllFields();
             switch(role) {
                 case 'Admin':
-                    professionField.style.display = 'none';
+                case 'Supervisor':
+                    firstnameField.style.display = 'block';
+                    lastnameField.style.display = 'block';
+                    emailField.style.display = 'block';
+                    genderField.style.display = 'block';
                     nidField.style.display = 'block';
                     dobField.style.display = 'block';
-                    genderField.style.display = 'block';
-                    addressField.style.display = 'none';
+                    phoneNumberField.style.display = 'block';
+                    passwordField.style.display = 'block';
+                    passwordConfirmationField.style.display = 'block';
                     break;
                 case 'Client':
-                    professionField.style.display = 'none';
-                    nidField.style.display = 'none';
-                    dobField.style.display = 'none';
-                    genderField.style.display = 'none';
+                    companyNameField.style.display = 'block';
+                    emailField.style.display = 'block';
                     addressField.style.display = 'block';
-                    break;
-                case 'Supervisor':
-                    professionField.style.display = 'none';
-                    nidField.style.display = 'block';
-                    dobField.style.display = 'block';
-                    genderField.style.display = 'block';
-                    addressField.style.display = 'none';
+                    phoneNumberField.style.display = 'block';
+                    passwordField.style.display = 'block';
+                    passwordConfirmationField.style.display = 'block';
                     break;
                 case 'Cleaner':
-                    professionField.style.display = 'block';
+                    firstnameField.style.display = 'block';
+                    lastnameField.style.display = 'block';
+                    emailField.style.display = 'block';
+                    genderField.style.display = 'block';
                     nidField.style.display = 'block';
                     dobField.style.display = 'block';
-                    genderField.style.display = 'block';
-                    addressField.style.display = 'none';
+                    professionField.style.display = 'block';
+                    phoneNumberField.style.display = 'block';
+                    passwordField.style.display = 'block';
+                    passwordConfirmationField.style.display = 'block';
                     break;
                 default:
-                    // Hide all optional fields if role is not recognized
-                    professionField.style.display = 'none';
-                    nidField.style.display = 'none';
-                    dobField.style.display = 'none';
-                    genderField.style.display = 'none';
-                    addressField.style.display = 'none';
+                    hideAllFields();
             }
         }
 
-        // Initial toggle based on the current role value
-        toggleFields(roleField.value);
+        // Initial state: hide all fields except role
+        hideAllFields();
 
         // Event listener for role field changes
         roleField.addEventListener('change', function() {
             toggleFields(this.value);
+            if (this.value === 'Client') {
+                firstnameField.style.display = 'none';
+                lastnameField.style.display = 'none';
+            } else {
+                companyNameField.style.display = 'none';
+            }
         });
+
+        // If the form is being re-rendered with errors, retain the visibility based on selected role
+        const initialRole = roleField.value;
+        if (initialRole) {
+            toggleFields(initialRole);
+            if (initialRole === 'Client') {
+                firstnameField.style.display = 'none';
+                lastnameField.style.display = 'none';
+            }
+        }
     });
 </script>
 
