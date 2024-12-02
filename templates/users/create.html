@@ -34,7 +34,7 @@
                                 </div>
                                 <div class="col-sm-4" id="div_company_name" style="display: none;">
                                     <label class="form-label">Company Name</label>
-                                    <input type="text" class="form-control" id="company_name" readonly>
+                                    {{ form.company_name }}
                                 </div>
                                 <div class="col-sm-4" id="div_email" style="display: none;">
                                     <label class="form-label">Email</label>
@@ -106,7 +106,6 @@
         const phoneNumberField = document.getElementById('div_phone_number');
         const passwordField = document.getElementById('div_password');
         const passwordConfirmationField = document.getElementById('div_password_confirmation');
-        const companyNameInput = document.getElementById('company_name');
 
         /**
          * Function to hide all fields except role
@@ -124,7 +123,6 @@
             phoneNumberField.style.display = 'none';
             passwordField.style.display = 'none';
             passwordConfirmationField.style.display = 'none';
-            companyNameInput.value = '';
         }
 
         /**
