@@ -9,30 +9,36 @@ class UserCreationForm(forms.ModelForm):
     firstname = forms.CharField(
         max_length=255,
         widget=forms.TextInput(attrs={'class': 'form-control'}),
-        label="First Name"
+        label="First Name",
+        required=True
     )
     lastname = forms.CharField(
         max_length=255,
         widget=forms.TextInput(attrs={'class': 'form-control'}),
-        label="Last Name"
+        label="Last Name",
+        required=True
     )
     password = forms.CharField(
         widget=forms.PasswordInput(attrs={'class': 'form-control'}),
-        label="Password"
+        label="Password",
+        required=True
     )
     password_confirmation = forms.CharField(
         widget=forms.PasswordInput(attrs={'class': 'form-control'}),
-        label="Password Confirmation"
+        label="Password Confirmation",
+        required=True
     )
     address = forms.CharField(
         max_length=255,
         widget=forms.TextInput(attrs={'class': 'form-control'}),
-        label="Address"
+        label="Address",
+        required=False
     )
     gender = forms.ChoiceField(
         choices=User.GENDER_CHOICES,
         widget=forms.Select(attrs={'class': 'form-control'}),
-        label="Gender"
+        label="Gender",
+        required=False
     )
 
     class Meta:
@@ -41,6 +47,7 @@ class UserCreationForm(forms.ModelForm):
         widgets = {
             'nid': forms.NumberInput(attrs={'class': 'form-control', 'type': 'number'}),
             'dob': forms.DateInput(attrs={'class': 'form-control', 'type': 'date'}),
+            'profession': forms.TextInput(attrs={'class': 'form-control'}),
         }
 
     def __init__(self, *args, **kwargs):
@@ -48,12 +55,10 @@ class UserCreationForm(forms.ModelForm):
         super(UserCreationForm, self).__init__(*args, **kwargs)
         self.fields['email'].widget.attrs.update({
             'class': 'form-control',
-            'required': 'true',
             'type': 'email'
         })
         self.fields['phone_number'].widget.attrs.update({
             'class': 'form-control',
-            'required': 'true',
             'type': 'number'
         })
         self.fields['profession'].widget.attrs.update({'class': 'form-control'})
@@ -62,19 +67,14 @@ class UserCreationForm(forms.ModelForm):
         self.fields['address'].widget.attrs.update({'class': 'form-control'})
 
     def clean_phone_number(self):
-        """
-        Validates that the phone number starts with 078, 072, or 073 and is exactly 10 digits long.
-        """
         phone_number = self.cleaned_data.get('phone_number')
-        pattern = re.compile(r'^(078|072|073)\d{7}$')
-        if not pattern.match(phone_number):
-            raise ValidationError("Phone number must start with 078, 072, or 073 and be exactly 10 digits long.")
+        if phone_number:
+            pattern = re.compile(r'^(078|072|073)\d{7}$')
+            if not pattern.match(phone_number):
+                raise ValidationError("Phone number must start with 078, 072, or 073 and be exactly 10 digits long.")
         return phone_number
 
     def clean_dob(self):
-        """
-        Validates that the user is at least 18 years old.
-        """
         dob = self.cleaned_data.get('dob')
         if dob:
             today = timezone.now().date()
@@ -84,9 +84,6 @@ class UserCreationForm(forms.ModelForm):
         return dob
 
     def clean(self):
-        """
-        Ensures that the password and password_confirmation fields match and sets the name.
-        """
         cleaned_data = super(UserCreationForm, self).clean()
         firstname = cleaned_data.get("firstname")
         lastname = cleaned_data.get("lastname")
@@ -94,7 +91,9 @@ class UserCreationForm(forms.ModelForm):
         password_confirmation = cleaned_data.get("password_confirmation")
 
         if firstname and lastname:
-            cleaned_data['name'] = f"{firstname} {lastname}"  # Combine into name
+            cleaned_data['name'] = f"{firstname} {lastname}"
+        else:
+            raise forms.ValidationError("Both first name and last name are required to set the name.")
 
         if password and password_confirmation:
             if password != password_confirmation:
@@ -103,9 +102,6 @@ class UserCreationForm(forms.ModelForm):
         return cleaned_data
 
     def save(self, commit=True):
-        """
-        Saves the user instance with the combined name and hashed password.
-        """
         user = super(UserCreationForm, self).save(commit=False)
         user.name = self.cleaned_data.get('name')
         password = self.cleaned_data.get('password')
@@ -119,22 +115,36 @@ class UserUpdateForm(forms.ModelForm):
     firstname = forms.CharField(
         max_length=255,
         widget=forms.TextInput(attrs={'class': 'form-control'}),
-        label="First Name"
+        label="First Name",
+        required=False
     )
     lastname = forms.CharField(
         max_length=255,
         widget=forms.TextInput(attrs={'class': 'form-control'}),
-        label="Last Name"
+        label="Last Name",
+        required=False
     )
     gender = forms.ChoiceField(
         choices=User.GENDER_CHOICES,
         widget=forms.Select(attrs={'class': 'form-control'}),
-        label="Gender"
+        label="Gender",
+        required=False
     )
     address = forms.CharField(
         max_length=255,
         widget=forms.TextInput(attrs={'class': 'form-control'}),
-        label="Address"
+        label="Address",
+        required=False
+    )
+    password = forms.CharField(
+        widget=forms.PasswordInput(attrs={'class': 'form-control'}),
+        label="Password",
+        required=False
+    )
+    password_confirmation = forms.CharField(
+        widget=forms.PasswordInput(attrs={'class': 'form-control'}),
+        label="Password Confirmation",
+        required=False
     )
 
     class Meta:
@@ -144,10 +154,11 @@ class UserUpdateForm(forms.ModelForm):
             'nid': forms.NumberInput(attrs={'class': 'form-control', 'type': 'number'}),
             'dob': forms.DateInput(attrs={'class': 'form-control', 'type': 'date'}),
             'image': forms.FileInput(attrs={'class': 'form-control'}),
+            'profession': forms.TextInput(attrs={'class': 'form-control'}),
         }
 
     def __init__(self, *args, **kwargs):
-        roles = kwargs.pop('roles', [])  # Pop 'roles' before calling super
+        roles = kwargs.pop('roles', [])
         super(UserUpdateForm, self).__init__(*args, **kwargs)
         if self.instance and self.instance.name:
             name_parts = self.instance.name.split()
@@ -155,33 +166,27 @@ class UserUpdateForm(forms.ModelForm):
             self.fields['lastname'].initial = " ".join(name_parts[1:]) if len(name_parts) > 1 else ''
         self.fields['email'].widget.attrs.update({
             'class': 'form-control',
-            'required': 'true',
             'type': 'email'
         })
         self.fields['phone_number'].widget.attrs.update({
             'class': 'form-control',
-            'required': 'true',
             'type': 'number'
         })
         self.fields['profession'].widget.attrs.update({'class': 'form-control'})
         self.fields['role'].choices = [(role, role) for role in roles]
         self.fields['role'].widget.attrs.update({'class': 'form-control'})
         self.fields['address'].widget.attrs.update({'class': 'form-control'})
+        self.fields['image'].widget.attrs.update({'class': 'form-control'})
 
     def clean_phone_number(self):
-        """
-        Validates that the phone number starts with 078, 072, or 073 and is exactly 10 digits long.
-        """
         phone_number = self.cleaned_data.get('phone_number')
-        pattern = re.compile(r'^(078|072|073)\d{7}$')
-        if not pattern.match(phone_number):
-            raise ValidationError("Phone number must start with 078, 072, or 073 and be exactly 10 digits long.")
+        if phone_number:
+            pattern = re.compile(r'^(078|072|073)\d{7}$')
+            if not pattern.match(phone_number):
+                raise ValidationError("Phone number must start with 078, 072, or 073 and be exactly 10 digits long.")
         return phone_number
 
     def clean_dob(self):
-        """
-        Validates that the user is at least 18 years old.
-        """
         dob = self.cleaned_data.get('dob')
         if dob:
             today = timezone.now().date()
@@ -191,26 +196,36 @@ class UserUpdateForm(forms.ModelForm):
         return dob
 
     def clean(self):
-        """
-        Ensures that the firstname and lastname fields are present and sets the full name.
-        """
         cleaned_data = super().clean()
         firstname = cleaned_data.get("firstname")
         lastname = cleaned_data.get("lastname")
+        role = cleaned_data.get("role")
+        password = cleaned_data.get("password")
+        password_confirmation = cleaned_data.get("password_confirmation")
 
-        if firstname and lastname:
-            cleaned_data['name'] = f"{firstname} {lastname}"
+        if role != 'Client':
+            if firstname and lastname:
+                cleaned_data['name'] = f"{firstname} {lastname}"
+            else:
+                raise forms.ValidationError("Both first name and last name are required to set the name.")
         else:
-            raise forms.ValidationError("Both first name and last name are required.")
+            # For Client role, you might handle company name differently if needed
+            if not (firstname or lastname):
+                raise forms.ValidationError("Company name is required for Client role.")
+            cleaned_data['name'] = f"{firstname} {lastname}".strip()
+
+        if password or password_confirmation:
+            if password != password_confirmation:
+                self.add_error('password_confirmation', "Passwords do not match.")
 
         return cleaned_data
 
     def save(self, commit=True):
-        """
-        Saves the user instance with the combined name.
-        """
         user = super(UserUpdateForm, self).save(commit=False)
-        user.name = f"{self.cleaned_data['firstname']} {self.cleaned_data['lastname']}"
+        user.name = self.cleaned_data.get('name')
+        password = self.cleaned_data.get('password')
+        if password:
+            user.set_password(password)
         if commit:
             user.save()
         return user
