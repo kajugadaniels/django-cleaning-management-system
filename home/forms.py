@@ -10,13 +10,19 @@ class UserCreationForm(forms.ModelForm):
         max_length=255,
         widget=forms.TextInput(attrs={'class': 'form-control'}),
         label="First Name",
-        required=True
+        required=False
     )
     lastname = forms.CharField(
         max_length=255,
         widget=forms.TextInput(attrs={'class': 'form-control'}),
         label="Last Name",
-        required=True
+        required=False
+    )
+    company_name = forms.CharField(
+        max_length=255,
+        widget=forms.TextInput(attrs={'class': 'form-control'}),
+        label="Company Name",
+        required=False
     )
     password = forms.CharField(
         widget=forms.PasswordInput(attrs={'class': 'form-control'}),
@@ -65,6 +71,7 @@ class UserCreationForm(forms.ModelForm):
         self.fields['role'].choices = [(role, role) for role in roles]
         self.fields['role'].widget.attrs.update({'class': 'form-control'})
         self.fields['address'].widget.attrs.update({'class': 'form-control'})
+        self.fields['company_name'].widget.attrs.update({'class': 'form-control'})
 
     def clean_phone_number(self):
         phone_number = self.cleaned_data.get('phone_number')
@@ -85,15 +92,21 @@ class UserCreationForm(forms.ModelForm):
 
     def clean(self):
         cleaned_data = super(UserCreationForm, self).clean()
+        role = cleaned_data.get("role")
         firstname = cleaned_data.get("firstname")
         lastname = cleaned_data.get("lastname")
+        company_name = cleaned_data.get("company_name")
         password = cleaned_data.get("password")
         password_confirmation = cleaned_data.get("password_confirmation")
 
-        if firstname and lastname:
-            cleaned_data['name'] = f"{firstname} {lastname}"
+        if role == 'Client':
+            if not company_name:
+                self.add_error('company_name', "Company name is required for Client role.")
+            cleaned_data['name'] = company_name
         else:
-            raise forms.ValidationError("Both first name and last name are required to set the name.")
+            if not firstname or not lastname:
+                raise forms.ValidationError("Both first name and last name are required for this role.")
+            cleaned_data['name'] = f"{firstname} {lastname}"
 
         if password and password_confirmation:
             if password != password_confirmation:
@@ -122,6 +135,12 @@ class UserUpdateForm(forms.ModelForm):
         max_length=255,
         widget=forms.TextInput(attrs={'class': 'form-control'}),
         label="Last Name",
+        required=False
+    )
+    company_name = forms.CharField(
+        max_length=255,
+        widget=forms.TextInput(attrs={'class': 'form-control'}),
+        label="Company Name",
         required=False
     )
     gender = forms.ChoiceField(
@@ -161,9 +180,12 @@ class UserUpdateForm(forms.ModelForm):
         roles = kwargs.pop('roles', [])
         super(UserUpdateForm, self).__init__(*args, **kwargs)
         if self.instance and self.instance.name:
-            name_parts = self.instance.name.split()
-            self.fields['firstname'].initial = name_parts[0]
-            self.fields['lastname'].initial = " ".join(name_parts[1:]) if len(name_parts) > 1 else ''
+            if self.instance.role == 'Client':
+                self.fields['company_name'].initial = self.instance.name
+            else:
+                name_parts = self.instance.name.split()
+                self.fields['firstname'].initial = name_parts[0]
+                self.fields['lastname'].initial = " ".join(name_parts[1:]) if len(name_parts) > 1 else ''
         self.fields['email'].widget.attrs.update({
             'class': 'form-control',
             'type': 'email'
@@ -177,6 +199,7 @@ class UserUpdateForm(forms.ModelForm):
         self.fields['role'].widget.attrs.update({'class': 'form-control'})
         self.fields['address'].widget.attrs.update({'class': 'form-control'})
         self.fields['image'].widget.attrs.update({'class': 'form-control'})
+        self.fields['company_name'].widget.attrs.update({'class': 'form-control'})
 
     def clean_phone_number(self):
         phone_number = self.cleaned_data.get('phone_number')
@@ -197,22 +220,21 @@ class UserUpdateForm(forms.ModelForm):
 
     def clean(self):
         cleaned_data = super().clean()
+        role = cleaned_data.get("role")
         firstname = cleaned_data.get("firstname")
         lastname = cleaned_data.get("lastname")
-        role = cleaned_data.get("role")
+        company_name = cleaned_data.get("company_name")
         password = cleaned_data.get("password")
         password_confirmation = cleaned_data.get("password_confirmation")
 
-        if role != 'Client':
-            if firstname and lastname:
-                cleaned_data['name'] = f"{firstname} {lastname}"
-            else:
-                raise forms.ValidationError("Both first name and last name are required to set the name.")
+        if role == 'Client':
+            if not company_name:
+                self.add_error('company_name', "Company name is required for Client role.")
+            cleaned_data['name'] = company_name
         else:
-            # For Client role, you might handle company name differently if needed
-            if not (firstname or lastname):
-                raise forms.ValidationError("Company name is required for Client role.")
-            cleaned_data['name'] = f"{firstname} {lastname}".strip()
+            if not firstname or not lastname:
+                raise forms.ValidationError("Both first name and last name are required for this role.")
+            cleaned_data['name'] = f"{firstname} {lastname}"
 
         if password or password_confirmation:
             if password != password_confirmation:
