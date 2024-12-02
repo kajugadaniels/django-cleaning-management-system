@@ -25,9 +25,11 @@ class User(AbstractBaseUser, PermissionsMixin):
         ('Female', 'Female'),
     )
 
-    email = models.EmailField(unique=True)
     name = models.CharField(max_length=255)
-    phone_number = models.CharField(max_length=15, unique=True)
+    role = models.CharField(max_length=30, choices=ROLE_CHOICES)
+
+    email = models.EmailField(unique=True, null=True, blank=True)
+    phone_number = models.CharField(max_length=15, unique=True, null=True, blank=True)
     nid = models.CharField(max_length=15, unique=True, null=True, blank=True)
     dob = models.DateField(null=True, blank=True)
     profession = models.CharField(max_length=15, null=True, blank=True)
@@ -39,7 +41,6 @@ class User(AbstractBaseUser, PermissionsMixin):
         null=True,
         blank=True,
     )
-    role = models.CharField(max_length=30, choices=ROLE_CHOICES)
     gender = models.CharField(max_length=6, choices=GENDER_CHOICES, null=True, blank=True)
     slug = models.SlugField(unique=True, max_length=255, null=True, blank=True)
     address = models.TextField(null=True, blank=True)
@@ -54,10 +55,10 @@ class User(AbstractBaseUser, PermissionsMixin):
     objects = CustomUserManager()
 
     USERNAME_FIELD = 'email'
-    REQUIRED_FIELDS = ['name', 'phone_number']
+    REQUIRED_FIELDS = ['name', 'role']
 
     def __str__(self):
-        return self.email
+        return self.email if self.email else self.name
 
     def save(self, *args, **kwargs):
         if not self.slug:
