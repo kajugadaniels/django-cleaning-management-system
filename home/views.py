@@ -347,21 +347,42 @@ def adminApproveCleanupRequest(request, request_id):
 
 @login_required
 def assignCleanersToTask(request, taskId):
-    # if request.user.role not in ['Admin', 'Supervisor'] and not request.user.is_superuser:
-    #     messages.error(request, "You are not authorized to access this page.")
-    #     return redirect('base:dashboard')
-
     task = get_object_or_404(Task, id=taskId, cleanup_request__supervisor=request.user, delete_status=False)
 
     if request.method == 'POST':
         form = TaskCleanerForm(request.POST, instance=task, user=request.user)
+        
         if form.is_valid():
-            task = form.save(commit=False)
+            # Get the selected cleaners from the form
+            selected_cleaners = form.cleaned_data.get('cleaners')
+            
+            # Check if any of the selected cleaners are already assigned to tasks in other CleanupRequests
+            for cleaner in selected_cleaners:
+                # Get all tasks assigned to this cleaner in other cleanup requests with Pending status
+                conflicting_tasks = Task.objects.filter(
+                    cleaners=cleaner,
+                    cleanup_request__status='Pending',  # Check only 'Pending' status tasks
+                    delete_status=False
+                )
+
+                # Check if there are any conflicting tasks
+                if conflicting_tasks.exists():
+                    # If so, check if the status is still Pending
+                    messages.error(request, f"Cleaner {cleaner.name} is already assigned to a task in another CleanupRequest with Pending status. They cannot be assigned to another task until the status is Approved or Rejected.")
+                    return redirect('base:viewCleanupRequest', cleanup_request_id=task.cleanup_request.id)
+            
+            # If no conflicts, assign the cleaners to the task
+            task.cleaners.add(*selected_cleaners)
             task.assigned_at = timezone.now()  # Set the assigned_at field to the current time
             task.save()
-            form.save_m2m()  # Save many-to-many data for cleaners
+
+            # Save the many-to-many data
+            form.save_m2m()
+            
+            # Notify the user that cleaners were assigned successfully
             messages.success(request, "Cleaners assigned successfully and time recorded.")
             return redirect('base:viewCleanupRequest', cleanup_request_id=task.cleanup_request.id)
+
     else:
         form = TaskCleanerForm(instance=task, user=request.user)
 
