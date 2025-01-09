@@ -358,19 +358,19 @@ def assignCleanersToTask(request, taskId):
             
             # Check if any of the selected cleaners are already assigned to tasks in other CleanupRequests
             for cleaner in selected_cleaners:
-                # Get all tasks assigned to this cleaner in other cleanup requests with Pending status
+                # Get all tasks assigned to this cleaner in other cleanup requests
                 conflicting_tasks = Task.objects.filter(
                     cleaners=cleaner,
-                    cleanup_request__status='Pending',  # Check only 'Pending' status tasks
                     delete_status=False
                 )
 
-                # Check if there are any conflicting tasks
-                if conflicting_tasks.exists():
-                    # If so, check if the status is still Pending
-                    messages.error(request, f"Cleaner {cleaner.name} is already assigned to a task in another CleanupRequest with Pending status. They cannot be assigned to another task until the status is Approved or Rejected.")
-                    return redirect('base:viewCleanupRequest', cleanup_request_id=task.cleanup_request.id)
-            
+                # Check if the conflicting task's cleanup request is Approved
+                for conflicting_task in conflicting_tasks:
+                    if conflicting_task.cleanup_request.status == 'Approved' and conflicting_task.cleanup_request != task.cleanup_request:
+                        # If status is Approved and task is in a different CleanupRequest
+                        messages.error(request, f"Cleaner {cleaner.name} is already assigned to a task in another CleanupRequest with Approved status. They cannot be assigned to another task in a different CleanupRequest until the status is Pending or Rejected.")
+                        return redirect('base:viewCleanupRequest', cleanup_request_id=task.cleanup_request.id)
+
             # If no conflicts, assign the cleaners to the task
             task.cleaners.add(*selected_cleaners)  # Add the selected cleaners to the task
             task.assigned_at = timezone.now()  # Set the assigned_at field to the current time
