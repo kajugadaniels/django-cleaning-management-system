@@ -111,7 +111,7 @@
                                                             </a>
                                                         {% endif %}
                                                     {% endif %}
-                                                    {% if user == request.supervisor and request.completed_at %}
+                                                    {% comment %} {% if user == request.supervisor and request.completed_at %}
                                                         {% if request.supervisor_report %}
                                                             <span class="badge bg-success">Already submitted</span>
                                                         {% else %}
@@ -119,7 +119,10 @@
                                                                 Send Report
                                                             </a>
                                                         {% endif %}
-                                                    {% endif %}
+                                                    {% endif %} {% endcomment %}
+                                                    <a href="{% url 'base:submitSupervisorReport' request.id %}" class="btn btn-info btn-sm">
+                                                        Send Report
+                                                    </a>
                                                 </div>
                                             </td>
                                             
