@@ -94,7 +94,6 @@
     </div>
 </div>
 
-<!-- JavaScript for Dynamic Field Visibility Based on Role -->
 <script>
     document.addEventListener('DOMContentLoaded', function() {
         const roleField = document.querySelector('#id_role');
@@ -106,12 +105,12 @@
         const nidField = document.getElementById('div_nid');
         const dobField = document.getElementById('div_dob');
         const professionField = document.getElementById('div_profession');
-        const addressField = document.getElementById('div_address');
+        const addressField = document.getElementById('div_address');  // No longer hidden
         const phoneNumberField = document.getElementById('div_phone_number');
         const passwordField = document.getElementById('div_password');
         const passwordConfirmationField = document.getElementById('div_password_confirmation');
         const imageField = document.getElementById('div_image');
-
+    
         /**
          * Function to hide all fields except role
          */
@@ -124,13 +123,12 @@
             nidField.style.display = 'none';
             dobField.style.display = 'none';
             professionField.style.display = 'none';
-            addressField.style.display = 'none';
             phoneNumberField.style.display = 'none';
             passwordField.style.display = 'none';
             passwordConfirmationField.style.display = 'none';
             imageField.style.display = 'none';
         }
-
+    
         /**
          * Function to show fields based on selected role
          * @param {string} role - The selected user role.
@@ -154,7 +152,7 @@
                 case 'Client':
                     companyNameField.style.display = 'block';
                     emailField.style.display = 'block';
-                    addressField.style.display = 'block';
+                    addressField.style.display = 'block';  // Always visible for all roles
                     phoneNumberField.style.display = 'block';
                     passwordField.style.display = 'block';
                     passwordConfirmationField.style.display = 'block';
@@ -177,10 +175,10 @@
                     hideAllFields();
             }
         }
-
+    
         // Initial state: hide all fields except role
         hideAllFields();
-
+    
         // Event listener for role field changes
         roleField.addEventListener('change', function() {
             toggleFields(this.value);
@@ -191,7 +189,7 @@
                 companyNameField.style.display = 'none';
             }
         });
-
+    
         // If the form is being re-rendered with existing data, retain the visibility based on selected role
         const initialRole = roleField.value;
         if (initialRole) {
@@ -201,7 +199,7 @@
                 lastnameField.style.display = 'none';
             }
         }
-    });
+    });    
 </script>
 
 {% endblock %}
