@@ -372,13 +372,10 @@ def assignCleanersToTask(request, taskId):
                     return redirect('base:viewCleanupRequest', cleanup_request_id=task.cleanup_request.id)
             
             # If no conflicts, assign the cleaners to the task
-            task.cleaners.add(*selected_cleaners)
+            task.cleaners.add(*selected_cleaners)  # Add the selected cleaners to the task
             task.assigned_at = timezone.now()  # Set the assigned_at field to the current time
             task.save()
 
-            # Save the many-to-many data
-            form.save_m2m()
-            
             # Notify the user that cleaners were assigned successfully
             messages.success(request, "Cleaners assigned successfully and time recorded.")
             return redirect('base:viewCleanupRequest', cleanup_request_id=task.cleanup_request.id)
