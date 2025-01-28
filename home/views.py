@@ -368,7 +368,7 @@ def assignCleanersToTask(request, taskId):
                 for conflicting_task in conflicting_tasks:
                     if conflicting_task.cleanup_request.status == 'Approved' and conflicting_task.cleanup_request != task.cleanup_request:
                         # If status is Approved and task is in a different CleanupRequest
-                        messages.error(request, f"Cleaner {cleaner.name} is already assigned to a task in another CleanupRequest with Approved status. They cannot be assigned to another task in a different CleanupRequest until the status is Pending or Rejected.")
+                        messages.error(request, f"Cleaner {cleaner.name} is already assigned to a task in another task.")
                         return redirect('base:viewCleanupRequest', cleanup_request_id=task.cleanup_request.id)
 
             # If no conflicts, assign the cleaners to the task
