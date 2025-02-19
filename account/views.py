@@ -46,25 +46,27 @@ def userProfile(request):
 
     if request.method == 'POST':
         if 'profile_form' in request.POST:
-            profile_form = UserProfileForm(request.POST, request.FILES, instance=user)
+            profile_form = UserUpdateForm(request.POST, request.FILES, instance=user)
             if profile_form.is_valid():
                 profile_form.save()
-                messages.success(request, 'Profile updated successfully.')
+                messages.success(request, 'Your profile has been updated successfully.')
                 return redirect('auth:userProfile')
             else:
+                messages.error(request, 'There were errors in your profile update form. Please check and try again.')
                 password_form = PasswordChangeForm(user=user)
         elif 'password_form' in request.POST:
             password_form = PasswordChangeForm(user=user, data=request.POST)
             if password_form.is_valid():
                 password_form.save()
                 update_session_auth_hash(request, password_form.user)
-                messages.success(request, 'Password changed successfully. Please log in again.')
+                messages.success(request, 'Your password has been changed successfully. Please log in again to continue.')
                 logout(request)
                 return redirect('auth:login')
             else:
-                profile_form = UserProfileForm(instance=user)
+                messages.error(request, 'There were errors in the password change form. Make sure your new password meets the criteria.')
+                profile_form = UserUpdateForm(instance=user)
     else:
-        profile_form = UserProfileForm(instance=user)
+        profile_form = UserUpdateForm(instance=user)
         password_form = PasswordChangeForm(user=user)
 
     context = {
@@ -73,3 +75,4 @@ def userProfile(request):
     }
 
     return render(request, 'auth/profile.html', context)
+
