@@ -46,33 +46,25 @@ def userProfile(request):
 
     if request.method == 'POST':
         if 'profile_form' in request.POST:
-            profile_form = UserUpdateForm(request.POST, request.FILES, instance=user)
+            profile_form = UserProfileForm(request.POST, request.FILES, instance=user)
             if profile_form.is_valid():
                 profile_form.save()
-                messages.success(request, 'Your profile has been updated successfully.')
+                messages.success(request, 'Profil mis à jour avec succès.')
                 return redirect('auth:userProfile')
             else:
-                # Pass errors to the template
-                for error in profile_form.errors.values():
-                    messages.error(request, error)
-
-                # If there are errors in the form, we re-render it
                 password_form = PasswordChangeForm(user=user)
         elif 'password_form' in request.POST:
             password_form = PasswordChangeForm(user=user, data=request.POST)
             if password_form.is_valid():
                 password_form.save()
                 update_session_auth_hash(request, password_form.user)
-                messages.success(request, 'Your password has been changed successfully. Please log in again to continue.')
+                messages.success(request, 'Mot de passe modifié avec succès. Veuillez vous reconnecter.')
                 logout(request)
                 return redirect('auth:login')
             else:
-                # Pass errors to the template
-                for error in password_form.errors.values():
-                    messages.error(request, error)
-                profile_form = UserUpdateForm(instance=user)
+                profile_form = UserProfileForm(instance=user)
     else:
-        profile_form = UserUpdateForm(instance=user)
+        profile_form = UserProfileForm(instance=user)
         password_form = PasswordChangeForm(user=user)
 
     context = {
@@ -81,5 +73,4 @@ def userProfile(request):
     }
 
     return render(request, 'auth/profile.html', context)
-
 
