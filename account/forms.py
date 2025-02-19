@@ -1,6 +1,7 @@
 from django import forms
 from account.models import *
 from django.contrib.auth import authenticate
+from django.utils.translation import gettext_lazy as _
 from django.contrib.auth.forms import PasswordChangeForm
 
 class LoginForm(forms.Form):
@@ -22,6 +23,70 @@ class LoginForm(forms.Form):
             if user is None:
                 raise forms.ValidationError("Invalid email or password")
         return cleaned_data
+
+class UserProfileForm(forms.ModelForm):
+    """
+    Form for updating user profile information.
+    """
+    class Meta:
+        model = User
+        fields = ['name', 'email', 'phone_number', 'image']
+        widgets = {
+            'name': forms.TextInput(attrs={
+                'class': 'form-control',
+                'placeholder': 'Enter your full name',
+                'required': 'required',
+            }),
+            'email': forms.EmailInput(attrs={
+                'class': 'form-control',
+                'placeholder': 'Enter your email address',
+                'required': 'required',
+            }),
+            'phone_number': forms.TextInput(attrs={
+                'class': 'form-control',
+                'placeholder': 'Enter your phone number',
+                'required': 'required',
+            }),
+            'image': forms.ClearableFileInput(attrs={
+            }),
+        }
+        labels = {
+            'name': _('Full Name'),
+            'email': _('Email Address'),
+            'phone_number': _('Phone Number'),
+            'image': _('Profile Image'),
+        }
+        error_messages = {
+            'name': {
+                'required': _('Please enter your full name.'),
+                'max_length': _('Name cannot exceed 255 characters.'),
+            },
+            'email': {
+                'required': _('Please enter your email address.'),
+                'invalid': _('Enter a valid email address.'),
+                'unique': _('This email address is already in use.'),
+            },
+            'phone_number': {
+                'required': _('Please enter your phone number.'),
+                'unique': _('This phone number is already in use.'),
+                'max_length': _('Phone number cannot exceed 15 characters.'),
+            },
+            'image': {
+                'invalid': _('Please upload a valid image file.'),
+            },
+        }
+
+    def clean_email(self):
+        email = self.cleaned_data.get('email')
+        if User.objects.filter(email=email).exclude(pk=self.instance.pk).exists():
+            raise forms.ValidationError(_('This email address is already in use. Please use a different one.'))
+        return email
+
+    def clean_phone_number(self):
+        phone_number = self.cleaned_data.get('phone_number')
+        if User.objects.filter(phone_number=phone_number).exclude(pk=self.instance.pk).exists():
+            raise forms.ValidationError(_('This phone number is already in use. Please use a different one.'))
+        return phone_number
 
 class UserUpdateForm(forms.ModelForm):
     class Meta:
