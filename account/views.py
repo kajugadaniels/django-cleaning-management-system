@@ -52,7 +52,11 @@ def userProfile(request):
                 messages.success(request, 'Your profile has been updated successfully.')
                 return redirect('auth:userProfile')
             else:
-                messages.error(request, 'There were errors in your profile update form. Please check and try again.')
+                # Pass errors to the template
+                for error in profile_form.errors.values():
+                    messages.error(request, error)
+
+                # If there are errors in the form, we re-render it
                 password_form = PasswordChangeForm(user=user)
         elif 'password_form' in request.POST:
             password_form = PasswordChangeForm(user=user, data=request.POST)
@@ -63,7 +67,9 @@ def userProfile(request):
                 logout(request)
                 return redirect('auth:login')
             else:
-                messages.error(request, 'There were errors in the password change form. Make sure your new password meets the criteria.')
+                # Pass errors to the template
+                for error in password_form.errors.values():
+                    messages.error(request, error)
                 profile_form = UserUpdateForm(instance=user)
     else:
         profile_form = UserUpdateForm(instance=user)
@@ -75,4 +81,5 @@ def userProfile(request):
     }
 
     return render(request, 'auth/profile.html', context)
+
 
