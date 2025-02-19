@@ -3,6 +3,7 @@ from django import forms
 from account.models import *
 from django.contrib.auth import authenticate
 from django.core.exceptions import ValidationError
+from django.contrib.auth import password_validation
 from django.contrib.auth.forms import PasswordChangeForm
 
 class LoginForm(forms.Form):
@@ -60,5 +61,15 @@ class PasswordChangeForm(PasswordChangeForm):
     old_password = forms.CharField(widget=forms.PasswordInput(attrs={'class': 'form-control', 'placeholder': 'Current Password'}))
     new_password1 = forms.CharField(widget=forms.PasswordInput(attrs={'class': 'form-control', 'placeholder': 'New Password'}))
     new_password2 = forms.CharField(widget=forms.PasswordInput(attrs={'class': 'form-control', 'placeholder': 'Confirm New Password'}))
+
     class Meta:
         model = User
+
+    def clean_new_password1(self):
+        new_password = self.cleaned_data.get('new_password1')
+        # Use Django's password validation system to check password strength
+        try:
+            password_validation.validate_password(new_password, self.instance)
+        except ValidationError as e:
+            raise forms.ValidationError(str(e))
+        return new_password
