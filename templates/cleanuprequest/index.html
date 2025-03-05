@@ -9,14 +9,14 @@
                     <div class="card-body">
                         <div class="list-product-header">
                             <div class="d-flex justify-content-between">
-                                {% if user.is_superuser or user.role == 'Admin' %}
+                                {% if user.is_superuser or user.role == 'Manager' %}
                                     <h4>Requests</h4>
                                 {% elif user.is_superuser or user.role == 'Supervisor' %}
                                     <h4>Cleaning Requests</h4>
                                 {% elif user.is_superuser or user.role == 'Client' %}
                                     <h4>Cleaning Requests</h4>
                                 {% endif %}
-                                {% if request.user.is_superuser or request.user.role in 'Admin' or request.user.role in 'Client' %}
+                                {% if request.user.is_superuser or request.user.role in 'Manager' or request.user.role in 'Client' %}
                                     <a class="btn btn-primary" href="{% url 'base:addCleanupRequest' %}"><i class="fa fa-plus"></i>
                                         Add Request
                                     </a>
@@ -36,7 +36,7 @@
                                     <th><span class="f-light f-w-600">Client</span></th>
                                     <th><span class="f-light f-w-600">Supervisor</span></th>
                                     <th><span class="f-light f-w-600">Status</span></th>
-                                    {% if user.is_superuser or user.role == 'Admin' %}
+                                    {% if user.is_superuser or user.role == 'Manager' %}
                                         <th><span class="f-light f-w-600">Supervisor Report</span></th>
                                     {% endif %}
                                     <th><span class="f-light f-w-600">Completed</span></th>
@@ -69,7 +69,7 @@
                                                     {{ request.get_status_display }}
                                                 </span>
                                             </td>
-                                            {% if user.is_superuser or user.role == 'Admin' %}
+                                            {% if user.is_superuser or user.role == 'Manager' %}
                                                     <td>
                                                         {% if request.supervisor_report %}
                                                             <a href="{{ request.supervisor_report.url }}" target="_blank" class="f-light">
@@ -94,7 +94,7 @@
                                                     <a href="{% url 'base:viewCleanupRequest' request.id %}" class="btn btn-primary btn-sm">
                                                         View
                                                     </a>
-                                                    {% if user.is_superuser or user.role == 'Admin' %}
+                                                    {% if user.is_superuser or user.role == 'Manager' %}
                                                         {% if request.completed_at %}
                                                             <span class="badge bg-success">Work Completed</span>
                                                         {% else %}

@@ -5,8 +5,8 @@
 <div class="container-fluid my-4">
     <h1 class="display-4 text-center mb-4">Dashboard</h1>
 
-    <!-- Admin Dashboard -->
-    {% if user.role == 'Admin' or user.is_superuser %}
+    <!-- Manager Dashboard -->
+    {% if user.role == 'Manager' or user.is_superuser %}
     <div class="row g-3 mb-4">
         <div class="col-md-3">
             <div class="card text-center shadow border-0">
@@ -219,7 +219,7 @@
     </div>
     {% endif %}
 
-    <!-- Chart for Admin (if data available) -->
+    <!-- Chart for Manager (if data available) -->
     {% if cleanup_request_data %}
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script>

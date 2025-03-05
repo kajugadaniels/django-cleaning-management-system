@@ -8,7 +8,7 @@
                     <div class="list-product-header">
                         <div class="d-flex justify-content-between">
                             <h4>Invoices</h4>
-                            {% if request.user.is_superuser or request.user.role in 'Admin' %}
+                            {% if request.user.is_superuser or request.user.role in 'Manager' %}
                                 <a class="btn btn-primary" href="{% url 'base:createInvoice' %}">
                                     <i class="fa fa-plus"></i> Add New Invoice
                                 </a>
@@ -26,7 +26,7 @@
                                     <th>Due Date</th>
                                     <th>Amount</th>
                                     <th>Paid</th>
-                                    {% if request.user.is_superuser or request.user.role in 'Admin' %}
+                                    {% if request.user.is_superuser or request.user.role in 'Manager' %}
                                         <th>Action</th>
                                     {% endif %}
                                 </tr>
@@ -44,7 +44,7 @@
                                         <td>{{ invoice.due_date }}</td>
                                         <td>{{ invoice.amount }}</td>
                                         <td>{{ invoice.is_paid|yesno:"Yes,No" }}</td>
-                                        {% if request.user.is_superuser or request.user.role in 'Admin' %}
+                                        {% if request.user.is_superuser or request.user.role in 'Manager' %}
                                             <td>
                                                 {% if request.user.role != 'Client' %}
                                                     <a href="{% url 'base:editInvoice' invoice.id %}" class="btn btn-primary btn-sm">Edit</a>

@@ -272,7 +272,7 @@ class CleanupRequestForm(forms.ModelForm):
                 self.fields['client'].queryset = User.objects.filter(id=user.id)
                 self.fields['client'].initial = user.id
                 self.fields['client'].widget.attrs['class'] += ' readonly-field'  # Add custom CSS class
-            elif user.role == 'Admin' or user.is_superuser:
+            elif user.role == 'Manager' or user.is_superuser:
                 # Allow only users with the 'Client' role to be selectable
                 self.fields['client'].queryset = User.objects.filter(role='Client')
                 self.fields['client'].label = "Choose Client"
@@ -347,7 +347,7 @@ class WeeklyReportForm(forms.ModelForm):
                 self.fields['supervisor'].widget.attrs['class'] += ' readonly-field'  # Add custom CSS class
                 self.fields['supervisor'].widget.attrs['readonly'] = True  # HTML readonly attribute
                 self.fields['supervisor'].required = False  # Will set in clean_supervisor method
-            elif self.user.role == 'Admin' or self.user.is_superuser:
+            elif self.user.role == 'Manager' or self.user.is_superuser:
                 # Allow only users with the 'Supervisor' role to be selectable
                 self.fields['supervisor'].queryset = User.objects.filter(role='Supervisor')
                 self.fields['supervisor'].label = "Choose Supervisor"
@@ -355,7 +355,7 @@ class WeeklyReportForm(forms.ModelForm):
 
     def clean_supervisor(self):
         """
-        Ensures that Supervisors cannot change the supervisor field and Admins/Superusers must select a supervisor.
+        Ensures that Supervisors cannot change the supervisor field and Managers/Superusers must select a supervisor.
         """
         supervisor = self.cleaned_data.get('supervisor')
         user = self.user  # Access the stored user
@@ -366,8 +366,8 @@ class WeeklyReportForm(forms.ModelForm):
                 if supervisor != user:
                     raise ValidationError("Supervisors can only assign themselves as supervisors.")
                 return user  # Return the logged-in user
-            elif user.role == 'Admin' or user.is_superuser:
-                # For Admins/Superusers, ensure a supervisor is selected
+            elif user.role == 'Manager' or user.is_superuser:
+                # For Managers/Superusers, ensure a supervisor is selected
                 if not supervisor:
                     raise ValidationError("Supervisor is required.")
                 return supervisor

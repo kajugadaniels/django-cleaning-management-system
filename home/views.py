@@ -12,8 +12,8 @@ def dashboard(request):
     user = request.user
     context = {}
 
-    if user.role == 'Admin' or user.is_superuser:
-        # Admin insights
+    if user.role == 'Manager' or user.is_superuser:
+        # Manager insights
         context['total_cleanup_requests'] = CleanupRequest.objects.count()
         context['pending_cleanup_requests'] = CleanupRequest.objects.filter(status='Pending').count()
         context['approved_cleanup_requests'] = CleanupRequest.objects.filter(status='Approved').count()
@@ -84,7 +84,7 @@ def dashboard(request):
 
 @login_required
 def getUsers(request):
-    # if request.user.role not in ['Admin', 'Supervisor'] and not request.user.is_superuser:
+    # if request.user.role not in ['Manager', 'Supervisor'] and not request.user.is_superuser:
     #     messages.error(request, "You are not authorized to access this page.")
     #     return redirect('base:dashboard')
 
@@ -104,8 +104,8 @@ def getUsers(request):
     # Supervisor users can only see users they added
     if request.user.role == 'Supervisor':
         getUsers = User.objects.filter(added_by=request.user).order_by('-created_at')
-    # Admin and superusers can see all users
-    elif request.user.role == 'Admin' or request.user.is_superuser:
+    # Manager and superusers can see all users
+    elif request.user.role == 'Manager' or request.user.is_superuser:
         getUsers = User.objects.all().order_by('-created_at')
     else:
         getUsers = User.objects.none().order_by('-created_at')
@@ -119,7 +119,7 @@ def getUsers(request):
 
 @login_required
 def addUser(request):
-    # if request.user.role not in ['Admin', 'Supervisor'] and not request.user.is_superuser:
+    # if request.user.role not in ['Manager', 'Supervisor'] and not request.user.is_superuser:
     #     messages.error(request, "You are not authorized to access this page.")
     #     return redirect('base:dashboard')
 
@@ -127,7 +127,7 @@ def addUser(request):
     if request.user.role == 'Supervisor':
         roles = ['Cleaner']
     else:
-        roles = ['Admin', 'Supervisor', 'Client', 'Cleaner'] if request.user.role == 'Admin' or request.user.is_superuser else ['Supervisor']
+        roles = ['Manager', 'Supervisor', 'Client', 'Cleaner'] if request.user.role == 'Manager' or request.user.is_superuser else ['Supervisor']
 
     if request.method == 'POST':
         form = UserCreationForm(request.POST, roles=roles)
@@ -170,7 +170,7 @@ def editUser(request, id):
     #     return redirect('base:dashboard')
 
     user = User.objects.get(id=id)
-    roles = ['Admin', 'Supervisor', 'Client', 'Cleaner'] if request.user.role == 'Admin' or request.user.is_superuser else ['Supervisor']
+    roles = ['Manager', 'Supervisor', 'Client', 'Cleaner'] if request.user.role == 'Manager' or request.user.is_superuser else ['Supervisor']
 
     if request.method == 'POST':
         form = UserUpdateForm(request.POST, request.FILES, instance=user, roles=roles)
@@ -219,8 +219,8 @@ def deleteUser(request, id):
 
 @login_required
 def getCleanupRequests(request):
-    # Ensure user is either Admin, Client, or SuperAdmin
-    # if request.user.role not in ['Admin', 'Supervisor', 'Client'] and not request.user.is_superuser:
+    # Ensure user is either Manager, Client, or SuperManager
+    # if request.user.role not in ['Manager', 'Supervisor', 'Client'] and not request.user.is_superuser:
     #     messages.error(request, "You are not authorized to access this page.")
     #     return redirect('base:dashboard')
 
@@ -228,8 +228,8 @@ def getCleanupRequests(request):
     if request.user.role == 'Client':
         # Client users only see their own requests
         cleanupRequests = CleanupRequest.objects.filter(client=request.user, delete_status=False).select_related('supervisor').prefetch_related('tasks').order_by('-created_at')
-    elif request.user.role == 'Admin' or request.user.is_superuser:
-        # Admin or SuperAdmin users see all requests
+    elif request.user.role == 'Manager' or request.user.is_superuser:
+        # Manager or SuperManager users see all requests
         cleanupRequests = CleanupRequest.objects.filter(delete_status=False).select_related('client', 'supervisor').prefetch_related('tasks').order_by('-created_at')
     elif request.user.role == 'Supervisor':
         # Client users only see their own requests
@@ -295,7 +295,7 @@ def viewCleanupRequest(request, cleanup_request_id):
     if request.user.role == 'Client' and cleanupRequest.client != request.user:
         messages.error(request, "You are not authorized to view this cleanup request.")
         return redirect('base:dashboard')
-    # elif request.user.role not in ['Admin', 'Supervisor'] and not request.user.is_superuser:
+    # elif request.user.role not in ['Manager', 'Supervisor'] and not request.user.is_superuser:
     #     messages.error(request, "You are not authorized to access this page.")
     #     return redirect('base:dashboard')
 
@@ -309,8 +309,8 @@ def viewCleanupRequest(request, cleanup_request_id):
 
 @login_required
 def adminApproveCleanupRequest(request, request_id):
-    # Ensure only Admin or SuperAdmin users can access this
-    # if request.user.role not in ['Admin'] and not request.user.is_superuser:
+    # Ensure only Manager or SuperManager users can access this
+    # if request.user.role not in ['Manager'] and not request.user.is_superuser:
     #     messages.error(request, "You are not authorized to access this page.")
     #     return redirect('base:dashboard')
 
@@ -407,7 +407,7 @@ def markCleanupRequestComplete(request, cleanup_request_id):
 
     if user.is_superuser:
         has_permission = True
-    elif user.role == 'Admin':
+    elif user.role == 'Manager':
         has_permission = True
     elif user.role == 'Supervisor':
         # Supervisors can mark requests they supervise as complete
