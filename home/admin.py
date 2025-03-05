@@ -1,22 +1,35 @@
+from home.models import *
 from django.contrib import admin
-from .models import *
 
-class UserAdmin(admin.ModelAdmin):
-    list_display = ('name', 'email')
+class ReadOnlyAdmin(admin.ModelAdmin):
+    """
+    A base admin class that marks all model fields as read-only.
+    Adding or deleting objects is disabled to maintain data integrity.
+    """
+    def has_add_permission(self, request):
+        return False
+    
+    def has_delete_permission(self, request, obj=None):
+        return False
 
-class CleanupRequestAdmin(admin.ModelAdmin):
-    list_display = ('client', 'supervisor', 'status', 'requested_at', 'approved_at', 'completed_at')
-    list_filter = ('status', 'supervisor', 'client', 'requested_at', 'approved_at', 'completed_at')
-    search_fields = ('client__username', 'supervisor__username', 'description')
-    ordering = ('-requested_at',)
+    def get_readonly_fields(self, request, obj=None):
+        # Include both standard and many-to-many fields
+        readonly_fields = [field.name for field in self.model._meta.fields]
+        readonly_fields += [field.name for field in self.model._meta.many_to_many]
+        return readonly_fields
 
-class TaskAdmin(admin.ModelAdmin):
-    list_display = ('cleanup_request', 'name', 'assigned_at', 'completed_at')
-    list_filter = ('cleanup_request', 'assigned_at', 'completed_at')
-    search_fields = ('name',)
-    ordering = ('-assigned_at',)
+@admin.register(CleanupRequest)
+class CleanupRequestAdmin(ReadOnlyAdmin):
+    list_display = ('id', 'client', 'status', 'requested_at')
 
-# Register models in the admin site
-admin.site.register(User, UserAdmin)
-admin.site.register(CleanupRequest, CleanupRequestAdmin)
-admin.site.register(Task, TaskAdmin)
+@admin.register(Task)
+class TaskAdmin(ReadOnlyAdmin):
+    list_display = ('id', 'cleanup_request', 'name', 'assigned_at', 'completed_at')
+
+@admin.register(Invoice)
+class InvoiceAdmin(ReadOnlyAdmin):
+    list_display = ('id', 'client', 'invoice_date', 'due_date', 'amount', 'is_paid')
+
+@admin.register(WeeklyReport)
+class WeeklyReportAdmin(ReadOnlyAdmin):
+    list_display = ('id', 'supervisor', 'created_at')
