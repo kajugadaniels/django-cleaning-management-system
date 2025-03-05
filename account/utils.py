@@ -5,6 +5,7 @@ from django.conf import settings
 def send_otp_email(recipient_email, otp):
     """
     Sends an OTP email to the specified recipient.
+    Returns a tuple (success: bool, error_message: str).
     """
     subject = "Password Reset OTP"
     body = (
@@ -18,7 +19,8 @@ def send_otp_email(recipient_email, otp):
     try:
         email_message = EmailMessage(subject, body, settings.DEFAULT_FROM_EMAIL, [recipient_email])
         email_message.send(fail_silently=False)
-        return True
+        return True, ""
     except Exception as e:
-        logging.error(f"Failed to send OTP email to {recipient_email}: {e}")
-        return False
+        # Log the complete exception traceback for debugging purposes.
+        logging.exception(f"Failed to send OTP email to {recipient_email}")
+        return False, str(e)
