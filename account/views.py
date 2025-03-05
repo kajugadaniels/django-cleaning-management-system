@@ -74,3 +74,36 @@ def userProfile(request):
 
     return render(request, 'auth/profile.html', context)
 
+def password_reset_request(request):
+    if request.method == 'POST':
+        form = PasswordResetRequestForm(request.POST)
+        if form.is_valid():
+            email = form.cleaned_data['email']
+            user = User.objects.get(email=email)
+            otp = generate_otp()  # your generate_otp helper function
+            user.reset_otp = otp
+            user.otp_created_at = timezone.now()
+            user.save()
+
+            # Send the OTP via email (ensure your email settings are correct)
+            subject = 'Password Reset OTP'
+            message = f'Your password reset OTP is: {otp}'
+            from_email = settings.DEFAULT_FROM_EMAIL
+            recipient_list = [user.email]
+            try:
+                send_mail(subject, message, from_email, recipient_list, fail_silently=False)
+                messages.success(request, "An OTP has been sent to your email address. Please check your inbox.")
+                # Store the email in session so it can be used in the confirmation form
+                request.session['reset_email'] = email
+                return redirect('auth:forgetPasswordConfirm')
+            except Exception as e:
+                messages.error(request, "Failed to send OTP email. Please try again later.")
+        else:
+            messages.error(request, "Please correct the errors below.")
+    else:
+        form = PasswordResetRequestForm()
+    context = {
+        'form': form,
+        'step': 'request'
+    }
+    return render(request, 'auth/forget-password.html', context)
