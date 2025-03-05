@@ -1,6 +1,7 @@
 from django import forms
 from account.models import *
 from django.contrib.auth import authenticate
+from django.utils.translation import gettext_lazy as _
 from django.contrib.auth.forms import PasswordChangeForm
 
 class LoginForm(forms.Form):
@@ -59,3 +60,19 @@ class PasswordChangeForm(PasswordChangeForm):
     new_password2 = forms.CharField(widget=forms.PasswordInput(attrs={'class': 'form-control', 'placeholder': 'Confirm New Password'}))
     class Meta:
         model = User
+
+class PasswordResetRequestForm(forms.Form):
+    email = forms.EmailField(
+        label=_("Email Address"),
+        required=True,
+        widget=forms.EmailInput(attrs={
+            'placeholder': 'Enter your email address',
+            'class': 'form-control'
+        })
+    )
+
+    def clean_email(self):
+        email = self.cleaned_data['email']
+        if not User.objects.filter(email=email).exists():
+            raise forms.ValidationError(_("User with this email address does not exist."))
+        return email
