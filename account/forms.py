@@ -1,5 +1,6 @@
 from django import forms
 from account.models import *
+from datetime import timedelta
 from django.contrib.auth import authenticate
 from django.utils.translation import gettext_lazy as _
 from django.contrib.auth.forms import PasswordChangeForm
@@ -76,3 +77,67 @@ class PasswordResetRequestForm(forms.Form):
         if not User.objects.filter(email=email).exists():
             raise forms.ValidationError(_("User with this email address does not exist."))
         return email
+
+class PasswordResetConfirmForm(forms.Form):
+    email = forms.EmailField(
+        label=_("Email Address"),
+        required=True,
+        widget=forms.EmailInput(attrs={
+            'placeholder': 'Enter your email address',
+            'class': 'form-control'
+        })
+    )
+    otp = forms.CharField(
+        label=_("OTP"),
+        max_length=7,
+        required=True,
+        widget=forms.TextInput(attrs={
+            'placeholder': 'Enter the OTP sent to your email',
+            'class': 'form-control'
+        })
+    )
+    new_password = forms.CharField(
+        label=_("New Password"),
+        required=True,
+        widget=forms.PasswordInput(attrs={
+            'placeholder': 'Enter your new password',
+            'class': 'form-control'
+        })
+    )
+    confirm_password = forms.CharField(
+        label=_("Confirm Password"),
+        required=True,
+        widget=forms.PasswordInput(attrs={
+            'placeholder': 'Confirm your new password',
+            'class': 'form-control'
+        })
+    )
+
+    def __init__(self, *args, **kwargs):
+        super(PasswordResetConfirmForm, self).__init__(*args, **kwargs)
+        # If an initial email is provided, mark the field as readonly.
+        if self.initial.get('email'):
+            self.fields['email'].widget.attrs.update({'readonly': 'readonly'})
+
+    def clean(self):
+        cleaned_data = super().clean()
+        email = cleaned_data.get("email")
+        otp = cleaned_data.get("otp")
+        new_password = cleaned_data.get("new_password")
+        confirm_password = cleaned_data.get("confirm_password")
+
+        if new_password and confirm_password and new_password != confirm_password:
+            raise forms.ValidationError(_("The two password fields must match."))
+
+        try:
+            user = User.objects.get(email=email, reset_otp=otp)
+        except User.DoesNotExist:
+            raise forms.ValidationError(_("Invalid OTP or email address."))
+
+        # Check if the OTP is expired (valid for 10 minutes)
+        if user.otp_created_at and timezone.now() > user.otp_created_at + timedelta(minutes=10):
+            raise forms.ValidationError(_("OTP has expired. Please request a new one."))
+
+        # Pass the user instance to the form's cleaned_data for later use
+        cleaned_data['user'] = user
+        return cleaned_data
