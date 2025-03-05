@@ -1,13 +1,23 @@
 import random
 import logging
-from account.forms import *
+from datetime import timedelta
 from django.conf import settings
 from django.contrib import messages
-from django.core.mail import send_mail
-from django.shortcuts import render, redirect
-from django.utils.translation import gettext_lazy as _
-from django.contrib.auth.decorators import login_required
 from django.contrib.auth import authenticate, login as auth_login, logout, update_session_auth_hash
+from django.core.mail import send_mail  # no longer used directly
+from django.shortcuts import render, redirect
+from django.utils import timezone
+from django.utils.translation import gettext_lazy as _
+from account.forms import (
+    LoginForm,
+    PasswordResetRequestForm,
+    PasswordResetConfirmForm,
+    UserProfileForm,
+    PasswordChangeForm,
+)
+from account.models import User
+from account.utils import send_otp_email
+from django.contrib.auth.decorators import login_required
 
 def user_login(request):
     if request.user.is_authenticated:
@@ -89,27 +99,26 @@ def password_reset_request(request):
         form = PasswordResetRequestForm(request.POST)
         if form.is_valid():
             email = form.cleaned_data['email']
-            user = User.objects.get(email=email)
-            otp = generate_otp()  # your generate_otp helper function
+            try:
+                user = User.objects.get(email=email)
+            except User.DoesNotExist:
+                messages.error(request, _("User with this email does not exist."))
+                return redirect('auth:forgetPassword')
+            
+            otp = generate_otp()  # Generate a random 7-digit OTP
             user.reset_otp = otp
             user.otp_created_at = timezone.now()
             user.save()
 
-            # Send the OTP via email (ensure your email settings are correct)
-            subject = 'Password Reset OTP'
-            message = f'Your password reset OTP is: {otp}'
-            from_email = settings.DEFAULT_FROM_EMAIL
-            recipient_list = [user.email]
-            try:
-                send_mail(subject, message, from_email, recipient_list, fail_silently=False)
-                messages.success(request, "An OTP has been sent to your email address. Please check your inbox.")
+            if send_otp_email(user.email, otp):
+                messages.success(request, _("An OTP has been sent to your email address. Please check your inbox."))
                 # Store the email in session so it can be used in the confirmation form
                 request.session['reset_email'] = email
                 return redirect('auth:forgetPasswordConfirm')
-            except Exception as e:
-                messages.error(request, "Failed to send OTP email. Please try again later.")
+            else:
+                messages.error(request, _("Failed to send OTP email. Please try again later."))
         else:
-            messages.error(request, "Please correct the errors below.")
+            messages.error(request, _("Please correct the errors below."))
     else:
         form = PasswordResetRequestForm()
     context = {
