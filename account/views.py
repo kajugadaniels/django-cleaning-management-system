@@ -1,5 +1,8 @@
+import random
+import logging
 from account.forms import *
 from django.contrib import messages
+from django.core.mail import send_mail
 from django.shortcuts import render, redirect
 from django.utils.translation import gettext_lazy as _
 from django.contrib.auth.decorators import login_required
@@ -106,4 +109,32 @@ def password_reset_request(request):
         'form': form,
         'step': 'request'
     }
+    return render(request, 'auth/forget-password.html', context)
+
+def password_reset_confirm(request):
+    if request.method == 'POST':
+        form = PasswordResetConfirmForm(request.POST)
+        if form.is_valid():
+            user = form.cleaned_data['user']
+            new_password = form.cleaned_data['new_password']
+            user.set_password(new_password)
+            # Clear the OTP fields
+            user.reset_otp = None
+            user.otp_created_at = None
+            user.save()
+            messages.success(request, "Your password has been reset successfully. Please log in with your new password.")
+            # Remove the email from session after successful reset
+            request.session.pop('reset_email', None)
+            return redirect('auth:login')
+        else:
+            messages.error(request, "Please correct the errors below.")
+    else:
+        # Retrieve the email from session and set it as initial data
+        email = request.session.get('reset_email', '')
+        form = PasswordResetConfirmForm(initial={'email': email})
+    context = {
+        'form': form,
+        'step': 'confirm'
+    }
+
     return render(request, 'auth/forget-password.html', context)
