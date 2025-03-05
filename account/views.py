@@ -4,7 +4,6 @@ from datetime import timedelta
 from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth import authenticate, login as auth_login, logout, update_session_auth_hash
-from django.core.mail import send_mail  # no longer used directly
 from django.shortcuts import render, redirect
 from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
@@ -110,13 +109,18 @@ def password_reset_request(request):
             user.otp_created_at = timezone.now()
             user.save()
 
-            if send_otp_email(user.email, otp):
+            success, error_msg = send_otp_email(user.email, otp)
+            if success:
                 messages.success(request, _("An OTP has been sent to your email address. Please check your inbox."))
                 # Store the email in session so it can be used in the confirmation form
                 request.session['reset_email'] = email
                 return redirect('auth:forgetPasswordConfirm')
             else:
-                messages.error(request, _("Failed to send OTP email. Please try again later."))
+                # If in DEBUG mode, show the detailed error message.
+                if settings.DEBUG:
+                    messages.error(request, _("Failed to send OTP email: ") + error_msg)
+                else:
+                    messages.error(request, _("Failed to send OTP email. Please try again later."))
         else:
             messages.error(request, _("Please correct the errors below."))
     else:
